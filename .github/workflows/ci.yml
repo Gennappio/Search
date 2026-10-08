@@ -19,8 +19,9 @@ jobs:
           enable-cache: true
       - run: uv python install ${{ matrix.python }}
       - run: uv sync --all-extras --python ${{ matrix.python }}
-      - run: uv run ruff check .
-      - run: uv run ruff format --check .
-      - run: uv run mypy
-      - run: uv run pytest -m "not realdata and not bench" -q
-      - run: uv run mkdocs build --strict -q
+      # --no-sync: uv run would otherwise re-sync the environment without the extras
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync mypy
+      - run: uv run --no-sync pytest -m "not realdata and not bench" -q -rs
+      - run: uv run --no-sync mkdocs build --strict -q

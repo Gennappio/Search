@@ -41,3 +41,7 @@ Deviations from the R originals and open questions, with the default chosen in t
   inequalities at thresholds; the Bonferroni denominator is the size of the universe.
 - The fractional rank of tied values is their average rank, so the lowest rank is not 0 when
   many genes share the lowest connectivity.
+- Edge decisions compare statistics and p-values rounded to 12 decimals with the threshold:
+  with few samples a Spearman correlation can sit exactly on 0.5, and without rounding the
+  floating-point noise of the matrix product, which depends on the order of samples, decided
+  the edge.
