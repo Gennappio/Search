@@ -10,6 +10,7 @@ build/
 .hypothesis/
 .benchmarks/
 site/
-runs/
-data/
+# run outputs and local data at the repository root only (tests/data holds fixtures)
+/runs/
+/data/
 .DS_Store
