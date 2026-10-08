@@ -53,3 +53,49 @@ excluded: `S = sum min(gamma_a, gamma_b) / sum max(gamma_a, gamma_b)`,
 `F = sum min(gamma_a, gamma_b) sign(stat_a stat_b) / sum min(gamma_a, gamma_b)`.
 With binary membership `S` is the Jaccard index on the non-seed rows. `S` and `F` cost one pass
 over the genes per seed pair and are computed automatically up to `overlap.auto_max_seeds` seeds.
+
+## 6. Recursive growth (SEARCH 2014)
+
+`growth.enabled` wraps the pass in a loop over the seed set. Each iteration:
+
+1. the neighbourhoods of the seeds added in the previous iteration are computed with the engine
+   (all seeds at iteration 1);
+2. from iteration 2, the binary overlap O between every pair of seeds is computed from the stored
+   neighbourhoods restricted to the current universe; the seeds under check (the new ones, or all
+   of them when `keep_seeds` is false) whose largest overlap with any other seed is below
+   `O_lower` are pruned;
+3. the connectivity D of every universe gene to the current seeds is computed from the
+   neighbourhoods with the configured membership and connectivity rules;
+4. seeds with D below `D_lower` are pruned; genes outside the seed set with D above `D_higher`
+   become seeds;
+5. the loop stops when nothing changed, when fewer than two seeds remain, when the universe is
+   empty, or at `max_iter`.
+
+Pruned genes leave the universe and every neighbourhood for good. `sd_threshold` removes flat
+genes before the loop, keyed by gene name. The final connectivity, aligned to the initial
+universe, is the statistic that bootstrap and the null model resample when growth is enabled.
+The tables of a run then also contain `D_final`, the iteration table, the events (added,
+removed by D, removed by O) and the connectivity of every iteration.
+
+## 7. Null model and p-values
+
+`internal_random_seeds` repeats the pass (or the growth loop) with random seed sets of the same
+size drawn from the genes with standard deviation above `eligible_min_sd`, the real seeds
+excluded. The empirical p-value of a gene is `(1 + count_ge) / (1 + n_null)`, where `count_ge`
+counts null values greater than or equal to the observed statistic (within 1e-12). With
+`pooled`, every gene's null values form one distribution (n_null = genes x replicates); with
+`per_gene`, only the gene's own replicates count (n_null = replicates). Both are computed from
+the same stored chunks. `external_runs` reads the per-replicate statistics stored by other runs,
+typically runs with random seeds, through `search summarise --null-runs`.
+
+## 8. Bootstrap, cohort combination and score
+
+Bootstrap draws the samples with replacement (jackknife: all but one), recomputes the statistic
+per replicate from a seed derived as `seed_base + replicate`, stores replicates in chunks and
+summarises mean, variance and standard deviation per gene. For several training cohorts the
+product of the bootstrap-mean ranks (`pC_boot`), the product of the observed ranks (`pC_obs`)
+and the inverse-variance weighted mean (`C_IVW`) are computed; a gene is a candidate when it is
+not a seed, is positively consistent in every cohort, has a null p-value below `mc_p_cutoff` in
+every cohort and `pC_boot` above `product_cutoff`; candidates are sorted by `pC_boot`, `pC_obs`,
+`C_IVW` and capped at `top_n`. The per-sample score is the median of the absolute expression of
+the signature genes, ranked between 0 and 1 across the samples of each cohort.

@@ -22,10 +22,9 @@ one was used.
 
 ## Status
 
-Phases 0-2 done: the single-pass engine, bootstrap, Monte Carlo null, cohort combination,
-signature score, checkpoints with resume, manifest and command line, validated with the
-`buffa2010` preset. Next: the recursive growth loop (`search2014`), then linear models with
-covariates. See `docs/` for the method, the presets, the decision log and the validation.
+Phases 0-3 done: the single-pass engine, the recursive growth loop, bootstrap, Monte Carlo and
+external null models, cohort combination, signature score, checkpoints with resume, manifest
+and command line; both presets run. Next: linear-model association with covariates. See `docs/` for the method, the presets, the decision log and the validation.
 
 ## Install
 

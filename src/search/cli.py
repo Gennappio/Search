@@ -188,6 +188,63 @@ def combine(
 
 
 @app.command()
+def summarise(
+    run_dir: Annotated[Path, typer.Argument(help="Run directory, or 'latest'.")] = Path(
+        "runs/latest"
+    ),
+    null_runs: Annotated[
+        list[Path] | None, typer.Option("--null-runs", help="Run directories of random-seed runs.")
+    ] = None,
+    pooling: Annotated[str, typer.Option(help="per_gene or pooled.")] = "per_gene",
+) -> None:
+    """Compare the observed connectivity of a run with the replicates of other runs used as null."""
+    import numpy as np
+    import pandas as pd
+
+    from search.config import RunConfig
+    from search.export.tables import read_cohort_tables, write_external_null
+    from search.null import external_null
+    from search.run import resolve_run_dir
+
+    try:
+        if not null_runs:
+            raise SearchError("give at least one --null-runs directory")
+        target = resolve_run_dir(run_dir)
+        cfg = RunConfig.from_yaml((target / "config.yaml").read_text())
+        statistic = (
+            cfg.resampling.statistic if cfg.resampling.scheme != "none" else cfg.null.statistic
+        )
+        tables = read_cohort_tables(target / "results")
+        if not tables:
+            raise SearchError(f"no cohort tables under {target / 'results'}")
+        for name, table in tables.items():
+            column = (
+                f"{statistic}_boot_mean" if f"{statistic}_boot_mean" in table.columns else statistic
+            )
+            genes = pd.Index(table["gene"].astype(str))
+            observed = table[column].to_numpy(dtype=float)
+            result = external_null(observed, genes, [Path(p) for p in null_runs], pooling=pooling)
+            out = pd.DataFrame(
+                {
+                    "gene": genes,
+                    "observed": observed,
+                    "p_external": result.p,
+                    "count_ge": result.count_ge,
+                    "n_null": result.n_null,
+                }
+            )
+            out = out.sort_values("p_external", kind="stable").reset_index(drop=True)
+            path = write_external_null(target / "results", name, out)
+            typer.echo(
+                f"{name}: {int(np.sum(result.p < 0.05))} genes with p < 0.05 against "
+                f"{result.n_rep} null replicates ({pooling}); {path.name}"
+            )
+    except (SearchError, ValueError, OSError) as exc:
+        _fail(exc)
+        return
+
+
+@app.command()
 def score(
     manifest: Annotated[Path, typer.Option("--manifest", "-m")],
     signature: Annotated[Path, typer.Option(help="Table with a 'gene' column.")],

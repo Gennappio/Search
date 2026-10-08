@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -59,19 +60,44 @@ def stage_hash(cfg: RunConfig, *parts: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()[:16]
 
 
+Evaluator = Callable[[ExpressionSet, list[str], RunConfig, NDArray[np.intp] | None], FloatArray]
+
+
+def core_evaluator(
+    work: ExpressionSet, seeds: list[str], cfg: RunConfig, sample_idx: NDArray[np.intp] | None
+) -> FloatArray:
+    """One pass of the engine, returning the configured resampling statistic."""
+    res = run_core(work, seeds, cfg, sample_idx=sample_idx)
+    return statistic_of(res, cfg.resampling.statistic)
+
+
+def growth_evaluator(
+    work: ExpressionSet, seeds: list[str], cfg: RunConfig, sample_idx: NDArray[np.intp] | None
+) -> FloatArray:
+    """The growth loop, returning the final connectivity aligned to the universe."""
+    from search.growth import growth_statistic, run_growth
+
+    res = run_growth(work, seeds, cfg, sample_idx=sample_idx)
+    return growth_statistic(res, cfg.resampling.statistic)
+
+
+def evaluator_for(cfg: RunConfig) -> Evaluator:
+    return growth_evaluator if cfg.growth.enabled else core_evaluator
+
+
 @dataclass
 class _Job:
     work: ExpressionSet
     seeds: list[str]
     cfg: RunConfig
     rep: int
+    evaluate: Evaluator
 
     def run(self) -> tuple[int, NDArray[np.intp], FloatArray]:
         idx = resample_indices(
             self.cfg.resampling.scheme, self.work.n_samples, self.cfg.resampling.seed_base, self.rep
         )
-        res = run_core(self.work, self.seeds, self.cfg, sample_idx=idx)
-        return self.rep, idx, statistic_of(res, self.cfg.resampling.statistic)
+        return self.rep, idx, self.evaluate(self.work, self.seeds, self.cfg, idx)
 
 
 def _run_job(job: _Job) -> tuple[int, NDArray[np.intp], FloatArray]:
@@ -89,11 +115,15 @@ def run_bootstrap(
     resume: bool = True,
     n_jobs: int = 1,
     store_indices: bool = True,
+    evaluate: Evaluator | None = None,
 ) -> BootstrapSummary:
     rc = cfg.resampling
+    evaluate = evaluate or evaluator_for(cfg)
     work, seed_list = resolve_seeds(expr, seeds, universe)
     store = ChunkStore(ckpt_dir, "bootstrap", cfg.checkpoint_dtype)
-    config_hash = stage_hash(cfg, rc.scheme, rc.statistic)
+    config_hash = stage_hash(
+        cfg, rc.scheme, rc.statistic, cfg.hash(["growth"]) if cfg.growth.enabled else ""
+    )
     ranges = chunk_ranges(rc.n_rep, rc.chunk_size)
     for chunk_no, (start, end) in enumerate(ranges, start=1):
         meta = ChunkMeta(
@@ -109,7 +139,7 @@ def run_bootstrap(
             log.info("bootstrap chunk %d/%d already done, skipping", chunk_no, len(ranges))
             continue
         log.info("bootstrap chunk %d/%d, replicates %d-%d", chunk_no, len(ranges), start, end)
-        jobs = [_Job(work, seed_list, cfg, rep) for rep in range(start, end + 1)]
+        jobs = [_Job(work, seed_list, cfg, rep, evaluate) for rep in range(start, end + 1)]
         outputs = parallel_map(_run_job, jobs, n_jobs)
         columns = {rep: values for rep, _, values in outputs}
         aux = None

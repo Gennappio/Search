@@ -28,3 +28,27 @@ A smoke run (20 bootstrap, 50 Monte Carlo replicates per cohort) on IT + FR take
 laptop and selects 26 candidate genes, the same 26 genes the R script selected in June 2026 with
 1000 and 5000 replicates. This is reported as information, not as a benchmark: the two runs used
 slightly different versions of the input matrices.
+
+## Growth loop, phase 3
+
+| test | what it checks |
+|---|---|
+| `tests/synthetic/test_growth.py` | five seeds of a planted module of 30 recruit at least 25 module genes and at most 3 background genes; a foreign seed is pruned by D at iteration 1, or by Omax at iteration 2 when seeds are not protected; one iteration without changes equals the single pass; the sd prefilter is keyed by gene name; bootstrap over growth and an external null from random-seed runs |
+| `tests/unit/test_breast_search2014.py` | the `search2014` preset grows a network on Breastdata1 and records its stop reason |
+| `tests/unit/test_pipeline.py` | the pipeline with growth writes the growth tables and `D_final` |
+
+## Full run on the GBM cohorts, phase 2
+
+1000 bootstrap and 5000 Monte Carlo replicates per cohort, IT + FR training, TCGA scoring,
+8 worker processes on a laptop:
+
+| stage | IT | FR |
+|---|---|---|
+| core pass | 0.1 s | 0.2 s |
+| bootstrap | 16 s | 39 s |
+| null model | 59 s | 163 s |
+
+Whole run 4 min 39 s (the R script took 1 h 50 min on 32 cluster cores), checkpoints 113 MB
+(1.5 GB in R). The 26 selected genes are the same 26 of the June 2026 R run; the bootstrap means
+of the two runs correlate at 0.999 and the Monte Carlo p-values at 0.995, with the two runs
+using different random draws and slightly different input matrices.

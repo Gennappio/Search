@@ -159,10 +159,32 @@ def test_cli_run_combine_score_and_config(tmp_path: Path) -> None:
     assert res.exit_code == 1 and "strict" in res.output
 
 
-def test_cli_rejects_growth_until_phase_3(tmp_path: Path) -> None:
-    path = write_manifest_files(tmp_path / "proj", n_boot=0, n_null=0)
-    res = CliRunner().invoke(
-        app,
-        ["run", "--manifest", str(path), "--preset", "search2014", "--out", str(tmp_path / "runs")],
+def test_pipeline_with_growth_preset(tmp_path: Path) -> None:
+    path = write_manifest_files(tmp_path / "proj", n_boot=2, n_null=2)
+    manifest = CohortManifest.load(path)
+    cfg = manifest.build_config(
+        preset="search2014",
+        overrides={
+            "growth.max_iter": 3,
+            "growth.D_higher": 0.5,
+            "growth.D_lower": 0.1,
+            "growth.sd_threshold": 0.0,
+            "resampling.n_rep": 2,
+            "resampling.chunk_size": 2,
+            "null.scheme": "internal_random_seeds",
+            "null.n_rep": 2,
+            "null.chunk_size": 2,
+            "combine.enabled": True,
+            "combine.mc_p_cutoff": 0.9,
+            "combine.product_cutoff": 0.0,
+        },
     )
-    assert res.exit_code == 1 and "phase 3" in res.output
+    result = run_pipeline(manifest, cfg, tmp_path / "runs")
+    run = result.cohorts["A"]
+    assert run.growth is not None and run.growth.n_iterations >= 1
+    results = result.run_dir / "results"
+    assert (results / "A_growth_iterations.csv").exists() and (
+        results / "A_growth_events.csv"
+    ).exists()
+    table = pd.read_csv(results / "A_gene_connectivity.csv")
+    assert "D_final" in table.columns and "C_raw_boot_mean" in table.columns

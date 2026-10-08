@@ -10,6 +10,7 @@ import pandas as pd
 from search.bootstrap import BootstrapSummary
 from search.combine import CombinedResult, legacy_two_cohort_names
 from search.core.corepass import CoreResult
+from search.growth import GrowthResult
 from search.null import NullResult
 
 
@@ -53,6 +54,7 @@ def write_cohort_tables(
     core: CoreResult,
     bootstrap: BootstrapSummary | None,
     null: NullResult | None,
+    gene_table: pd.DataFrame | None = None,
 ) -> list[Path]:
     results_dir = Path(results_dir)
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -63,7 +65,8 @@ def write_cohort_tables(
         frame.to_csv(path, index=False)
         written.append(path)
 
-    save(cohort_gene_table(name, core, bootstrap, null), f"{name}_gene_connectivity.csv")
+    table = gene_table if gene_table is not None else cohort_gene_table(name, core, bootstrap, null)
+    save(table, f"{name}_gene_connectivity.csv")
     pairs = core.seed_pairs()
     pairs.insert(0, "dataset", name)
     save(pairs[["dataset", "seed_x", "seed_y", "S"]], f"{name}_shared_neighbourhood_S.csv")
@@ -116,3 +119,34 @@ def read_cohort_tables(results_dir: Path) -> dict[str, pd.DataFrame]:
         )
         tables[name] = frame
     return tables
+
+
+def write_growth_tables(results_dir: Path, name: str, growth: GrowthResult) -> list[Path]:
+    results_dir = Path(results_dir)
+    results_dir.mkdir(parents=True, exist_ok=True)
+    frames = {
+        f"{name}_growth_iterations.csv": growth.iteration_table(),
+        f"{name}_growth_events.csv": growth.event_table(),
+        f"{name}_growth_connectivity.csv": growth.connectivity_table(),
+        f"{name}_growth_final_seeds.csv": pd.DataFrame(
+            {
+                "gene": growth.final_seeds,
+                "initial": [g in set(growth.initial_seeds) for g in growth.final_seeds],
+            }
+        ),
+    }
+    written = []
+    for filename, frame in frames.items():
+        frame.insert(0, "dataset", name)
+        path = results_dir / filename
+        frame.to_csv(path, index=False)
+        written.append(path)
+    return written
+
+
+def write_external_null(results_dir: Path, name: str, table: pd.DataFrame) -> Path:
+    results_dir = Path(results_dir)
+    results_dir.mkdir(parents=True, exist_ok=True)
+    path = results_dir / f"{name}_external_null.csv"
+    table.to_csv(path, index=False)
+    return path

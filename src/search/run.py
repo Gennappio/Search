@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
 
+import numpy as np
 import pandas as pd
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
@@ -31,8 +32,10 @@ from search.export.tables import (
     cohort_gene_table,
     write_cohort_tables,
     write_combined_tables,
+    write_growth_tables,
     write_scores,
 )
+from search.growth import GrowthResult, growth_statistic, run_growth
 from search.logging_utils import close_file_handlers, get_logger
 from search.null import NullResult, run_internal_null
 from search.parallel import default_n_jobs
@@ -200,9 +203,16 @@ class CohortRun:
     null: NullResult | None
     input_hash: str
     timings: dict[str, float] = field(default_factory=dict)
+    growth: GrowthResult | None = None
 
     def gene_table(self) -> pd.DataFrame:
-        return cohort_gene_table(self.name, self.core, self.bootstrap, self.null)
+        table = cohort_gene_table(self.name, self.core, self.bootstrap, self.null)
+        if self.growth is not None:
+            final = pd.DataFrame(
+                {"gene": np.asarray(self.growth.universe), "D_final": self.growth.final_D()}
+            )
+            table = table.merge(final, on="gene", how="left")
+        return table
 
 
 def run_cohort(
@@ -216,22 +226,44 @@ def run_cohort(
     resume: bool = True,
     n_jobs: int = 1,
 ) -> CohortRun:
-    if cfg.growth.enabled:
-        raise NotImplementedError("the growth loop (search2014 preset) arrives in phase 3")
     timings: dict[str, float] = {}
     work, seed_list = resolve_seeds(expr, seeds, universe)
     input_hash = expression_hash(work, seed_list, None)
     ckpt_dir = run_dir / "checkpoints" / name
 
     t0 = time.perf_counter()
-    log.info(
-        "%s: core pass on %d genes x %d samples, %d seeds",
-        name,
-        work.n_genes,
-        work.n_samples,
-        len(seed_list),
-    )
-    core = run_core(work, seed_list, cfg)
+    growth: GrowthResult | None = None
+    if cfg.growth.enabled:
+        log.info(
+            "%s: growth loop on %d genes x %d samples, %d seeds",
+            name,
+            work.n_genes,
+            work.n_samples,
+            len(seed_list),
+        )
+        growth = run_growth(work, seed_list, cfg)
+        log.info(
+            "%s: growth stopped (%s) with %d seeds after %d iterations",
+            name,
+            growth.stop_reason,
+            len(growth.final_seeds),
+            growth.n_iterations,
+        )
+        if len(growth.final_seeds) < 2:
+            raise DataError(f"{name}: growth ended with fewer than two seeds")
+        core = run_core(work.subset_genes(growth.final_universe), growth.final_seeds, cfg)
+        observed = growth_statistic(growth, cfg.null.statistic)
+        write_growth_tables(run_dir / "results", name, growth)
+    else:
+        log.info(
+            "%s: core pass on %d genes x %d samples, %d seeds",
+            name,
+            work.n_genes,
+            work.n_samples,
+            len(seed_list),
+        )
+        core = run_core(work, seed_list, cfg)
+        observed = statistic_of(core, cfg.null.statistic)
     timings["core"] = time.perf_counter() - t0
 
     bootstrap: BootstrapSummary | None = None
@@ -261,7 +293,7 @@ def run_cohort(
             seed_list,
             cfg,
             universe=None,
-            observed=statistic_of(core, cfg.null.statistic),
+            observed=observed,
             ckpt_dir=ckpt_dir,
             input_hash=input_hash,
             resume=resume,
@@ -269,8 +301,9 @@ def run_cohort(
         )
         timings["null"] = time.perf_counter() - t0
 
-    write_cohort_tables(run_dir / "results", name, core, bootstrap, null)
-    return CohortRun(name, "training", core, bootstrap, null, input_hash, timings)
+    run = CohortRun(name, "training", core, bootstrap, null, input_hash, timings, growth)
+    write_cohort_tables(run_dir / "results", name, core, bootstrap, null, run.gene_table())
+    return run
 
 
 # ---- the pipeline ----------------------------------------------------------------------

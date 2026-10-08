@@ -57,14 +57,20 @@ class _Job:
     def run(self) -> tuple[int, FloatArray, float, float, list[str]]:
         rng = derive_rng(self.cfg.null.seed_base, self.rep)
         random_seeds = random_seed_set(self.eligible, self.k, rng)
-        res = run_core(self.work, random_seeds, self.cfg)
-        values = statistic_of(res, self.cfg.null.statistic)
         mean_s = median_s = float("nan")
-        if res.S is not None and self.k > 1:
-            upper = res.S[np.triu_indices(self.k, 1)]
-            upper = upper[np.isfinite(upper)]
-            if upper.size:
-                mean_s, median_s = float(upper.mean()), float(np.median(upper))
+        if self.cfg.growth.enabled:
+            from search.growth import growth_statistic, run_growth
+
+            grown = run_growth(self.work, random_seeds, self.cfg)
+            values = growth_statistic(grown, self.cfg.null.statistic)
+        else:
+            res = run_core(self.work, random_seeds, self.cfg)
+            values = statistic_of(res, self.cfg.null.statistic)
+            if res.S is not None and self.k > 1:
+                upper = res.S[np.triu_indices(self.k, 1)]
+                upper = upper[np.isfinite(upper)]
+                if upper.size:
+                    mean_s, median_s = float(upper.mean()), float(np.median(upper))
         return self.rep, values, mean_s, median_s, random_seeds
 
 
@@ -117,7 +123,13 @@ def run_internal_null(
     eligible = eligible_null_genes(work, seed_list, nc.eligible_min_sd)
     k = len(seed_list)
     store = ChunkStore(ckpt_dir, "null", cfg.checkpoint_dtype)
-    config_hash = stage_hash(cfg, "null", nc.statistic, str(nc.eligible_min_sd))
+    config_hash = stage_hash(
+        cfg,
+        "null",
+        nc.statistic,
+        str(nc.eligible_min_sd),
+        cfg.hash(["growth"]) if cfg.growth.enabled else "",
+    )
     ranges = chunk_ranges(nc.n_rep, nc.chunk_size)
     for chunk_no, (start, end) in enumerate(ranges, start=1):
         meta = ChunkMeta(
@@ -171,3 +183,50 @@ def run_internal_null(
     return NullResult(
         nc.statistic, nc.pooling, nc.n_rep, work.genes, p, count_ge, n_null, seed_summary
     )
+
+
+def collect_null_chunks(run_dirs: list[Path | str], stage: str = "bootstrap") -> list[Path]:
+    """Chunk files of ``stage`` under run directories (checkpoints/<cohort>/) or chunk folders."""
+    files: list[Path] = []
+    for raw in run_dirs:
+        root = Path(raw)
+        pointer = root / "run_path.txt"
+        if pointer.exists():
+            root = Path(pointer.read_text().strip())
+        files.extend(sorted(root.glob(f"checkpoints/*/{stage}_chunk_*.parquet")))
+        files.extend(sorted(root.glob(f"{stage}_chunk_*.parquet")))
+    return files
+
+
+def external_null(
+    observed: FloatArray,
+    genes: pd.Index,
+    run_dirs: list[Path | str],
+    pooling: str = "per_gene",
+    stage: str = "bootstrap",
+) -> NullResult:
+    """Empirical p-values of an observed statistic against replicates stored by other runs,
+    typically runs with random seed sets (the external null of SEARCH 2014)."""
+    files = collect_null_chunks(run_dirs, stage)
+    if not files:
+        raise ValueError("no null chunks found under the given run directories")
+    count_ge = np.zeros(len(genes), dtype=np.int64)
+    n_null = np.zeros(len(genes), dtype=np.int64)
+    n_rep = 0
+    for path in files:
+        frame = pd.read_parquet(path).set_index("gene").reindex(genes)
+        chunk = frame.to_numpy(dtype=np.float64)
+        n_rep += chunk.shape[1]
+        if pooling == "pooled":
+            counts, n = pooled_counts(observed, chunk)
+            count_ge += counts
+            n_null += n
+        else:
+            counts, n_g = per_gene_counts(observed, chunk)
+            count_ge += counts
+            n_null += n_g
+    if pooling == "pooled":
+        n_null = np.where(np.isfinite(observed), n_null, 0)
+    p = empirical_p(count_ge, n_null)
+    empty = pd.DataFrame(columns=["rep", "mean_S", "median_S", "seeds"])
+    return NullResult("external", pooling, n_rep, genes, p, count_ge, n_null, empty)
