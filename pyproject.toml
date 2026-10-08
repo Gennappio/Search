@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "search"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Seed Agglomerative and Recursive Clustering with Hypothesis-oriented initialisation (SEARCH): a single engine with the SEARCH 2014 and Buffa 2010 presets"
 readme = "README.md"
 license = "GPL-2.0-or-later"

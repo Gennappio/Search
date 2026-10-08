@@ -273,6 +273,96 @@ def score(
     typer.echo(f"scores for {len(table)} samples written to {out}")
 
 
+@app.command()
+def compare(
+    run_a: Annotated[Path, typer.Argument(help="First run directory, or 'latest'.")],
+    run_b: Annotated[Path, typer.Argument(help="Second run directory.")],
+    top_n: Annotated[int, typer.Option(help="Size of the top lists compared.")] = 50,
+    out: Annotated[Path | None, typer.Option(help="Write the cohort metrics as CSV.")] = None,
+) -> None:
+    """How much two runs agree: rank correlations, top overlaps, signature Jaccard."""
+    from search.compare import compare_runs
+
+    try:
+        result = compare_runs(run_a, run_b, top_n)
+    except (SearchError, OSError, ValueError) as exc:
+        _fail(exc)
+        return
+    typer.echo(result.summary())
+    if out is not None:
+        result.cohort_metrics.to_csv(out, index=False)
+        typer.echo(f"written {out}")
+
+
+@app.command()
+def variants(
+    manifest: Annotated[Path, typer.Option("--manifest", "-m", help="Cohort manifest (YAML).")],
+    grid: Annotated[list[str], typer.Option("--grid", help="key.path=v1,v2,... (repeatable).")],
+    preset: Annotated[str | None, typer.Option(help="Preset name, overrides the manifest.")] = None,
+    set_: Annotated[
+        list[str] | None, typer.Option("--set", help="Override applied to every variant.")
+    ] = None,
+    out: Annotated[Path, typer.Option(help="Directory holding the variant runs.")] = Path(
+        "runs/variants"
+    ),
+    n_jobs: Annotated[int | None, typer.Option()] = None,
+    top_n: Annotated[int, typer.Option()] = 50,
+) -> None:
+    """Run every combination of a grid of settings and compare the rankings with the first one."""
+    import yaml
+
+    from search.compare import summarise_variants, variant_label, variants_grid
+    from search.run import CohortManifest, run_pipeline
+
+    try:
+        spec = CohortManifest.load(manifest)
+        parsed: dict[str, list[object]] = {}
+        for item in grid:
+            if "=" not in item:
+                raise SearchError(f"grid entries look like key.path=v1,v2, got {item!r}")
+            key, raw = item.split("=", 1)
+            parsed[key.strip()] = [yaml.safe_load(v) for v in raw.split(",")]
+        combos = variants_grid(parsed)
+        runs: dict[str, Path] = {}
+        for combo in combos:
+            label = variant_label(combo)
+            cfg = spec.build_config(preset, {**_overrides(set_), **combo})
+            named = spec.model_copy(update={"name": label})
+            result = run_pipeline(named, cfg, out, n_jobs=n_jobs)
+            runs[label] = result.run_dir
+            typer.echo(f"{label}: {result.run_dir}")
+        baseline = next(iter(runs))
+        table = summarise_variants(runs, baseline, top_n)
+    except (SearchError, NotImplementedError, OSError, ValueError) as exc:
+        _fail(exc)
+        return
+    path = out / "variants_summary.csv"
+    table.to_csv(path, index=False)
+    typer.echo(table.drop(columns=["run_dir"]).to_string(index=False))
+    typer.echo(f"written {path}")
+
+
+@app.command()
+def plot(
+    run_dir: Annotated[Path, typer.Argument(help="Run directory, or 'latest'.")] = Path(
+        "runs/latest"
+    ),
+) -> None:
+    """Write the figures of a run into its plots/ folder (needs the plots extra)."""
+    from search.config import RunConfig
+    from search.plots import plot_run
+    from search.run import resolve_run_dir
+
+    try:
+        target = resolve_run_dir(run_dir)
+        cfg = RunConfig.from_yaml((target / "config.yaml").read_text())
+        written = plot_run(target, cfg.combine.product_cutoff)
+    except (SearchError, OSError, ImportError) as exc:
+        _fail(exc)
+        return
+    typer.echo("\n".join(str(p) for p in written) if written else "nothing to plot")
+
+
 @config_app.command("show")
 def config_show(
     preset: Annotated[str | None, typer.Option(help="Preset name.")] = None,

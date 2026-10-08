@@ -288,13 +288,16 @@ def read_matrix(
     """Read an expression matrix from csv/tsv/parquet/h5ad."""
     p = Path(path)
     fmt = format or detect_format(p)
+    default_sample_table: pd.DataFrame | None = None
     if fmt == "h5ad":
         import anndata
 
-        expr = ExpressionSet.from_anndata(anndata.read_h5ad(p))
-        frame = expr.to_frame()
-        if orientation == "samples_x_genes":
-            frame = frame.T
+        loaded = ExpressionSet.from_anndata(anndata.read_h5ad(p))
+        frame = loaded.to_frame()
+        if loaded.sample_table is not None and loaded.sample_table.shape[1] > 0:
+            default_sample_table = loaded.sample_table
+        if gene_table is None and loaded.gene_table is not None and loaded.gene_table.shape[1] > 0:
+            gene_table = loaded.gene_table
     else:
         frame = read_table(p, fmt)
         if orientation == "samples_x_genes":
@@ -305,6 +308,8 @@ def read_matrix(
     table: pd.DataFrame | None
     if isinstance(sample_table, (str, Path)):
         table = read_sample_table(sample_table)
+    elif sample_table is None:
+        table = default_sample_table
     else:
         table = sample_table
     try:

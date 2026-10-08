@@ -22,17 +22,22 @@ one was used.
 
 ## Status
 
-Phases 0-4 done: the single-pass engine, the recursive growth loop, correlation and linear-model
+Version 0.1: the single-pass engine, the recursive growth loop, correlation and linear-model
 association with covariates, bootstrap, Monte Carlo and external null models, cohort combination,
-signature score, checkpoints with resume, manifest and command line; both presets run.
-Next: variant comparison, plots and the documentation site. See `docs/` for the method, the presets, the decision log and the validation.
+signature score (internal, or through pysigscore), checkpoints with resume, run manifest, variant
+comparison, plots, command line and documentation site (`uv run mkdocs serve`). See `docs/` for the method, the presets, the decision log and the validation.
 
 ## Install
 
 ```bash
-uv sync --all-extras          # development environment
+uv sync --all-extras          # development environment (.venv in the project, or UV_PROJECT_ENVIRONMENT)
 uv run search --help
+uv run pytest                 # tests; SEARCH_GBM_DATA=<folder> enables the real-data tests
 ```
+
+pysigscore, the optional scorer backend, is not on PyPI: install it by hand into the same
+environment (`uv pip install --python .venv/bin/python <path or git url>`); without it the
+internal score of Buffa 2010 is used.
 
 On a SLURM cluster without `uv`, `environment.yml` creates a conda environment and installs the
 package with pip; `slurm/run_search.sbatch` is a job template.

@@ -8,9 +8,21 @@ search qc --manifest cohorts.yaml
 search combine [runs/latest] [--mc-p-cutoff P] [--product-cutoff X] [--top-n N]
                [--no-positive-consistent] [--keep-seeds] [--prefix recombined]
 search score --manifest cohorts.yaml --signature genes.csv [--out scores.csv] [--method M]
+search compare <run_a> <run_b> [--top-n 50] [--out metrics.csv]
+search variants --manifest cohorts.yaml --grid membership.mode=cluster_size,binary,gene_normalised
+                [--grid null.pooling=pooled,per_gene] [--preset P] [--set ...] [--out runs/variants]
+search plot [runs/latest]
 search config show [--preset NAME | --file cfg.yaml] [--set key.path=value ...]
 search config validate cfg.yaml
 ```
+
+`variants` runs the pipeline once per combination of the grid, with the first combination as
+baseline, and writes `variants_summary.csv`: candidates per variant, Spearman correlation and
+top-N overlap of the combined score with the baseline, Jaccard of the signatures, top-10 genes.
+This is the table to bring to a domain reviewer for the open statistical questions.
+`compare` reports the same agreement measures between any two runs. `plot` draws the seed
+networks (S and O), the rank scatter between the first two cohorts, the product-score histogram
+and the score distribution per cohort (needs the `plots` extra).
 
 `--set` takes dotted paths into the configuration and YAML values: `--set null.pooling=per_gene`,
 `--set resampling.n_rep=200`, `--set association.covariates=[batch]`. Any configuration outside a

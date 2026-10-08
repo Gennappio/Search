@@ -2137,7 +2137,7 @@ settings = [
 
 [[package]]
 name = "search"
-version = "0.1.0.dev0"
+version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "joblib" },
