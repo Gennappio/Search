@@ -1,0 +1,10 @@
+site_name: Search
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Method: methods.md
+  - Presets: presets.md
+  - Decisions: decisions.md
+  - Command line: cli.md
+  - Validation: validation.md

@@ -1,0 +1,5 @@
+exportPattern("^[[:alpha:]]+")
+import(igraph)
+import(gplots)
+import(multicore)
+import(RcppArmadillo)

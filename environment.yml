@@ -1,0 +1,9 @@
+# Conda environment for SLURM clusters without uv. Local development uses `uv sync`.
+name: search
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - -e .[h5ad,glm,plots]
