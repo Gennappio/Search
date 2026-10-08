@@ -22,7 +22,10 @@ one was used.
 
 ## Status
 
-Phase 0: scaffold. See `docs/` for the method, the presets and the decision log.
+Phases 0-2 done: the single-pass engine, bootstrap, Monte Carlo null, cohort combination,
+signature score, checkpoints with resume, manifest and command line, validated with the
+`buffa2010` preset. Next: the recursive growth loop (`search2014`), then linear models with
+covariates. See `docs/` for the method, the presets, the decision log and the validation.
 
 ## Install
 

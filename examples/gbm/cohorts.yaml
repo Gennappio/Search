@@ -1,0 +1,31 @@
+# Cohort manifest for the GBM hypoxia signature. Paths are relative to this file; copy it next
+# to the DATA folder of the GBM project (or edit the paths) before running:
+#   search run --manifest cohorts.yaml --preset buffa2010 --out runs --n-jobs 8
+name: gbm_hypoxia
+seeds: seeds_buffa2010_setA.csv
+universe: null
+gene_filter:
+  strip_ensembl_version: true
+  common_genes_across_training: true
+  annotation_table: DATA/master_annotation_ITFR_Ensembl104_TCGA_GDC_consensus.csv
+  annotation_query: null
+cohorts:
+  - name: IT
+    role: training
+    matrix: DATA/NORMALIZED/IT_GBM_RNA_Deseq2_vst_Combat.csv
+    format: csv
+    orientation: genes_x_samples
+    sample_table: null
+  - name: FR
+    role: training
+    matrix: DATA/NORMALIZED/FR_GBM_RNA_Deseq2_vst_Combat.csv
+    format: csv
+  - name: TCGA
+    role: scoring
+    matrix: DATA/NORMALIZED/TCGA_GBM_RNA_Deseq2_vst.csv
+    format: csv
+config:
+  preset: buffa2010
+  overrides:
+    resampling.n_rep: 1000
+    null.n_rep: 5000

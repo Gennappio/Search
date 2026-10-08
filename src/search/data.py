@@ -228,7 +228,7 @@ def read_table(path: Path | str, format: TableFormat | None = None) -> pd.DataFr
         if isinstance(frame.index, pd.RangeIndex) and frame.shape[1] > 0:
             frame = frame.set_index(frame.columns[0])
     elif fmt in ("csv", "tsv"):
-        frame = pd.read_csv(p, sep="\t" if fmt == "tsv" else ",", index_col=0)
+        frame = pd.read_csv(p, sep="\t" if fmt == "tsv" else ",", index_col=0, low_memory=False)
     else:
         raise DataError(f"read_table does not handle format {fmt}")
     frame.index = pd.Index([str(i) for i in frame.index])
