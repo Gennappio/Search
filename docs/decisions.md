@@ -17,7 +17,8 @@ Deviations from the R originals and open questions, with the default chosen in t
 5. **Pruned old seeds left in the neighbourhood lists** (SEARCH.R with keep.Alist = FALSE),
    which produced NA names in D. Search removes them everywhere.
 6. **Covariates ignored unless a formula string was given** (nodes.glm.R). Search uses the
-   declared covariates always (phase 4).
+   declared covariates always; they are columns of the sample table, which travels with the
+   matrix and follows every resampling.
 7. **Correlation with pairwise handling of missing values** (GBM script). The script paid for
    per-pair ranking on data without missing values, 12 times the cost of the rest of the pass.
    Search ranks once per gene; genes with missing values get no edges and the QC warns.

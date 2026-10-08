@@ -99,3 +99,22 @@ not a seed, is positively consistent in every cohort, has a null p-value below `
 every cohort and `pC_boot` above `product_cutoff`; candidates are sorted by `pC_boot`, `pC_obs`,
 `C_IVW` and capped at `top_n`. The per-sample score is the median of the absolute expression of
 the signature genes, ranked between 0 and 1 across the samples of each cohort.
+
+## 9. Linear-model association with covariates
+
+`association.method = ols` fits, for every seed *s* and gene *g*, the model
+`seed_s ~ gene_g + covariates`, where the covariates are columns of the sample table (numeric as
+they are, categorical one-hot encoded without the first level). By the Frisch-Waugh-Lovell
+theorem the coefficient of the gene equals the coefficient of the simple regression of the
+seed's residuals on the gene's residuals, both taken on the covariates. Search residualises the
+whole matrix once (`E = X - (X Q) Q^T`, with `Q` from the QR decomposition of the design) and then
+computes every coefficient, standard error and t-based p-value from dot products of residuals,
+with `n - q - 2` degrees of freedom for *q* covariate columns. The result is identical to fitting
+every model separately, at the cost of one matrix product. The statistic stored for the edges is
+the coefficient; the usual edge rule is `p_threshold` with `bonferroni = none` and a per-seed
+`p_adjust`, as the SEARCH R package did.
+
+`association.method = glm` fits one statsmodels GLM per pair (families gaussian, poisson, gamma,
+inverse gaussian) and accepts extra formula terms, including interactions with the gene
+(`formula: "x_node:batch"`). It is slow and meant for small universes or for checking the
+vectorised path, which it reproduces exactly for the gaussian family.

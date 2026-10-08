@@ -52,3 +52,9 @@ Whole run 4 min 39 s (the R script took 1 h 50 min on 32 cluster cores), checkpo
 (1.5 GB in R). The 26 selected genes are the same 26 of the June 2026 R run; the bootstrap means
 of the two runs correlate at 0.999 and the Monte Carlo p-values at 0.995, with the two runs
 using different random draws and slightly different input matrices.
+
+## Linear models, phase 4
+
+| test | what it checks |
+|---|---|
+| `tests/unit/test_linear.py` | the vectorised coefficients and p-values equal least squares pair by pair with numeric and categorical covariates; without covariates they equal `scipy.stats.linregress`; they equal statsmodels OLS and gaussian GLM; a planted batch effect creates spurious edges without the covariate and none with it, while the real module is still recovered (AUC > 0.95); resampling keeps covariates aligned with the columns |
