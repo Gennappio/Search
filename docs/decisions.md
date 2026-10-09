@@ -48,9 +48,8 @@ Deviations from the R originals and open questions, with the default chosen in t
 
 ## Operational decisions, 2026-10-09
 
-- **pysigscore stays optional.** The built-in median-of-absolute-expression score is the
-  default; `score.method: pysigscore_<Scorer>` delegates to pysigscore, which is not on PyPI and
-  must be installed into the environment by hand. It is not a declared dependency.
+- **One scorer, no external scoring package.** The per-sample score is the built-in
+  median-of-absolute-expression rank of Buffa 2010; Search depends on no other scoring project.
 - **Strict mode** refuses configurations outside a validated preset and QC warnings about the
   data; a missing sample table is informational, otherwise cohorts without clinical tables could
   never run strictly.

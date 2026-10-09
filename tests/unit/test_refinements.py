@@ -180,12 +180,8 @@ def test_symbols_are_written_and_used_for_labels(tmp_path: Path) -> None:
 
 def test_score_method_is_validated() -> None:
     assert BUFFA2010.score.method == "median_abs_rank01"
-    ok = BUFFA2010.with_overrides({"score.method": "pysigscore_median"})
-    assert ok.score.method == "pysigscore_median"
-    with pytest.raises(ConfigError, match="score.method"):
+    with pytest.raises(ConfigError, match="score.method|method"):
         BUFFA2010.with_overrides({"score.method": "median"})
-    with pytest.raises(ConfigError):
-        BUFFA2010.with_overrides({"score.method": "pysigscore_"})
 
 
 def test_breast_example_manifest_loads() -> None:

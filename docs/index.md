@@ -20,5 +20,4 @@ uv run search plot runs/latest
 `examples/gbm/cohorts.yaml` expects the GBM data folder next to it; edit the paths or copy the
 file next to the data. `examples/breast/cohorts.yaml` runs the `search2014` preset on the breast
 cohorts bundled as test fixtures. The documentation site is not published (GitHub Pages is not
-available for private repositories on the free plan): read it with `uv run mkdocs serve`. The optional pysigscore scorers need the package installed in the
-environment by hand (it is not on PyPI): `uv pip install --python .venv/bin/python <path-or-git-url>`.
+available for private repositories on the free plan): read it with `uv run mkdocs serve`.

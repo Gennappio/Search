@@ -7,7 +7,7 @@ search resume [runs/latest] [--n-jobs N]
 search qc --manifest cohorts.yaml
 search combine [runs/latest] [--mc-p-cutoff P] [--product-cutoff X] [--top-n N]
                [--no-positive-consistent] [--keep-seeds] [--prefix recombined]
-search score --manifest cohorts.yaml --signature genes.csv [--out scores.csv] [--method M]
+search score --manifest cohorts.yaml --signature genes.csv [--out scores.csv] [--min-genes N]
 search compare <run_a> <run_b> [--top-n 50] [--out metrics.csv]
 search variants --manifest cohorts.yaml --grid membership.mode=cluster_size,binary,gene_normalised
                 [--grid null.pooling=pooled,per_gene] [--preset P] [--set ...] [--out runs/variants]

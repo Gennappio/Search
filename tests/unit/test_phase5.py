@@ -1,4 +1,4 @@
-"""Comparison of runs, variant grids, plots, h5ad round trip and the pysigscore adapter."""
+"""Comparison of runs, variant grids, plots and the h5ad round trip."""
 
 from pathlib import Path
 
@@ -100,21 +100,3 @@ def test_h5ad_round_trip(tmp_path: Path) -> None:
         "b",
         "b",
     ]
-
-
-def test_pysigscore_adapter_matches_internal_median() -> None:
-    pytest.importorskip("pysigscore")
-    from search.config import ScoreConfig
-    from search.signature import median_abs_rank01, pysigscore_scores, score_samples
-
-    rng = np.random.default_rng(0)
-    values = rng.normal(size=(40, 10)) + 5
-    expr = ExpressionSet(
-        values, pd.Index([f"g{i}" for i in range(40)]), pd.Index([f"s{j}" for j in range(10)])
-    )
-    genes = [f"g{i}" for i in range(8)]
-    reference = median_abs_rank01(expr, genes)
-    scores = pysigscore_scores(expr, genes)
-    np.testing.assert_allclose(scores.to_numpy(), reference["E_median_abs_expression"].to_numpy())
-    table = score_samples(expr, genes, ScoreConfig(enabled=True, method="pysigscore_median"), "T")
-    np.testing.assert_allclose(table["HS_rank01"].to_numpy(), reference["HS_rank01"].to_numpy())

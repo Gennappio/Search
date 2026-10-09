@@ -251,7 +251,6 @@ def score(
     manifest: Annotated[Path, typer.Option("--manifest", "-m")],
     signature: Annotated[Path, typer.Option(help="Table with a 'gene' column.")],
     out: Annotated[Path, typer.Option(help="Output CSV.")] = Path("scores.csv"),
-    method: Annotated[str, typer.Option()] = "median_abs_rank01",
     min_genes: Annotated[int, typer.Option()] = 3,
 ) -> None:
     """Score every sample of every cohort with a signature."""
@@ -265,7 +264,7 @@ def score(
     try:
         inputs = load_inputs(CohortManifest.load(manifest))
         genes = read_gene_list(signature)
-        cfg = ScoreConfig(enabled=True, method=method, min_genes=min_genes)
+        cfg = ScoreConfig(enabled=True, min_genes=min_genes)
         parts = [score_samples(expr, genes, cfg, name) for name, expr in inputs.cohorts.items()]
         table = pd.concat(parts, ignore_index=True)
         table.to_csv(out, index=False)
