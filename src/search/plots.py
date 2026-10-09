@@ -24,8 +24,28 @@ def _require() -> tuple[Any, Any]:
     return plt, nx
 
 
+def load_symbols(results_dir: Path) -> dict[str, str]:
+    """gene -> symbol written by the pipeline, empty when the run had no symbols."""
+    path = Path(results_dir) / "gene_symbols.csv"
+    if not path.exists():
+        return {}
+    table = pd.read_csv(path, dtype=str).dropna()
+    return dict(zip(table["gene"], table["symbol"], strict=True))
+
+
+def node_labels(nodes: list[str], symbols: dict[str, str] | None) -> dict[str, str]:
+    """Symbol when known, the identifier otherwise."""
+    lookup = symbols or {}
+    return {node: lookup.get(node, node) for node in nodes}
+
+
 def seed_network_plot(
-    pairs: pd.DataFrame, column: str, path: Path, title: str, threshold: float = 0.0
+    pairs: pd.DataFrame,
+    column: str,
+    path: Path,
+    title: str,
+    threshold: float = 0.0,
+    symbols: dict[str, str] | None = None,
 ) -> Path:
     """Seeds as nodes, pairwise overlap (S or O) or correlation as weighted edges."""
     plt, nx = _require()
@@ -49,7 +69,7 @@ def seed_network_plot(
         nx.draw_networkx_edges(
             graph, pos, width=1 + 5 * weights / weights.max(), edge_color=colors, ax=ax
         )
-    nx.draw_networkx_labels(graph, pos, font_size=7, ax=ax)
+    nx.draw_networkx_labels(graph, pos, labels=node_labels(seeds, symbols), font_size=7, ax=ax)
     ax.set_title(title)
     ax.axis("off")
     fig.tight_layout()
@@ -114,6 +134,7 @@ def plot_run(run_dir: Path | str, product_cutoff: float = 0.5) -> list[Path]:
     out = run_dir / "plots"
     out.mkdir(exist_ok=True)
     written: list[Path] = []
+    symbols = load_symbols(results)
     for name in read_cohort_tables(results):
         for kind, column in (("shared_neighbourhood_S", "S"), ("seed_overlap_O", "O")):
             path = results / f"{name}_{kind}.csv"
@@ -126,6 +147,7 @@ def plot_run(run_dir: Path | str, product_cutoff: float = 0.5) -> list[Path]:
                             column,
                             out / f"{name}_seed_network_{column}.png",
                             f"{name}: seed {column}",
+                            symbols=symbols,
                         )
                     )
     full_path = results / "combined_full_ranking.csv"

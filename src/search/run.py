@@ -40,7 +40,7 @@ from search.logging_utils import close_file_handlers, get_logger
 from search.null import NullResult, run_internal_null
 from search.parallel import default_n_jobs
 from search.presets import get_preset, matching_preset
-from search.qc import QCWarning, format_warnings, qc_expression
+from search.qc import QC_INFORMATIONAL, QCWarning, format_warnings, qc_expression
 from search.signature import score_samples
 
 log = logging.getLogger("search")
@@ -249,11 +249,14 @@ def run_cohort(
             len(growth.final_seeds),
             growth.n_iterations,
         )
+        write_growth_tables(run_dir / "results", name, growth)
         if len(growth.final_seeds) < 2:
-            raise DataError(f"{name}: growth ended with fewer than two seeds")
+            raise DataError(
+                f"{name}: growth ended with fewer than two seeds ({growth.stop_reason}); "
+                "the growth tables under results/ show what was pruned"
+            )
         core = run_core(work.subset_genes(growth.final_universe), growth.final_seeds, cfg)
         observed = growth_statistic(growth, cfg.null.statistic)
-        write_growth_tables(run_dir / "results", name, growth)
     else:
         log.info(
             "%s: core pass on %d genes x %d samples, %d seeds",
@@ -300,10 +303,28 @@ def run_cohort(
             n_jobs=n_jobs,
         )
         timings["null"] = time.perf_counter() - t0
+    elif cfg.null.scheme == "external_runs":
+        log.info("%s: null scheme external_runs, p-values come later from 'search summarise'", name)
 
     run = CohortRun(name, "training", core, bootstrap, null, input_hash, timings, growth)
     write_cohort_tables(run_dir / "results", name, core, bootstrap, null, run.gene_table())
     return run
+
+
+def write_symbols(results_dir: Path, inputs: LoadedInputs) -> Path | None:
+    """gene -> symbol for the genes of the loaded cohorts, used by the plots and the tables."""
+    if not inputs.symbols:
+        return None
+    present: set[str] = set()
+    for expr in inputs.cohorts.values():
+        present.update(str(g) for g in expr.genes)
+    rows = [(gene, symbol) for gene, symbol in inputs.symbols.items() if gene in present]
+    if not rows:
+        return None
+    results_dir.mkdir(parents=True, exist_ok=True)
+    path = results_dir / "gene_symbols.csv"
+    pd.DataFrame(rows, columns=["gene", "symbol"]).to_csv(path, index=False)
+    return path
 
 
 # ---- the pipeline ----------------------------------------------------------------------
@@ -382,19 +403,35 @@ def run_pipeline(
         preset_name,
         preset_name is not None,
     )
-    if preset_name is None:
-        if cfg.strict:
-            raise ConfigError("strict mode: the configuration matches no validated preset")
-        logger.warning("configuration matches no validated preset; results are not validated")
-
     try:
+        if preset_name is None:
+            if cfg.strict:
+                raise ConfigError("strict mode: the configuration matches no validated preset")
+            logger.warning("configuration matches no validated preset; results are not validated")
         inputs = load_inputs(manifest)
         manifest_dict["inputs"] = inputs.sources
         manifest_dict["seeds"] = inputs.seeds.seeds
         manifest_dict["qc"] = {name: [w.__dict__ for w in ws] for name, ws in inputs.qc.items()}
+        blocking: dict[str, list[str]] = {}
         for name, warnings in inputs.qc.items():
-            logger.info("%s %s", name, format_warnings(warnings))
+            if warnings:
+                logger.warning("%s %s", name, format_warnings(warnings))
+            else:
+                logger.info("%s QC: no warnings", name)
+            codes = sorted({w.code for w in warnings if w.code not in QC_INFORMATIONAL})
+            if codes:
+                blocking[name] = codes
+        manifest_dict["qc_blocking"] = blocking
+        if cfg.null.scheme == "external_runs":
+            manifest_dict["notes"] = [
+                "null scheme external_runs: p-values come from 'search summarise --null-runs' "
+                "against runs with random seed sets"
+            ]
+        write_symbols(run_dir / "results", inputs)
         write_manifest(run_dir, manifest_dict)
+        if cfg.strict and blocking:
+            detail = "; ".join(f"{name}: {', '.join(codes)}" for name, codes in blocking.items())
+            raise ConfigError(f"strict mode: QC warnings on the data ({detail})")
 
         cohort_runs: dict[str, CohortRun] = {}
         for name, role in inputs.roles.items():
@@ -458,8 +495,9 @@ def run_pipeline(
         write_manifest(run_dir, manifest_dict)
         logger.info("finished: %s", run_dir)
         return PipelineResult(run_dir, cfg, inputs, cohort_runs, combined, scores, manifest_dict)
-    except BaseException:
+    except BaseException as exc:
         manifest_dict["status"] = "failed"
+        manifest_dict["error"] = {"type": type(exc).__name__, "message": str(exc)}
         manifest_dict["finished"] = now_iso()
         write_manifest(run_dir, manifest_dict)
         raise

@@ -211,6 +211,8 @@ def detect_format(path: Path | str) -> TableFormat:
     if ext == ".csv":
         return "csv"
     # .txt or unknown: sniff the first line
+    if not p.exists():
+        raise DataError(f"file not found: {p}")
     opener = gzip.open if p.suffix.lower() == ".gz" else open
     with opener(p, "rt") as handle:
         first = handle.readline()
@@ -247,6 +249,8 @@ def read_sample_table(path: Path | str) -> pd.DataFrame:
 def read_gene_list(path: Path | str, column: str = "gene") -> list[str]:
     """A gene list: a table with a ``gene`` column, or a one-column file without header."""
     p = Path(path)
+    if not p.exists():
+        raise DataError(f"file not found: {p}")
     with gzip.open(p, "rt") if p.suffix.lower() == ".gz" else open(p) as handle:
         lines = [line.strip() for line in handle]
     lines = [line for line in lines if line]
@@ -263,6 +267,8 @@ def read_gene_list(path: Path | str, column: str = "gene") -> list[str]:
 def read_seeds(path: Path | str) -> SeedSpec:
     """Seeds from a table with a ``gene`` column and an optional ``symbol`` column."""
     p = Path(path)
+    if not p.exists():
+        raise DataError(f"seed file not found: {p}")
     sep = "\t" if detect_format(p) == "tsv" else ","
     frame = pd.read_csv(p, sep=sep)
     if "gene" not in frame.columns:
@@ -287,6 +293,8 @@ def read_matrix(
 ) -> ExpressionSet:
     """Read an expression matrix from csv/tsv/parquet/h5ad."""
     p = Path(path)
+    if not p.exists():
+        raise DataError(f"expression matrix not found: {p}")
     fmt = format or detect_format(p)
     default_sample_table: pd.DataFrame | None = None
     if fmt == "h5ad":

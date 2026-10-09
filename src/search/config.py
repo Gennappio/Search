@@ -13,7 +13,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from search.errors import ConfigError
 
@@ -117,6 +117,18 @@ class ScoreConfig(_Model):
     enabled: bool = False
     method: str = "median_abs_rank01"
     min_genes: int = 3
+
+    @field_validator("method")
+    @classmethod
+    def _known_method(cls, value: str) -> str:
+        if value == "median_abs_rank01" or (
+            value.startswith("pysigscore_") and len(value) > len("pysigscore_")
+        ):
+            return value
+        raise ValueError(
+            "score.method must be 'median_abs_rank01' (built in) or 'pysigscore_<Scorer>' "
+            "such as 'pysigscore_median' (needs pysigscore installed by hand)"
+        )
 
 
 # Fields that do not change the result and are ignored when matching a preset.

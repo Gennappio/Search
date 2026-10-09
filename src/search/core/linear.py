@@ -165,6 +165,7 @@ def associate_linear(
     seed_idx: NDArray[np.intp],
     cfg: AssociationConfig,
     sample_table: pd.DataFrame | None,
+    seed_names: list[str] | None = None,
 ) -> AssociationResult:
     if cfg.method == "ols":
         if cfg.formula:
@@ -173,7 +174,7 @@ def associate_linear(
         result = ols_fwl(values, seed_idx, design)
         if cfg.covariates:
             result.coef_table = covariate_coefficients(
-                values, seed_idx, design, names, [str(i) for i in seed_idx]
+                values, seed_idx, design, names, seed_names or [str(i) for i in seed_idx]
             )
         return result
     if cfg.method == "glm":

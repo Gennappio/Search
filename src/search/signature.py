@@ -53,7 +53,10 @@ def pysigscore_scores(
     try:
         from pysigscore import Scorer
     except ImportError as exc:  # pragma: no cover - depends on the optional package
-        raise ImportError("pysigscore is not installed; pip install search[score]") from exc
+        raise ImportError(
+            "pysigscore is not installed; it is not on PyPI, install it into the environment "
+            "by hand: uv pip install --python .venv/bin/python <path or git url>"
+        ) from exc
     present = [g for g in dict.fromkeys(genes) if g in expr.genes]
     frame = pd.DataFrame(
         np.abs(expr.values).T,

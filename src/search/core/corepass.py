@@ -140,7 +140,7 @@ def run_core(
         work = work.take_samples(sample_idx)
     seed_idx = work.gene_positions(seed_list)
 
-    assoc = associate(work.values, seed_idx, cfg.association, work.sample_table)
+    assoc = associate(work.values, seed_idx, cfg.association, work.sample_table, seed_list)
     delta = compute_edges(assoc, cfg.edge, seed_idx)
     gamma, cluster_size = compute_membership(delta, assoc.stat, cfg.membership)
     c_raw = compute_connectivity(gamma, seed_idx, cfg.connectivity)

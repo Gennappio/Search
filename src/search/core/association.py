@@ -58,6 +58,7 @@ def associate(
     seed_idx: NDArray[np.intp],
     cfg: AssociationConfig,
     sample_table: pd.DataFrame | None = None,
+    seed_names: list[str] | None = None,
 ) -> AssociationResult:
     """Dispatch on the configured method."""
     n = int(values.shape[1])
@@ -73,5 +74,5 @@ def associate(
     if cfg.method in ("ols", "glm"):
         from search.core.linear import associate_linear
 
-        return associate_linear(values, seed_idx, cfg, sample_table)
+        return associate_linear(values, seed_idx, cfg, sample_table, seed_names)
     raise ValueError(f"unknown association method {cfg.method}")

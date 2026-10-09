@@ -76,7 +76,7 @@ def run(
         if resume and (out / "latest" / "run_path.txt").exists():
             run_dir = resolve_run_dir(out / "latest")
         result = run_pipeline(spec, cfg, out, resume=resume, run_dir=run_dir, n_jobs=n_jobs)
-    except (SearchError, NotImplementedError) as exc:
+    except (SearchError, NotImplementedError, OSError) as exc:
         _fail(exc)
         return
     typer.echo(f"run directory: {result.run_dir}")
@@ -119,7 +119,7 @@ def qc(manifest: Annotated[Path, typer.Option("--manifest", "-m")]) -> None:
 
     try:
         inputs = load_inputs(CohortManifest.load(manifest))
-    except SearchError as exc:
+    except (SearchError, OSError) as exc:
         _fail(exc)
         return
     for name, expr in inputs.cohorts.items():
@@ -223,7 +223,9 @@ def summarise(
             )
             genes = pd.Index(table["gene"].astype(str))
             observed = table[column].to_numpy(dtype=float)
-            result = external_null(observed, genes, [Path(p) for p in null_runs], pooling=pooling)
+            result = external_null(
+                observed, genes, [Path(p) for p in null_runs], pooling=pooling, cohort=name
+            )
             out = pd.DataFrame(
                 {
                     "gene": genes,
@@ -267,7 +269,7 @@ def score(
         parts = [score_samples(expr, genes, cfg, name) for name, expr in inputs.cohorts.items()]
         table = pd.concat(parts, ignore_index=True)
         table.to_csv(out, index=False)
-    except (SearchError, ImportError) as exc:
+    except (SearchError, ImportError, OSError) as exc:
         _fail(exc)
         return
     typer.echo(f"scores for {len(table)} samples written to {out}")

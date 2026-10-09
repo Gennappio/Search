@@ -185,15 +185,27 @@ def run_internal_null(
     )
 
 
-def collect_null_chunks(run_dirs: list[Path | str], stage: str = "bootstrap") -> list[Path]:
-    """Chunk files of ``stage`` under run directories (checkpoints/<cohort>/) or chunk folders."""
+def collect_null_chunks(
+    run_dirs: list[Path | str], stage: str = "bootstrap", cohort: str | None = None
+) -> list[Path]:
+    """Chunk files of ``stage`` under run directories (checkpoints/<cohort>/) or chunk folders.
+
+    With ``cohort`` only that cohort's chunks are taken, and a run directory that has
+    checkpoints but none for that cohort is an error: null replicates must not mix cohorts.
+    """
     files: list[Path] = []
     for raw in run_dirs:
         root = Path(raw)
         pointer = root / "run_path.txt"
         if pointer.exists():
             root = Path(pointer.read_text().strip())
-        files.extend(sorted(root.glob(f"checkpoints/*/{stage}_chunk_*.parquet")))
+        if cohort is None:
+            files.extend(sorted(root.glob(f"checkpoints/*/{stage}_chunk_*.parquet")))
+        else:
+            checkpoints = root / "checkpoints"
+            if checkpoints.is_dir() and not (checkpoints / cohort).is_dir():
+                raise ValueError(f"null run {root} has no checkpoints for cohort {cohort!r}")
+            files.extend(sorted(checkpoints.glob(f"{cohort}/{stage}_chunk_*.parquet")))
         files.extend(sorted(root.glob(f"{stage}_chunk_*.parquet")))
     return files
 
@@ -204,12 +216,15 @@ def external_null(
     run_dirs: list[Path | str],
     pooling: str = "per_gene",
     stage: str = "bootstrap",
+    cohort: str | None = None,
 ) -> NullResult:
     """Empirical p-values of an observed statistic against replicates stored by other runs,
-    typically runs with random seed sets (the external null of SEARCH 2014)."""
-    files = collect_null_chunks(run_dirs, stage)
+    typically runs with random seed sets (the external null of SEARCH 2014). ``cohort``
+    restricts the replicates to the same cohort of the null runs."""
+    files = collect_null_chunks(run_dirs, stage, cohort)
     if not files:
-        raise ValueError("no null chunks found under the given run directories")
+        where = f" for cohort {cohort!r}" if cohort else ""
+        raise ValueError(f"no {stage} chunks found{where} under the given run directories")
     count_ge = np.zeros(len(genes), dtype=np.int64)
     n_null = np.zeros(len(genes), dtype=np.int64)
     n_rep = 0

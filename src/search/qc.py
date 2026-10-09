@@ -1,4 +1,5 @@
-"""Quality checks on the inputs. They warn, they never block, unless the run is strict."""
+"""Quality checks on the inputs. They warn; a strict run refuses to proceed on any warning
+about the data, while the codes in QC_INFORMATIONAL stay informational."""
 
 from __future__ import annotations
 
@@ -10,6 +11,8 @@ import numpy as np
 
 from search.data import ExpressionSet
 from search.stats import row_sds
+
+QC_INFORMATIONAL = frozenset({"sample_table_missing"})
 
 _CONTROL_RE = re.compile(r"(ctrl|control|normal|healthy|benign)", re.IGNORECASE)
 _REPLICATE_RE = re.compile(r"^(.+?)(?:\.|_rep|_r|-rep|-r)(\d{1,2})$", re.IGNORECASE)

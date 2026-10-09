@@ -45,3 +45,18 @@ Deviations from the R originals and open questions, with the default chosen in t
   with few samples a Spearman correlation can sit exactly on 0.5, and without rounding the
   floating-point noise of the matrix product, which depends on the order of samples, decided
   the edge.
+
+## Operational decisions, 2026-10-09
+
+- **pysigscore stays optional.** The built-in median-of-absolute-expression score is the
+  default; `score.method: pysigscore_<Scorer>` delegates to pysigscore, which is not on PyPI and
+  must be installed into the environment by hand. It is not a declared dependency.
+- **Strict mode** refuses configurations outside a validated preset and QC warnings about the
+  data; a missing sample table is informational, otherwise cohorts without clinical tables could
+  never run strictly.
+- **A growth loop that prunes every seed** is a failed run with an explicit error, not a result:
+  the growth tables are written first so the pruning can be inspected.
+- **External null per cohort.** Replicates of different cohorts are never mixed; `summarise`
+  matches cohorts by name across runs.
+- **Tag v0.1.0** points at the phase 5 commit, two commits before the fixtures were added: a
+  fresh clone of that tag fails two tests. It is left in place; v0.1.1 is the first complete tag.

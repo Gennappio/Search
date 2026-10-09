@@ -16,6 +16,16 @@ search config show [--preset NAME | --file cfg.yaml] [--set key.path=value ...]
 search config validate cfg.yaml
 ```
 
+`--strict` refuses two things: a configuration that matches no validated preset, and QC
+warnings about the data (control-like or replicate-like sample names, duplicated samples,
+missing values, constant genes, repeated patients, unbalanced batches, missing covariate
+values). The absence of a sample table stays a warning. A refused run is recorded in its
+manifest with `status: failed` and an `error` entry.
+
+`summarise` compares each training cohort of a run with the replicates of the **same cohort**
+in the null runs (`checkpoints/<cohort>/` of each `--null-runs` directory); a null run that has
+checkpoints but not that cohort is an error. Null runs are ordinary runs with random seeds.
+
 `variants` runs the pipeline once per combination of the grid, with the first combination as
 baseline, and writes `variants_summary.csv`: candidates per variant, Spearman correlation and
 top-N overlap of the combined score with the baseline, Jaccard of the signatures, top-10 genes.
@@ -69,6 +79,10 @@ runs/<name>_<timestamp>/
     <cohort>_MC_random_seed_S_summary.csv
     combined_full_ranking.csv, combined_signature.csv, combined_signature_top.csv
     scores_signature_all.csv, scores_signature_top.csv
+    <cohort>_seeds.csv                  seed, cluster size, degree among the seeds
+    <cohort>_covariate_coefficients.csv coefficients of the covariates per seed (ols with covariates)
+    <cohort>_growth_*.csv               iterations, events, connectivity per iteration, final seeds (growth)
+    gene_symbols.csv                    gene -> symbol, used by the plots
 runs/latest/run_path.txt      points to the most recent run
 ```
 

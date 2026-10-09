@@ -77,6 +77,19 @@ def write_cohort_tables(
     save(clusters, f"{name}_seed_clusters.csv")
     if null is not None and len(null.random_seed_summary):
         save(null.random_seed_summary, f"{name}_MC_random_seed_S_summary.csv")
+    seeds = pd.DataFrame(
+        {
+            "dataset": name,
+            "seed": core.seeds,
+            "cluster_size": core.cluster_size,
+            "nodes_degree": core.nodes_degree,
+        }
+    )
+    save(seeds, f"{name}_seeds.csv")
+    if core.coef_table is not None:
+        coef = core.coef_table.copy()
+        coef.insert(0, "dataset", name)
+        save(coef, f"{name}_covariate_coefficients.csv")
     return written
 
 

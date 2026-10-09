@@ -1,0 +1,19 @@
+# The two breast cancer microarray cohorts bundled with the original SEARCH package
+# (tests/data/breast). Paths are relative to this file; run from the repository root:
+#   .venv/bin/search run --manifest examples/breast/cohorts.yaml --out runs
+name: breast_search2014
+seeds: seeds_breast_cluster.csv
+gene_filter:
+  strip_ensembl_version: false
+  common_genes_across_training: false
+cohorts:
+  - name: Breast1
+    role: training
+    matrix: ../../tests/data/breast/Breastdata1/mRNA_abundance.txt.gz
+    sample_table: ../../tests/data/breast/Breastdata1/patient_annotation.txt
+  - name: Breast2
+    role: scoring
+    matrix: ../../tests/data/breast/Breastdata2/mRNA_abundance.txt.gz
+    sample_table: ../../tests/data/breast/Breastdata2/patient_annotation.txt
+config:
+  preset: search2014

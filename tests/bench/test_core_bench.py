@@ -1,3 +1,4 @@
+import os
 import time
 
 import numpy as np
@@ -8,9 +9,12 @@ from search.core.corepass import run_core
 from search.data import ExpressionSet
 from search.presets import BUFFA2010
 
+# seconds per pass; CI runners are slower than a laptop, so the workflow raises the limit
+LIMIT = float(os.environ.get("SEARCH_BENCH_LIMIT", "1.0"))
+
 
 @pytest.mark.bench
-def test_core_pass_under_one_second_on_cohort_sized_matrix() -> None:
+def test_core_pass_on_cohort_sized_matrix_is_fast() -> None:
     rng = np.random.default_rng(0)
     n_genes, n_samples = 16548, 95
     values = rng.normal(size=(n_genes, n_samples))
@@ -23,5 +27,5 @@ def test_core_pass_under_one_second_on_cohort_sized_matrix() -> None:
     for _ in range(3):
         run_core(expr, seeds, BUFFA2010)
     elapsed = (time.perf_counter() - start) / 3
-    print(f"\ncore pass on {n_genes}x{n_samples}, 10 seeds: {elapsed:.3f} s")
-    assert elapsed < 1.0
+    print(f"\ncore pass on {n_genes}x{n_samples}, 10 seeds: {elapsed:.3f} s (limit {LIMIT} s)")
+    assert elapsed < LIMIT
