@@ -22,7 +22,7 @@ one was used.
 
 ## Status
 
-Version 0.1: the single-pass engine, the recursive growth loop, correlation and linear-model
+Version 0.1.1: the single-pass engine, the recursive growth loop, correlation and linear-model
 association with covariates, bootstrap, Monte Carlo and external null models, cohort combination,
 signature score (internal, or through pysigscore), checkpoints with resume, run manifest, variant
 comparison, plots, command line and documentation site (`uv run mkdocs serve`). See `docs/` for the method, the presets, the decision log and the validation.

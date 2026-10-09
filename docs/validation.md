@@ -58,3 +58,34 @@ using different random draws and slightly different input matrices.
 | test | what it checks |
 |---|---|
 | `tests/unit/test_linear.py` | the vectorised coefficients and p-values equal least squares pair by pair with numeric and categorical covariates; without covariates they equal `scipy.stats.linregress`; they equal statsmodels OLS and gaussian GLM; a planted batch effect creates spurious edges without the covariate and none with it, while the real module is still recovered (AUC > 0.95); resampling keeps covariates aligned with the columns |
+
+## Usage audit and variant comparison, 2026-10-09
+
+After the audit every command was exercised on the GBM cohorts through the command line:
+`qc`, `run`, `resume` after a deleted chunk, `combine` with other cutoffs, `score`, `compare`,
+`plot`, `summarise`, a strict run (refused on the sample names of the IT cohort), a missing seed
+file (one-line error), the `search2014` preset on Breastdata1 through `examples/breast`, and the
+conda environment of `environment.yml`, which reproduces the uv results exactly.
+
+The three open statistical questions were then run with the full replicate numbers of the
+`buffa2010` preset (1000 bootstrap, 5000 Monte Carlo per cohort, IT + FR), six pipelines of
+about five minutes each on eight processes:
+
+| membership | null pooling | candidates | Spearman vs script | top-50 overlap | signature Jaccard |
+|---|---|---|---|---|---|
+| cluster_size (script) | pooled | 26 | 1.000 | 1.00 | 1.00 |
+| cluster_size | per gene | 28 | 1.000 | 1.00 | 0.54 |
+| binary (SEARCH 2014) | pooled | 216 | 0.998 | 0.88 | 0.10 |
+| binary | per gene | 216 | 0.998 | 0.88 | 0.12 |
+| gene_normalised (paper as printed) | pooled | 0 | 0.999 | 0.60 | 0.00 |
+| gene_normalised | per gene | 0 | 0.999 | 0.60 | 0.00 |
+
+Reading the table: the ranking of the genes barely depends on the membership weighting
+(Spearman above 0.998 in every variant), the **selection** does. With the script's weighting the
+pooled and the per-gene null share 19 genes; the pooled null adds AKAP12, ENO2, GAPDH, KISS1R,
+MAFF, MCHR1 and ZNF395, the per-gene null adds APLN, FAM180A, IGFBP5, KCNE4, OXSR1, PCOLCE2, PI3,
+SLC6A8 and ZBTB21. The binary weighting makes the product criterion pass for hundreds of genes
+because D takes only eleven distinct values. The paper's formula as printed selects nothing. With
+a tenth of the replicates the per-gene variant had given 19 candidates instead of 28: that null
+needs the full replicate count to settle. The tables of every variant are kept with the project
+results (`RESULTS/SEARCH_PY/variants_full/`), outside the repository.
