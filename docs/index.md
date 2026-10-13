@@ -4,6 +4,7 @@ Seed-based gene co-expression clustering with named presets: one engine, the `bu
 `search2014` presets, bootstrap and null models, cohort combination, signature scores.
 
 - [Method](methods.md): the formulas of every stage.
+- [User guide](user_guide.md): a practical walkthrough of inputs, cohort roles, commands and results.
 - [Presets](presets.md): what each preset reproduces.
 - [Decision log](decisions.md): deviations from the R originals and the open questions.
 - [Command line](cli.md): commands, the cohort manifest and the run directory.

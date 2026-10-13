@@ -3,6 +3,7 @@ theme:
   name: material
 nav:
   - Home: index.md
+  - User guide: user_guide.md
   - Method: methods.md
   - Presets: presets.md
   - Decisions: decisions.md
