@@ -33,9 +33,24 @@ slightly different versions of the input matrices.
 
 | test | what it checks |
 |---|---|
-| `tests/synthetic/test_growth.py` | five seeds of a planted module of 30 recruit at least 25 module genes and at most 3 background genes; a foreign seed is pruned by D at iteration 1, or by Omax at iteration 2 when seeds are not protected; one iteration without changes equals the single pass; the sd prefilter is keyed by gene name; bootstrap over growth and an external null from random-seed runs |
+| `tests/synthetic/test_growth.py` | five seeds of a planted module of 30 recruit at least 25 module genes and at most 3 background genes; a foreign seed is pruned by D at iteration 1, or by Omax at iteration 2 when seeds are not protected; one iteration without changes equals the single pass; the sd prefilter is keyed by gene name; bootstrap over growth and an external null from random-seed runs; the internal null counts the random seed sets that lose every seed (19 of 20 here) and still separates the module (p < 0.01) from the background (p > 0.5) |
 | `tests/unit/test_breast_search2014.py` | the `search2014` preset grows a network on Breastdata1 and records its stop reason |
 | `tests/unit/test_pipeline.py` | the pipeline with growth writes the growth tables and `D_final` |
+
+## Null model of `search2014`, 2026-10-12
+
+The preset now carries the null model of `buffa2010`. Run as it is:
+
+| data | genes with D > 0 | p < 0.05 | p < 0.01 | null stage |
+|---|---|---|---|---|
+| Breastdata1, the six seeds of `examples/breast` | 15 of 1129 | 15 | 15 | 100 s on one process |
+| GBM IT cohort (21254 genes x 95 samples), the ten seeds of Buffa 2010 | 2132 of 21253 | 1355 (D >= 0.2) | 921 (D >= 0.222) | 7 min 29 s on eight processes |
+
+With the pooled null the p-value is a function of D alone, so the cutoffs are thresholds on D.
+On Breastdata1 only 0.01% of the probeset pairs pass the correlation threshold, random seed sets
+connect nothing, and every connected probeset is significant: that dataset shows that the stage
+runs, not that it discriminates. With 500 replicates instead of 5000 the breast example selects
+the same 15 probesets in 11 seconds.
 
 ## Full run on the GBM cohorts, phase 2
 

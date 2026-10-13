@@ -2,7 +2,9 @@
 
 `cohorts.yaml` runs the `search2014` preset on Breastdata1 (1231 probesets x 77 samples), with
 Breastdata2 loaded as a scoring cohort; the preset has combination and scoring switched off, so
-Breastdata2 only goes through the quality checks.
+Breastdata2 only goes through the quality checks. The run writes the connectivity `D_final` and
+its null p-value `p_MC_C` for every probeset; the manifest lowers the null replicates from 5000
+to 500 to keep the example short.
 
 `seeds_breast_cluster.csv` holds a hub probeset and its five strongest neighbours in Breastdata1
 (|Spearman| > 0.5), which is the kind of co-expressed seed set the growth loop needs. The five

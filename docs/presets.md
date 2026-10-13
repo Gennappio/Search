@@ -22,7 +22,8 @@ Buffa et al. 2010 as implemented by the GBM script.
 
 ## search2014
 
-The SEARCH R package with the defaults of `SEARCH.randomise`.
+The SEARCH R package with the defaults of `SEARCH.randomise`, except for the null model, which is
+the one of `buffa2010` (see the decision log).
 
 | stage | values |
 |---|---|
@@ -32,5 +33,5 @@ The SEARCH R package with the defaults of `SEARCH.randomise`.
 | connectivity | self excluded, fraction, no rank (this is D) |
 | growth | on: max_iter 1, D_lower 0.1, D_higher 0.24, O_lower 0.01, seeds kept, sd threshold 0.1 |
 | resampling | bootstrap, 10 replicates, statistic `C_raw` |
-| null | external runs, per gene |
+| null | as `buffa2010`: internal random seed sets, 5000 replicates, pooled, statistic `C_raw` |
 | combine, score | off |

@@ -77,12 +77,14 @@ SEARCH2014 = RunConfig(
     resampling=ResamplingConfig(
         scheme="bootstrap", n_rep=10, chunk_size=100, seed_base=0, statistic="C_raw"
     ),
-    null=NullConfig(scheme="external_runs", pooling="per_gene", statistic="C_raw"),
+    null=BUFFA2010.null.model_copy(deep=True),
     combine=CombineConfig(enabled=False),
     score=ScoreConfig(enabled=False),
 )
 """The SEARCH R package with the defaults of SEARCH.randomise: hard correlation threshold,
-binary membership, recursive growth with D and O pruning, bootstrap of D, external null runs."""
+binary membership, recursive growth with D and O pruning, bootstrap of D. The null model is the
+one of buffa2010 (see docs/decisions.md); the external null runs of the R package stay available
+through ``null.scheme = external_runs`` and ``search summarise``."""
 
 PRESETS: dict[str, RunConfig] = {"buffa2010": BUFFA2010, "search2014": SEARCH2014}
 

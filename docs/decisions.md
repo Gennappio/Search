@@ -26,8 +26,12 @@ Deviations from the R originals and open questions, with the default chosen in t
 ## Open statistical questions, parametrised, default = the GBM script
 
 - **Membership normalisation** (`membership.mode`). `cluster_size` (script), `binary` (SEARCH)
-  and `gene_normalised` (paper, equation 2 as printed) give different rankings. With step edges
-  `gene_normalised` is degenerate: every connected gene gets 1/K. Default `cluster_size`.
+  and `gene_normalised` (paper, equation 2 as printed) give different rankings.
+  `gene_normalised` is degenerate by construction: the memberships of a gene sum to 1, so with
+  unit weights equation 5 gives 1/K to every non-seed gene with at least one nonzero membership,
+  whatever the edge rule (with step edges the connected genes get 1/K and the others 0). Table 2
+  of the paper shows graded scores, which the formulas as printed cannot give; the script's
+  normalisation within each seed cluster does. Default `cluster_size`.
 - **Null pooling** (`null.pooling`). `pooled` throws every gene's null values into one
   distribution; `per_gene` compares each gene with its own. Default `pooled`.
 - **Selection criteria** (`combine.*`). Rank product > 0.5 and the top-51 cap are not in the
@@ -59,3 +63,15 @@ Deviations from the R originals and open questions, with the default chosen in t
   matches cohorts by name across runs.
 - **Tag v0.1.0** points at the phase 5 commit, two commits before the fixtures were added: a
   fresh clone of that tag fails two tests. It is left in place; v0.1.1 is the first complete tag.
+
+## Method decisions, 2026-10-12
+
+- **`search2014` uses the null model of `buffa2010`** (random seed sets drawn inside the run,
+  pooled, 5000 replicates), following the rule that `buffa2010` decides wherever a choice is
+  open. The R package compared a run with other runs made by hand with random seeds. Ported as
+  it was, every random seed set is a run of its own, and a run whose growth prunes every seed is
+  a failed run that leaves no replicates: 22 of 40 random sets of ten seeds on a GBM cohort of
+  21254 genes and 95 samples, 40 of 40 random sets of six on Breastdata1. The null was then built
+  from the surviving sets only, or could not be built at all. Inside the run a random seed set
+  that loses its seeds is a replicate like any other. `null.scheme = external_runs` and
+  `search summarise` remain available.

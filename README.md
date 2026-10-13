@@ -15,7 +15,8 @@ One engine, two named presets:
   edges, cluster-size membership, bootstrap ranks, pooled Monte Carlo null, cross-cohort rank
   product, hypoxia score).
 - `search2014` reproduces the behaviour of the original SEARCH R package (hard correlation
-  threshold, binary membership, recursive network growth with D and O pruning).
+  threshold, binary membership, recursive network growth with D and O pruning), with the null
+  model of `buffa2010`.
 
 Free configurations are allowed; only presets are validated, and the run manifest records which
 one was used.

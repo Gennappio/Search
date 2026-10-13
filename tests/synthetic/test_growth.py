@@ -8,8 +8,8 @@ import pytest
 
 from search.bootstrap import growth_evaluator, run_bootstrap
 from search.core.corepass import run_core
-from search.growth import run_growth
-from search.null import external_null
+from search.growth import growth_statistic, run_growth
+from search.null import external_null, run_internal_null
 from search.presets import SEARCH2014
 from tests.synthetic_data import make_planted
 
@@ -143,3 +143,27 @@ def test_bootstrap_over_growth_and_external_null(tmp_path: Path) -> None:
     assert table.loc[module, "p"].median() < table.loc[data.background, "p"].median()
     with pytest.raises(ValueError):
         external_null(observed, summary.genes, [tmp_path / "nowhere"])
+
+
+def test_internal_null_counts_random_seed_sets_that_lose_their_seeds(tmp_path: Path) -> None:
+    data = make_planted(n_genes=120, n_samples=50, module_size=20, n_seeds=4, strength=2.0, seed=47)
+    cfg = growth_cfg(**{"growth.max_iter": 1, "null.n_rep": 20, "null.chunk_size": 10})
+    observed = growth_statistic(run_growth(data.expr, data.seeds, cfg), cfg.null.statistic)
+    result = run_internal_null(
+        data.expr,
+        data.seeds,
+        cfg,
+        universe=None,
+        observed=observed,
+        ckpt_dir=tmp_path,
+        input_hash="x",
+    )
+    # random seeds are mostly background genes, unrelated to each other: the growth prunes them
+    random_sets = [s.split(",") for s in result.random_seed_summary["seeds"]]
+    lost = sum(len(run_growth(data.expr, s, cfg).final_seeds) < 2 for s in random_sets)
+    assert len(random_sets) == 20 and lost >= 15
+    # such a set is still a replicate: every gene left in its universe contributes a null value
+    assert result.n_null.max() >= 20 * (120 - 4)
+    p = pd.Series(result.p, index=result.genes)
+    module = [g for g in data.module if g not in data.seeds]
+    assert p[module].max() < 0.01 and p[data.background].min() > 0.5

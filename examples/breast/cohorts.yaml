@@ -17,3 +17,7 @@ cohorts:
     sample_table: ../../tests/data/breast/Breastdata2/patient_annotation.txt
 config:
   preset: search2014
+  # the preset's 5000 null replicates take 100 seconds on one process; 500 take 11 and select
+  # the same 15 probesets, because the pooled null already holds half a million values
+  overrides:
+    null.n_rep: 500

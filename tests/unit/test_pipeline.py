@@ -171,7 +171,6 @@ def test_pipeline_with_growth_preset(tmp_path: Path) -> None:
             "growth.sd_threshold": 0.0,
             "resampling.n_rep": 2,
             "resampling.chunk_size": 2,
-            "null.scheme": "internal_random_seeds",
             "null.n_rep": 2,
             "null.chunk_size": 2,
             "combine.enabled": True,
@@ -188,3 +187,5 @@ def test_pipeline_with_growth_preset(tmp_path: Path) -> None:
     ).exists()
     table = pd.read_csv(results / "A_gene_connectivity.csv")
     assert "D_final" in table.columns and "C_raw_boot_mean" in table.columns
+    # the preset's own null model runs inside the pipeline
+    assert cfg.null.scheme == "internal_random_seeds" and table["p_MC_C"].notna().any()

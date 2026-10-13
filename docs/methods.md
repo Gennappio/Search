@@ -85,8 +85,12 @@ excluded. The empirical p-value of a gene is `(1 + count_ge) / (1 + n_null)`, wh
 counts null values greater than or equal to the observed statistic (within 1e-12). With
 `pooled`, every gene's null values form one distribution (n_null = genes x replicates); with
 `per_gene`, only the gene's own replicates count (n_null = replicates). Both are computed from
-the same stored chunks. `external_runs` reads the per-replicate statistics stored by other runs,
-typically runs with random seeds, through `search summarise --null-runs`.
+the same stored chunks. With growth enabled a random seed set can lose every seed at the first
+iteration; it is still a replicate, and the connectivity it gives to the genes left in the
+universe (zero) is counted. `external_runs` reads the per-replicate statistics stored by other
+runs, typically runs with random seeds, through `search summarise --null-runs`; a run whose
+growth prunes every seed fails and stores nothing, so that route sees only the random seed sets
+that survive.
 
 ## 8. Bootstrap, cohort combination and score
 

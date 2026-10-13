@@ -50,3 +50,10 @@ def test_presets_match_themselves_and_not_each_other() -> None:
     assert get_preset("buffa2010") == BUFFA2010
     with pytest.raises(ConfigError):
         get_preset("nope")
+
+
+def test_search2014_takes_its_null_model_from_buffa2010() -> None:
+    assert SEARCH2014.null == BUFFA2010.null
+    assert SEARCH2014.null.scheme == "internal_random_seeds"
+    # a copy, not the same object: overriding one preset must not touch the other
+    assert SEARCH2014.null is not BUFFA2010.null
