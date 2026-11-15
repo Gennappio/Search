@@ -75,3 +75,44 @@ Deviations from the R originals and open questions, with the default chosen in t
   from the surviving sets only, or could not be built at all. Inside the run a random seed set
   that loses its seeds is a replicate like any other. `null.scheme = external_runs` and
   `search summarise` remain available.
+
+## Found by the comparison with R, 2026-11-15
+
+The comparison described in [Porting from R](porting.md) ran both originals next to Search.
+It confirmed entries 1, 2 and 5 above with numbers, and added the following.
+
+Defects of the SEARCH package that were not recorded. Search never had them; they explain
+differences from the package, and three of them stop it with an error:
+
+8. **Pruned genes stayed members of the other neighbourhoods** (SEARCH.R, any value of
+   keep.Alist). Entry 5 is the special case of an old seed removed on Omax. A gene removed on D
+   or on Omax kept counting in every later overlap O; D was not affected.
+9. **A neighbourhood of one member lost its name** (nodes.glm.R, nodes.fastLm.R). A seed
+   associated only with itself was not counted in its own D, got D = -1 / (K - 1) and was removed
+   even with D.lower = 0. Search keeps the self edge whatever the association method.
+10. **A seed with no significant association disappeared from the result** (nodes.glm.R), and
+    when this happened to every seed the run stopped with an error.
+11. **Missing values added an entry named NA to a neighbourhood** (nodes.correlation.R), and the
+    run stopped at the second iteration. With that corrected the package and Search agree: a
+    gene with a missing value has no association.
+12. **summarise.iterations stopped on a gene present only in a null run.** With every default
+    argument on Breastdata1 this follows from entry 1.
+
+Choices of the engine that differ from the package and were not recorded:
+
+- **Genes absent from a null replicate** (`search.null.per_gene_counts`). The p-value divides
+  by the number of null replicates in which the gene has a value, plus one. The package divided
+  by the number of all null replicates plus one, so a gene absent from half of them could get
+  0.55 where Search gives 1.
+- **Bootstrap of a growth run.** The replicates are summarised on the final D of each. The
+  package summarised each iteration number separately, over the replicates that reached it.
+  The two coincide when every replicate stops at the same iteration, as with `max_iter = 1`.
+
+Open defects of the port, found by the same comparison and listed with their evidence in
+[Porting from R](porting.md#defects-found-in-the-port): covariate names that are not valid
+Python names silently empty the network with `association.method = glm`; `C_rank` depends on
+the order of the seeds when two seed clusters have the same size, because mathematically tied
+connectivities can differ in the last digit; `nodes_degree` is transposed for association
+methods that are not symmetric; with per-gene pooling a gene without an observed value gets
+the smallest p-value. None is corrected in version 0.1.1.
+

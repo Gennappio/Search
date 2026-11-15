@@ -28,6 +28,10 @@ association with covariates, bootstrap, Monte Carlo and external null models, co
 signature score, checkpoints with resume, run manifest, variant
 comparison, plots, command line and documentation site (`uv run mkdocs serve`). See `docs/` for the method, the presets, the decision log and the validation.
 
+The port was compared with both R originals number by number; the result, and every difference
+with its cause, is in `docs/porting.md`. The comparison can be repeated with
+`validation/r_parity/run_all.sh` (it needs R).
+
 ## Install
 
 ```bash
@@ -50,4 +54,5 @@ table per cohort. Normalisation (DESeq2 VST, ComBat) is out of scope and must ha
 Search is a Python port and generalisation of the SEARCH R package (Syed Haider and
 Francesca M. Buffa, University of Oxford, 2014, GPL-2) and of a 2026 R script implementing
 Buffa et al. 2010 on RNA-seq cohorts. The original R sources are kept under `reference/` for
-attribution and consultation only. Search is released under the GPL-2.0-or-later licence.
+attribution, for consultation and for the comparison harness under `validation/r_parity`.
+Search is released under the GPL-2.0-or-later licence.

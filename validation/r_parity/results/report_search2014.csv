@@ -1,0 +1,476 @@
+case,variant,quantity,n,n_mismatch,max_abs_diff,status,detail
+breast_bootstrap,verbatim,per replicate: iterations,5,0,0.0,equal,5 replicates on the samples drawn by R.
+breast_bootstrap,verbatim,per replicate: D,12289,0,1.1102230246251565e-16,equal,5 replicates on the samples drawn by R.
+breast_bootstrap,verbatim,per replicate: seeds added,69,0,0.0,equal,5 replicates on the samples drawn by R.
+breast_bootstrap,verbatim,per replicate: seeds removed on D,16,0,0.0,equal,5 replicates on the samples drawn by R.
+breast_bootstrap,verbatim,per replicate: seeds removed on Omax,0,0,0.0,equal,5 replicates on the samples drawn by R.
+breast_bootstrap,verbatim,per replicate: seeds holding a neighbourhood at the end,78,0,0.0,equal,5 replicates on the samples drawn by R.
+breast_bootstrap,verbatim,"bootstrap mean of D, iteration 1",1231,0,1.9999999999881224e-06,equal,5 of 5 replicates reached iteration 1; R reads D back from files rounded to five decimals.
+breast_bootstrap,verbatim,"null p-value, iteration 1: genes with a mean and present in every null replicate",1219,0,2.7755575615628914e-17,equal,R's means and null values through per_gene_counts; 10 null replicates.
+breast_bootstrap,verbatim,"null p-value, iteration 1: genes absent from some null replicate",12,12,0.4545454545454546,differs,"R's means and null values through per_gene_counts; 10 null replicates. largest difference at 147_at: R 0.545455, Python 1"
+breast_bootstrap,verbatim,"bootstrap mean of D, iteration 2",1230,0,1.8021978022142449e-06,equal,5 of 5 replicates reached iteration 2; R reads D back from files rounded to five decimals.
+breast_bootstrap,verbatim,"bootstrap mean as the pipeline takes it (final D), against R iteration 2",1230,0,1.8021978022142449e-06,equal,"last iteration of each replicate: [2, 2, 2, 2, 2]."
+breast_bootstrap_6iter,verbatim,per replicate: iterations,8,0,0.0,equal,8 replicates on the samples drawn by R.
+breast_bootstrap_6iter,verbatim,per replicate: D,44198,0,1.1102230246251565e-16,equal,8 replicates on the samples drawn by R.
+breast_bootstrap_6iter,verbatim,per replicate: seeds added,165,0,0.0,equal,8 replicates on the samples drawn by R.
+breast_bootstrap_6iter,verbatim,per replicate: seeds removed on D,33,0,0.0,equal,8 replicates on the samples drawn by R.
+breast_bootstrap_6iter,verbatim,per replicate: seeds removed on Omax,0,0,0.0,equal,8 replicates on the samples drawn by R.
+breast_bootstrap_6iter,verbatim,per replicate: seeds holding a neighbourhood at the end,180,0,0.0,equal,8 replicates on the samples drawn by R.
+breast_bootstrap_6iter,verbatim,"bootstrap mean of D, iteration 1",1231,0,2.0833333333747373e-06,equal,8 of 8 replicates reached iteration 1; R reads D back from files rounded to five decimals.
+breast_bootstrap_6iter,verbatim,"null p-value, iteration 1: genes with a mean and present in every null replicate",1225,0,0.0,equal,R's means and null values through per_gene_counts; 3 null replicates.
+breast_bootstrap_6iter,verbatim,"null p-value, iteration 1: genes absent from some null replicate",6,6,0.0,differs,R's means and null values through per_gene_counts; 3 null replicates. 6 values missing on one side only
+breast_bootstrap_6iter,verbatim,"bootstrap mean of D, iteration 2",1231,0,2.8571428570545176e-06,equal,8 of 8 replicates reached iteration 2; R reads D back from files rounded to five decimals.
+breast_bootstrap_6iter,verbatim,"bootstrap mean of D, iteration 3",1230,0,1.8101343100540568e-06,equal,8 of 8 replicates reached iteration 3; R reads D back from files rounded to five decimals.
+breast_bootstrap_6iter,verbatim,"bootstrap mean of D, iteration 4",1230,0,3.3333333333551707e-06,equal,8 of 8 replicates reached iteration 4; R reads D back from files rounded to five decimals.
+breast_bootstrap_6iter,verbatim,"bootstrap mean of D, iteration 5",1229,0,3.6363636363723195e-06,equal,2 of 8 replicates reached iteration 5; R reads D back from files rounded to five decimals.
+breast_bootstrap_6iter,verbatim,"bootstrap mean of D, iteration 6",1229,0,4.2760180994361185e-06,equal,2 of 8 replicates reached iteration 6; R reads D back from files rounded to five decimals.
+breast_bootstrap_6iter,verbatim,"bootstrap mean as the pipeline takes it (final D), against R iteration 6",1230,560,0.3049141630591631,differs,"last iteration of each replicate: [6, 6, 4, 4, 4, 4, 4, 4]. 1 names only in Python, e.g. ['4784_at']; largest difference at 808_at: R 0.685605, Python 0.380691"
+breast_bootstrap_defaults,verbatim,per replicate: iterations,10,0,0.0,equal,10 replicates on the samples drawn by R.
+breast_bootstrap_defaults,verbatim,per replicate: D,11981,1929,0.25,differs,"10 replicates on the samples drawn by R. replicate 1: 85 names only in R, e.g. ['10025_at', '10048_at', '10284_at']; 84 names only in Python, e.g. ['10006_at', '10236_at', '10928_at']; largest difference at 1457_at: R 0.4, Python 0.2"
+breast_bootstrap_defaults,verbatim,per replicate: seeds added,131,21,0.0,differs,"10 replicates on the samples drawn by R. replicate 1: R 4, Python 2, shared 2; only in R e.g. ['1457_at', '9869_at']"
+breast_bootstrap_defaults,verbatim,per replicate: seeds removed on D,14,4,0.0,differs,"10 replicates on the samples drawn by R. replicate 1: R 1, Python 2, shared 1; only in Python e.g. ['27044_at']"
+breast_bootstrap_defaults,verbatim,per replicate: genes removed by the sd prefilter or on Omax,1946,1630,0.0,differs,"10 replicates on the samples drawn by R. replicate 1: R 121, Python 121, shared 37; only in R e.g. ['10006_at', '10236_at', '10928_at']; only in Python e.g. ['10025_at', '10048_at', '10284_at']"
+breast_bootstrap_defaults,verbatim,per replicate: seeds holding a neighbourhood at the end,47,7,0.0,differs,"10 replicates on the samples drawn by R. replicate 1: R 4, Python 3, shared 2; only in R e.g. ['27044_at', '6427_at']; only in Python e.g. ['4784_at']"
+breast_bootstrap_defaults,verbatim,summarise.iterations,0,1,,r_error,R stopped with 'subscript out of bounds'
+breast_bootstrap_defaults,patched,per replicate: iterations,10,0,0.0,equal,10 replicates on the samples drawn by R.
+breast_bootstrap_defaults,patched,per replicate: D,11166,0,1.1102230246251565e-16,equal,10 replicates on the samples drawn by R.
+breast_bootstrap_defaults,patched,per replicate: seeds added,115,0,0.0,equal,10 replicates on the samples drawn by R.
+breast_bootstrap_defaults,patched,per replicate: seeds removed on D,13,0,0.0,equal,10 replicates on the samples drawn by R.
+breast_bootstrap_defaults,patched,per replicate: genes removed by the sd prefilter or on Omax,1131,0,0.0,equal,10 replicates on the samples drawn by R.
+breast_bootstrap_defaults,patched,per replicate: seeds holding a neighbourhood at the end,45,0,0.0,equal,10 replicates on the samples drawn by R.
+breast_bootstrap_defaults,patched,"bootstrap mean of D, iteration 1",1185,0,3.3333333333551707e-06,equal,10 of 10 replicates reached iteration 1; R reads D back from files rounded to five decimals.
+breast_bootstrap_defaults,patched,"bootstrap mean as the pipeline takes it (final D), against R iteration 1",1185,0,3.3333333333551707e-06,equal,"last iteration of each replicate: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]."
+breast_bootstrap_defaults,patched,"null p-value, iteration 1: genes with a mean and present in every null replicate",1038,0,2.7755575615628914e-17,equal,R's means and null values through per_gene_counts; 10 null replicates.
+breast_bootstrap_defaults,patched,"null p-value, iteration 1: genes absent from some null replicate",147,147,0.7272727272727273,differs,"R's means and null values through per_gene_counts; 10 null replicates. 10 values missing on one side only; largest difference at 10010_at: R 0.272727, Python 1"
+breast_doc_example,verbatim,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_doc_example,verbatim,"D, iteration 1",1231,0,0.0,equal,
+breast_doc_example,verbatim,"seeds added, iteration 1",2,0,0.0,equal,"R 2, Python 2, shared 2"
+breast_doc_example,verbatim,"D, iteration 2",1231,0,1.3877787807814457e-17,equal,
+breast_doc_example,verbatim,"seeds added, iteration 2",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_example,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_example,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_example,verbatim,seeds holding a neighbourhood at the end,12,0,0.0,equal,"R 12, Python 12, shared 12"
+breast_doc_example,verbatim,neighbourhood members and association values,16,0,3.3306690738754696e-16,equal,
+breast_doc_example,verbatim,O of the final neighbourhoods,78,0,0.0,equal,
+breast_doc_example,verbatim,O matrix stored at iteration 1,55,0,0.0,equal,
+breast_doc_example,verbatim,"nodes degree, iteration 1",10,0,0.0,equal,
+breast_doc_example,patched,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_doc_example,patched,"D, iteration 1",1231,0,0.0,equal,
+breast_doc_example,patched,"seeds added, iteration 1",2,0,0.0,equal,"R 2, Python 2, shared 2"
+breast_doc_example,patched,"D, iteration 2",1231,0,1.3877787807814457e-17,equal,
+breast_doc_example,patched,"seeds added, iteration 2",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_example,patched,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_example,patched,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_example,patched,seeds holding a neighbourhood at the end,12,0,0.0,equal,"R 12, Python 12, shared 12"
+breast_doc_example,patched,neighbourhood members and association values,16,0,3.3306690738754696e-16,equal,
+breast_doc_example,patched,O of the final neighbourhoods,78,0,0.0,equal,
+breast_doc_example,patched,O matrix stored at iteration 1,55,0,0.0,equal,
+breast_doc_example,patched,"nodes degree, iteration 1",10,0,0.0,equal,
+breast_doc_not_immune,verbatim,run,0,1,,r_error,"R stopped with 'subscript out of bounds'; Python: 3 iterations, converged, 4 seeds"
+breast_doc_not_immune,patched,iterations,1,0,0.0,equal,"R 3, Python 3"
+breast_doc_not_immune,patched,"D, iteration 1",1231,0,0.0,equal,
+breast_doc_not_immune,patched,"seeds added, iteration 1",2,0,0.0,equal,"R 2, Python 2, shared 2"
+breast_doc_not_immune,patched,"D, iteration 2",1223,0,0.0,equal,
+breast_doc_not_immune,patched,"seeds added, iteration 2",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_not_immune,patched,"D, iteration 3",1223,0,0.0,equal,
+breast_doc_not_immune,patched,"seeds added, iteration 3",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_not_immune,patched,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_doc_not_immune,patched,seeds removed on Omax,8,0,0.0,equal,"R 8, Python 8, shared 8"
+breast_doc_not_immune,patched,seeds holding a neighbourhood at the end,4,0,0.0,equal,"R 4, Python 4, shared 4"
+breast_doc_not_immune,patched,neighbourhood members and association values,8,0,2.220446049250313e-16,equal,
+breast_doc_not_immune,patched,O of the final neighbourhoods,10,0,0.0,equal,
+breast_doc_not_immune,patched,O matrix stored at iteration 1,55,0,0.0,equal,
+breast_doc_not_immune,patched,"nodes degree, iteration 1",10,0,0.0,equal,
+breast_doc_not_immune,patched,O matrix stored at iteration 2,10,0,0.0,equal,
+breast_doc_not_immune,patched,"nodes degree, iteration 2",4,0,0.0,equal,
+breast_fastlm,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_fastlm,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_fastlm,verbatim,"seeds added, iteration 1",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_fastlm,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_fastlm,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_fastlm,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_fastlm,verbatim,neighbourhood members and association values,28,0,7.105427357601002e-15,equal,
+breast_fastlm,verbatim,O of the final neighbourhoods,21,0,5.551115123125783e-17,equal,
+breast_fastlm,verbatim,O matrix stored at iteration 1,21,0,5.551115123125783e-17,equal,
+breast_fastlm,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_fastlm [association.method=glm],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_fastlm [association.method=glm],verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_fastlm [association.method=glm],verbatim,"seeds added, iteration 1",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_fastlm [association.method=glm],verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_fastlm [association.method=glm],verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_fastlm [association.method=glm],verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_fastlm [association.method=glm],verbatim,neighbourhood members and association values,28,0,1.3988810110276972e-14,equal,
+breast_fastlm [association.method=glm],verbatim,O of the final neighbourhoods,21,0,5.551115123125783e-17,equal,
+breast_fastlm [association.method=glm],verbatim,O matrix stored at iteration 1,21,0,5.551115123125783e-17,equal,
+breast_fastlm [association.method=glm],verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_fastlm_doc,verbatim,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_fastlm_doc,verbatim,"D, iteration 1",1231,7,0.0,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']"
+breast_fastlm_doc,verbatim,"seeds added, iteration 1",5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_fastlm_doc,verbatim,"D, iteration 2",1231,25,0.14285714285714285,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']; largest difference at 10018_at: R 0.285714, Python 0.142857"
+breast_fastlm_doc,verbatim,"seeds added, iteration 2",10,0,0.0,equal,"R 10, Python 10, shared 10"
+breast_fastlm_doc,verbatim,seeds removed on D,7,7,0.0,differs,"R 7, Python 0, shared 0; only in R e.g. ['10000_at', '10001_at', '10006_at']"
+breast_fastlm_doc,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_fastlm_doc,verbatim,seeds holding a neighbourhood at the end,15,7,0.0,differs,"R 8, Python 15, shared 8; only in Python e.g. ['10000_at', '10001_at', '10006_at']"
+breast_fastlm_doc,verbatim,neighbourhood members and association values,36,7,1.176836406102666e-14,differs,"7 names only in Python, e.g. ['10000_at|10000_at', '10001_at|10001_at', '10006_at|10006_at']"
+breast_fastlm_doc,verbatim,O of the final neighbourhoods,36,0,5.551115123125783e-17,equal,
+breast_fastlm_doc,verbatim,O matrix stored at iteration 1,6,0,0.0,equal,
+breast_fastlm_doc,verbatim,"nodes degree, iteration 1",10,10,0.2333333333333333,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']; largest difference at 10014_at: R 0.333333, Python 0.1"
+breast_fastlm_doc,verbatim,O matrix stored at iteration 2,36,0,5.551115123125783e-17,equal,
+breast_fastlm_doc,verbatim,"nodes degree, iteration 2",15,15,0.175,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']; largest difference at 10018_at: R 0.375, Python 0.2"
+breast_fastlm_doc,patched,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_fastlm_doc,patched,"D, iteration 1",1231,0,0.0,equal,
+breast_fastlm_doc,patched,"seeds added, iteration 1",5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_fastlm_doc,patched,"D, iteration 2",1231,0,6.938893903907228e-17,equal,
+breast_fastlm_doc,patched,"seeds added, iteration 2",10,0,0.0,equal,"R 10, Python 10, shared 10"
+breast_fastlm_doc,patched,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_fastlm_doc,patched,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_fastlm_doc,patched,seeds holding a neighbourhood at the end,15,0,0.0,equal,"R 15, Python 15, shared 15"
+breast_fastlm_doc,patched,neighbourhood members and association values,36,0,1.176836406102666e-14,equal,
+breast_fastlm_doc,patched,O of the final neighbourhoods,120,0,5.551115123125783e-17,equal,
+breast_fastlm_doc,patched,O matrix stored at iteration 1,55,0,0.0,equal,
+breast_fastlm_doc,patched,"nodes degree, iteration 1",10,0,0.0,equal,
+breast_fastlm_doc,patched,O matrix stored at iteration 2,120,0,5.551115123125783e-17,equal,
+breast_fastlm_doc,patched,"nodes degree, iteration 2",15,0,6.938893903907228e-17,equal,
+breast_glm_bh,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_bh,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_glm_bh,verbatim,"seeds added, iteration 1",14,0,0.0,equal,"R 14, Python 14, shared 14"
+breast_glm_bh,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_bh,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_bh,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_bh,verbatim,neighbourhood members and association values,113,0,1.354472090042691e-14,equal,
+breast_glm_bh,verbatim,O of the final neighbourhoods,21,0,9.71445146547012e-17,equal,
+breast_glm_bh,verbatim,O matrix stored at iteration 1,21,0,9.71445146547012e-17,equal,
+breast_glm_bh,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_glm_bh [association.method=glm],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_bh [association.method=glm],verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_glm_bh [association.method=glm],verbatim,"seeds added, iteration 1",14,0,0.0,equal,"R 14, Python 14, shared 14"
+breast_glm_bh [association.method=glm],verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_bh [association.method=glm],verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_bh [association.method=glm],verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_bh [association.method=glm],verbatim,neighbourhood members and association values,113,0,1.1435297153639112e-14,equal,
+breast_glm_bh [association.method=glm],verbatim,O of the final neighbourhoods,21,0,9.71445146547012e-17,equal,
+breast_glm_bh [association.method=glm],verbatim,O matrix stored at iteration 1,21,0,9.71445146547012e-17,equal,
+breast_glm_bh [association.method=glm],verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_glm_covariates,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_covariates,verbatim,"D, iteration 1",1231,0,1.1102230246251565e-16,equal,
+breast_glm_covariates,verbatim,"seeds added, iteration 1",55,0,0.0,equal,"R 55, Python 55, shared 55"
+breast_glm_covariates,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_covariates,verbatim,neighbourhood members and association values,256,0,1.2656542480726785e-14,equal,
+breast_glm_covariates,verbatim,O of the final neighbourhoods,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates,verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates,verbatim,"nodes degree, iteration 1",6,0,1.1102230246251565e-16,equal,
+breast_glm_covariates [association.method=glm],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_covariates [association.method=glm],verbatim,"D, iteration 1",1231,153,0.8333333333333333,differs,"6 names only in R, e.g. ['1017_at', '10458_at', '27044_at']; largest difference at 9869_at: R 0.833333, Python 0"
+breast_glm_covariates [association.method=glm],verbatim,"seeds added, iteration 1",55,55,0.0,differs,"R 55, Python 0, shared 0; only in R e.g. ['1001_at', '10298_at', '1457_at']"
+breast_glm_covariates [association.method=glm],verbatim,seeds removed on D,6,6,0.0,differs,"R 0, Python 6, shared 0; only in Python e.g. ['1017_at', '10458_at', '27044_at']"
+breast_glm_covariates [association.method=glm],verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates [association.method=glm],verbatim,seeds holding a neighbourhood at the end,6,6,0.0,differs,"R 6, Python 0, shared 0; only in R e.g. ['1017_at', '10458_at', '27044_at']"
+breast_glm_covariates [association.method=glm],verbatim,neighbourhood members and association values,256,256,0.0,differs,"256 names only in R, e.g. ['1017_at|1001_at', '1017_at|1017_at', '1017_at|10298_at']"
+breast_glm_covariates [association.method=glm],verbatim,O of the final neighbourhoods,21,21,0.0,differs,"21 names only in R, e.g. ['1017_at|1017_at', '1017_at|10458_at', '1017_at|27044_at']"
+breast_glm_covariates [association.method=glm],verbatim,O matrix stored at iteration 1,21,21,0.0,differs,"21 names only in R, e.g. ['1017_at|1017_at', '1017_at|10458_at', '1017_at|27044_at']"
+breast_glm_covariates [association.method=glm],verbatim,"nodes degree, iteration 1",6,6,0.0,differs,"6 names only in R, e.g. ['1017_at', '10458_at', '27044_at']"
+breast_glm_covariates_ignored [covariates declared],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_covariates_ignored [covariates declared],verbatim,"D, iteration 1",1231,37,0.3333333333333333,differs,"largest difference at 4683_at: R 0.666667, Python 0.333333"
+breast_glm_covariates_ignored [covariates declared],verbatim,"seeds added, iteration 1",61,11,0.0,differs,"R 56, Python 55, shared 50; only in R e.g. ['1788_at', '23236_at', '4214_at']; only in Python e.g. ['2237_at', '25_at', '5607_at']"
+breast_glm_covariates_ignored [covariates declared],verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_ignored [covariates declared],verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_ignored [covariates declared],verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_covariates_ignored [covariates declared],verbatim,neighbourhood members and association values,272,266,0.1186156649960256,differs,"16 names only in R, e.g. ['1017_at|23236_at', '1017_at|4214_at', '1017_at|4683_at']; 22 names only in Python, e.g. ['1017_at|1958_at', '1017_at|5591_at', '10458_at|2237_at']; largest difference at 1017_at|11014_at: R 0.640851, Python 0.759466"
+breast_glm_covariates_ignored [covariates declared],verbatim,O of the final neighbourhoods,21,15,0.061730066332746775,differs,"largest difference at 10458_at|715_at: R 0.0843373, Python 0.146067"
+breast_glm_covariates_ignored [covariates declared],verbatim,O matrix stored at iteration 1,21,15,0.061730066332746775,differs,"largest difference at 10458_at|715_at: R 0.0843373, Python 0.146067"
+breast_glm_covariates_ignored [covariates declared],verbatim,"nodes degree, iteration 1",6,2,0.16666666666666674,differs,"largest difference at 10458_at: R 0.666667, Python 0.833333"
+breast_glm_covariates_ignored [no covariates],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_covariates_ignored [no covariates],verbatim,"D, iteration 1",1231,0,1.1102230246251565e-16,equal,
+breast_glm_covariates_ignored [no covariates],verbatim,"seeds added, iteration 1",56,0,0.0,equal,"R 56, Python 56, shared 56"
+breast_glm_covariates_ignored [no covariates],verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_ignored [no covariates],verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_ignored [no covariates],verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_covariates_ignored [no covariates],verbatim,neighbourhood members and association values,250,0,1.354472090042691e-14,equal,
+breast_glm_covariates_ignored [no covariates],verbatim,O of the final neighbourhoods,21,0,9.71445146547012e-17,equal,
+breast_glm_covariates_ignored [no covariates],verbatim,O matrix stored at iteration 1,21,0,9.71445146547012e-17,equal,
+breast_glm_covariates_ignored [no covariates],verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_glm_covariates_plain,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_covariates_plain,verbatim,"D, iteration 1",1231,0,1.1102230246251565e-16,equal,
+breast_glm_covariates_plain,verbatim,"seeds added, iteration 1",55,0,0.0,equal,"R 55, Python 55, shared 55"
+breast_glm_covariates_plain,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_plain,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_plain,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_covariates_plain,verbatim,neighbourhood members and association values,256,0,1.2656542480726785e-14,equal,
+breast_glm_covariates_plain,verbatim,O of the final neighbourhoods,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates_plain,verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates_plain,verbatim,"nodes degree, iteration 1",6,0,1.1102230246251565e-16,equal,
+breast_glm_covariates_plain [association.method=glm],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_covariates_plain [association.method=glm],verbatim,"D, iteration 1",1231,0,1.1102230246251565e-16,equal,
+breast_glm_covariates_plain [association.method=glm],verbatim,"seeds added, iteration 1",55,0,0.0,equal,"R 55, Python 55, shared 55"
+breast_glm_covariates_plain [association.method=glm],verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_plain [association.method=glm],verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_covariates_plain [association.method=glm],verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_covariates_plain [association.method=glm],verbatim,neighbourhood members and association values,256,0,2.970956813896919e-13,equal,
+breast_glm_covariates_plain [association.method=glm],verbatim,O of the final neighbourhoods,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates_plain [association.method=glm],verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates_plain [association.method=glm],verbatim,"nodes degree, iteration 1",6,0,1.1102230246251565e-16,equal,
+breast_glm_doc,verbatim,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_glm_doc,verbatim,"D, iteration 1",1231,7,0.0,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']"
+breast_glm_doc,verbatim,"seeds added, iteration 1",5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_glm_doc,verbatim,"D, iteration 2",1231,25,0.14285714285714285,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']; largest difference at 10018_at: R 0.285714, Python 0.142857"
+breast_glm_doc,verbatim,"seeds added, iteration 2",10,0,0.0,equal,"R 10, Python 10, shared 10"
+breast_glm_doc,verbatim,seeds removed on D,7,7,0.0,differs,"R 7, Python 0, shared 0; only in R e.g. ['10000_at', '10001_at', '10006_at']"
+breast_glm_doc,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_doc,verbatim,seeds holding a neighbourhood at the end,15,7,0.0,differs,"R 8, Python 15, shared 8; only in Python e.g. ['10000_at', '10001_at', '10006_at']"
+breast_glm_doc,verbatim,neighbourhood members and association values,36,7,6.8833827526759706e-15,differs,"7 names only in Python, e.g. ['10000_at|10000_at', '10001_at|10001_at', '10006_at|10006_at']"
+breast_glm_doc,verbatim,O of the final neighbourhoods,36,0,5.551115123125783e-17,equal,
+breast_glm_doc,verbatim,O matrix stored at iteration 1,6,0,0.0,equal,
+breast_glm_doc,verbatim,"nodes degree, iteration 1",10,10,0.2333333333333333,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']; largest difference at 10014_at: R 0.333333, Python 0.1"
+breast_glm_doc,verbatim,O matrix stored at iteration 2,36,0,5.551115123125783e-17,equal,
+breast_glm_doc,verbatim,"nodes degree, iteration 2",15,15,0.175,differs,"7 names only in Python, e.g. ['10000_at', '10001_at', '10006_at']; largest difference at 10018_at: R 0.375, Python 0.2"
+breast_glm_doc,patched,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_glm_doc,patched,"D, iteration 1",1231,0,0.0,equal,
+breast_glm_doc,patched,"seeds added, iteration 1",5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_glm_doc,patched,"D, iteration 2",1231,0,6.938893903907228e-17,equal,
+breast_glm_doc,patched,"seeds added, iteration 2",10,0,0.0,equal,"R 10, Python 10, shared 10"
+breast_glm_doc,patched,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_doc,patched,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_doc,patched,seeds holding a neighbourhood at the end,15,0,0.0,equal,"R 15, Python 15, shared 15"
+breast_glm_doc,patched,neighbourhood members and association values,36,0,6.8833827526759706e-15,equal,
+breast_glm_doc,patched,O of the final neighbourhoods,120,0,5.551115123125783e-17,equal,
+breast_glm_doc,patched,O matrix stored at iteration 1,55,0,0.0,equal,
+breast_glm_doc,patched,"nodes degree, iteration 1",10,0,0.0,equal,
+breast_glm_doc,patched,O matrix stored at iteration 2,120,0,5.551115123125783e-17,equal,
+breast_glm_doc,patched,"nodes degree, iteration 2",15,0,6.938893903907228e-17,equal,
+breast_glm_gamma,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_gamma,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_glm_gamma,verbatim,"seeds added, iteration 1",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_glm_gamma,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_gamma,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_gamma,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_gamma,verbatim,neighbourhood members and association values,28,0,8.142791996235133e-12,equal,
+breast_glm_gamma,verbatim,O of the final neighbourhoods,21,0,5.551115123125783e-17,equal,
+breast_glm_gamma,verbatim,O matrix stored at iteration 1,21,0,5.551115123125783e-17,equal,
+breast_glm_gamma,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_glm_gamma,verbatim,"nodes degree, iteration 1, counted as R counts it",6,0,0.0,equal,
+breast_glm_poisson,verbatim,run,0,1,,r_error,"R stopped with 'subscript out of bounds'; Python: 1 iterations, max_iter, 0 seeds"
+breast_glm_poisson_loose,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_glm_poisson_loose,verbatim,"D, iteration 1",1231,0,1.1102230246251565e-16,equal,
+breast_glm_poisson_loose,verbatim,"seeds added, iteration 1",428,0,0.0,equal,"R 428, Python 428, shared 428"
+breast_glm_poisson_loose,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_poisson_loose,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_glm_poisson_loose,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_poisson_loose,verbatim,neighbourhood members and association values,1698,0,1.7014736841680644e-11,equal,
+breast_glm_poisson_loose,verbatim,O of the final neighbourhoods,21,0,1.1102230246251565e-16,equal,
+breast_glm_poisson_loose,verbatim,O matrix stored at iteration 1,21,0,1.1102230246251565e-16,equal,
+breast_glm_poisson_loose,verbatim,"nodes degree, iteration 1",6,3,0.33333333333333337,differs,"largest difference at 6427_at: R 0.666667, Python 1"
+breast_glm_poisson_loose,verbatim,"nodes degree, iteration 1, counted as R counts it",6,0,1.1102230246251565e-16,equal,
+breast_growth,verbatim,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_growth,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_growth,verbatim,"seeds added, iteration 1",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_growth,verbatim,"D, iteration 2",1231,0,5.551115123125783e-17,equal,
+breast_growth,verbatim,"seeds added, iteration 2",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_growth,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_growth,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_growth,verbatim,seeds holding a neighbourhood at the end,7,0,0.0,equal,"R 7, Python 7, shared 7"
+breast_growth,verbatim,neighbourhood members and association values,32,0,3.3306690738754696e-16,equal,
+breast_growth,verbatim,O of the final neighbourhoods,28,0,8.326672684688674e-17,equal,
+breast_growth,verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_growth,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_jackknife,verbatim,per replicate: iterations,4,0,0.0,equal,4 replicates on the samples drawn by R.
+breast_jackknife,verbatim,per replicate: D,4923,0,5.551115123125783e-17,equal,4 replicates on the samples drawn by R.
+breast_jackknife,verbatim,per replicate: seeds added,4,0,0.0,equal,4 replicates on the samples drawn by R.
+breast_jackknife,verbatim,per replicate: seeds removed on D,1,0,0.0,equal,4 replicates on the samples drawn by R.
+breast_jackknife,verbatim,per replicate: seeds removed on Omax,0,0,0.0,equal,4 replicates on the samples drawn by R.
+breast_jackknife,verbatim,per replicate: seeds holding a neighbourhood at the end,23,0,0.0,equal,4 replicates on the samples drawn by R.
+breast_jackknife,verbatim,"bootstrap mean of D, iteration 1",1231,0,3.3333333333551707e-06,equal,4 of 4 replicates reached iteration 1; R reads D back from files rounded to five decimals.
+breast_jackknife,verbatim,"bootstrap mean as the pipeline takes it (final D), against R iteration 1",1231,0,3.3333333333551707e-06,equal,"last iteration of each replicate: [1, 1, 1, 1]."
+breast_jackknife,verbatim,"null p-value, iteration 1: genes with a mean and present in every null replicate",1225,0,0.0,equal,R's means and null values through per_gene_counts; 3 null replicates.
+breast_jackknife,verbatim,"null p-value, iteration 1: genes absent from some null replicate",6,6,0.0,differs,R's means and null values through per_gene_counts; 3 null replicates. 6 values missing on one side only
+breast_missing_values,verbatim,run,0,1,,r_error,"R stopped with 'subscript out of bounds'; Python: 5 iterations, converged, 8 seeds"
+breast_missing_values,patched,iterations,1,0,0.0,equal,"R 5, Python 5"
+breast_missing_values,patched,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_missing_values,patched,"seeds added, iteration 1",12,0,0.0,equal,"R 12, Python 12, shared 12"
+breast_missing_values,patched,"D, iteration 2",1221,0,5.551115123125783e-17,equal,
+breast_missing_values,patched,"seeds added, iteration 2",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_missing_values,patched,"D, iteration 3",1220,0,5.551115123125783e-17,equal,
+breast_missing_values,patched,"seeds added, iteration 3",5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_missing_values,patched,"D, iteration 4",1215,0,1.1102230246251565e-16,equal,
+breast_missing_values,patched,"seeds added, iteration 4",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_missing_values,patched,"D, iteration 5",1215,0,5.551115123125783e-17,equal,
+breast_missing_values,patched,"seeds added, iteration 5",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_missing_values,patched,seeds removed on D,15,0,0.0,equal,"R 15, Python 15, shared 15"
+breast_missing_values,patched,seeds removed on Omax,1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_missing_values,patched,seeds holding a neighbourhood at the end,8,0,0.0,equal,"R 8, Python 8, shared 8"
+breast_missing_values,patched,neighbourhood members and association values,28,0,3.3306690738754696e-16,equal,
+breast_missing_values,patched,O of the final neighbourhoods,36,0,1.1102230246251565e-16,equal,
+breast_missing_values,patched,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_missing_values,patched,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_missing_values,patched,O matrix stored at iteration 2,36,0,1.1102230246251565e-16,equal,
+breast_missing_values,patched,"nodes degree, iteration 2",8,0,0.0,equal,
+breast_missing_values,patched,O matrix stored at iteration 3,36,0,1.1102230246251565e-16,equal,
+breast_missing_values,patched,"nodes degree, iteration 3",8,0,0.0,equal,
+breast_missing_values,patched,O matrix stored at iteration 4,36,0,1.1102230246251565e-16,equal,
+breast_missing_values,patched,"nodes degree, iteration 4",8,0,0.0,equal,
+breast_omax_pruning,verbatim,iterations,1,0,0.0,equal,"R 3, Python 3"
+breast_omax_pruning,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_omax_pruning,verbatim,"seeds added, iteration 1",12,0,0.0,equal,"R 12, Python 12, shared 12"
+breast_omax_pruning,verbatim,"D, iteration 2",1218,7,0.053030303030303094,differs,"largest difference at 10458_at: R 0.363636, Python 0.416667"
+breast_omax_pruning,verbatim,"seeds added, iteration 2",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_omax_pruning,verbatim,"D, iteration 3",1218,0,0.0,equal,
+breast_omax_pruning,verbatim,"seeds added, iteration 3",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_omax_pruning,verbatim,seeds removed on D,8,1,0.0,differs,"R 7, Python 8, shared 7; only in Python e.g. ['51362_at']"
+breast_omax_pruning,verbatim,seeds removed on Omax,6,1,0.0,differs,"R 6, Python 5, shared 5; only in R e.g. ['51362_at']"
+breast_omax_pruning,verbatim,seeds holding a neighbourhood at the end,5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_omax_pruning,verbatim,neighbourhood members and association values,28,13,3.3306690738754696e-16,differs,"13 names only in R, e.g. ['1017_at|4771_at', '1017_at|4784_at', '1017_at|715_at']"
+breast_omax_pruning,verbatim,O of the final neighbourhoods,15,10,0.625,differs,"largest difference at 6772_at|10458_at: R 0.375, Python 1"
+breast_omax_pruning,verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_omax_pruning,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_omax_pruning,verbatim,O matrix stored at iteration 2,15,10,0.625,differs,"largest difference at 6772_at|10458_at: R 0.375, Python 1"
+breast_omax_pruning,verbatim,"nodes degree, iteration 2",5,0,1.1102230246251565e-16,equal,
+breast_omax_pruning,patched,iterations,1,0,0.0,equal,"R 3, Python 3"
+breast_omax_pruning,patched,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_omax_pruning,patched,"seeds added, iteration 1",12,0,0.0,equal,"R 12, Python 12, shared 12"
+breast_omax_pruning,patched,"D, iteration 2",1218,0,1.1102230246251565e-16,equal,
+breast_omax_pruning,patched,"seeds added, iteration 2",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_omax_pruning,patched,"D, iteration 3",1218,0,0.0,equal,
+breast_omax_pruning,patched,"seeds added, iteration 3",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_omax_pruning,patched,seeds removed on D,8,0,0.0,equal,"R 8, Python 8, shared 8"
+breast_omax_pruning,patched,seeds removed on Omax,5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_omax_pruning,patched,seeds holding a neighbourhood at the end,5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_omax_pruning,patched,neighbourhood members and association values,15,0,3.3306690738754696e-16,equal,
+breast_omax_pruning,patched,O of the final neighbourhoods,15,0,1.1102230246251565e-16,equal,
+breast_omax_pruning,patched,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_omax_pruning,patched,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_omax_pruning,patched,O matrix stored at iteration 2,15,0,1.1102230246251565e-16,equal,
+breast_omax_pruning,patched,"nodes degree, iteration 2",5,0,1.1102230246251565e-16,equal,
+breast_pearson,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_pearson,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_pearson,verbatim,"seeds added, iteration 1",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_pearson,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_pearson,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_pearson,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_pearson,verbatim,neighbourhood members and association values,19,0,6.661338147750939e-16,equal,
+breast_pearson,verbatim,O of the final neighbourhoods,21,0,0.0,equal,
+breast_pruned_members,verbatim,iterations,1,0,0.0,equal,"R 5, Python 5"
+breast_pruned_members,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_pruned_members,verbatim,"seeds added, iteration 1",12,0,0.0,equal,"R 12, Python 12, shared 12"
+breast_pruned_members,verbatim,"D, iteration 2",1221,0,5.551115123125783e-17,equal,
+breast_pruned_members,verbatim,"seeds added, iteration 2",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_pruned_members,verbatim,"D, iteration 3",1220,0,5.551115123125783e-17,equal,
+breast_pruned_members,verbatim,"seeds added, iteration 3",5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_pruned_members,verbatim,"D, iteration 4",1215,0,1.1102230246251565e-16,equal,
+breast_pruned_members,verbatim,"seeds added, iteration 4",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_pruned_members,verbatim,"D, iteration 5",1215,0,5.551115123125783e-17,equal,
+breast_pruned_members,verbatim,"seeds added, iteration 5",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_pruned_members,verbatim,seeds removed on D,15,0,0.0,equal,"R 15, Python 15, shared 15"
+breast_pruned_members,verbatim,seeds removed on Omax,1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_pruned_members,verbatim,seeds holding a neighbourhood at the end,8,0,0.0,equal,"R 8, Python 8, shared 8"
+breast_pruned_members,verbatim,neighbourhood members and association values,43,15,3.3306690738754696e-16,differs,"15 names only in R, e.g. ['1017_at|4771_at', '1017_at|4784_at', '1017_at|715_at']"
+breast_pruned_members,verbatim,O of the final neighbourhoods,36,24,0.375,differs,"largest difference at 6772_at|10458_at: R 0.375, Python 0.75"
+breast_pruned_members,verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_pruned_members,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_pruned_members,verbatim,O matrix stored at iteration 2,36,20,0.375,differs,"largest difference at 6772_at|10458_at: R 0.375, Python 0.75"
+breast_pruned_members,verbatim,"nodes degree, iteration 2",8,0,0.0,equal,
+breast_pruned_members,verbatim,O matrix stored at iteration 3,36,20,0.375,differs,"largest difference at 6772_at|10458_at: R 0.375, Python 0.75"
+breast_pruned_members,verbatim,"nodes degree, iteration 3",8,0,0.0,equal,
+breast_pruned_members,verbatim,O matrix stored at iteration 4,36,24,0.375,differs,"largest difference at 6772_at|10458_at: R 0.375, Python 0.75"
+breast_pruned_members,verbatim,"nodes degree, iteration 4",8,0,0.0,equal,
+breast_pruned_members,patched,iterations,1,0,0.0,equal,"R 5, Python 5"
+breast_pruned_members,patched,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_pruned_members,patched,"seeds added, iteration 1",12,0,0.0,equal,"R 12, Python 12, shared 12"
+breast_pruned_members,patched,"D, iteration 2",1221,0,5.551115123125783e-17,equal,
+breast_pruned_members,patched,"seeds added, iteration 2",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_pruned_members,patched,"D, iteration 3",1220,0,5.551115123125783e-17,equal,
+breast_pruned_members,patched,"seeds added, iteration 3",5,0,0.0,equal,"R 5, Python 5, shared 5"
+breast_pruned_members,patched,"D, iteration 4",1215,0,1.1102230246251565e-16,equal,
+breast_pruned_members,patched,"seeds added, iteration 4",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_pruned_members,patched,"D, iteration 5",1215,0,5.551115123125783e-17,equal,
+breast_pruned_members,patched,"seeds added, iteration 5",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_pruned_members,patched,seeds removed on D,15,0,0.0,equal,"R 15, Python 15, shared 15"
+breast_pruned_members,patched,seeds removed on Omax,1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_pruned_members,patched,seeds holding a neighbourhood at the end,8,0,0.0,equal,"R 8, Python 8, shared 8"
+breast_pruned_members,patched,neighbourhood members and association values,28,0,3.3306690738754696e-16,equal,
+breast_pruned_members,patched,O of the final neighbourhoods,36,0,1.1102230246251565e-16,equal,
+breast_pruned_members,patched,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_pruned_members,patched,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_pruned_members,patched,O matrix stored at iteration 2,36,0,1.1102230246251565e-16,equal,
+breast_pruned_members,patched,"nodes degree, iteration 2",8,0,0.0,equal,
+breast_pruned_members,patched,O matrix stored at iteration 3,36,0,1.1102230246251565e-16,equal,
+breast_pruned_members,patched,"nodes degree, iteration 3",8,0,0.0,equal,
+breast_pruned_members,patched,O matrix stored at iteration 4,36,0,1.1102230246251565e-16,equal,
+breast_pruned_members,patched,"nodes degree, iteration 4",8,0,0.0,equal,
+breast_sd_prefilter,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_sd_prefilter,verbatim,"D, iteration 1",1201,157,0.04999999999999999,differs,"72 names only in R, e.g. ['10025_at', '10048_at', '10524_at']; 72 names only in Python, e.g. ['10006_at', '10498_at', '10928_at']; largest difference at 10458_at: R 0.25, Python 0.2"
+breast_sd_prefilter,verbatim,"seeds added, iteration 1",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_sd_prefilter,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_sd_prefilter,verbatim,genes removed by the sd prefilter or on Omax,174,144,0.0,differs,"R 102, Python 102, shared 30; only in R e.g. ['10006_at', '10498_at', '10928_at']; only in Python e.g. ['10025_at', '10048_at', '10524_at']"
+breast_sd_prefilter,verbatim,seeds holding a neighbourhood at the end,6,1,0.0,differs,"R 5, Python 6, shared 5; only in Python e.g. ['4784_at']"
+breast_sd_prefilter,verbatim,neighbourhood members and association values,26,4,3.3306690738754696e-16,differs,"1 names only in R, e.g. ['1017_at|4771_at']; 3 names only in Python, e.g. ['1017_at|4784_at', '4784_at|1017_at', '4784_at|4784_at']"
+breast_sd_prefilter,verbatim,O of the final neighbourhoods,15,0,5.551115123125783e-17,equal,
+breast_sd_prefilter,patched,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_sd_prefilter,patched,"D, iteration 1",1129,0,5.551115123125783e-17,equal,
+breast_sd_prefilter,patched,"seeds added, iteration 1",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_sd_prefilter,patched,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_sd_prefilter,patched,genes removed by the sd prefilter or on Omax,102,0,0.0,equal,"R 102, Python 102, shared 102"
+breast_sd_prefilter,patched,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_sd_prefilter,patched,neighbourhood members and association values,25,0,3.3306690738754696e-16,equal,
+breast_sd_prefilter,patched,O of the final neighbourhoods,21,0,5.551115123125783e-17,equal,
+breast_seeds_not_immune,verbatim,run,0,1,,r_error,"R stopped with 'subscript out of bounds'; Python: 2 iterations, converged, 7 seeds"
+breast_seeds_not_immune,patched,iterations,1,0,0.0,equal,"R 2, Python 2"
+breast_seeds_not_immune,patched,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_seeds_not_immune,patched,"seeds added, iteration 1",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_seeds_not_immune,patched,"D, iteration 2",1231,0,5.551115123125783e-17,equal,
+breast_seeds_not_immune,patched,"seeds added, iteration 2",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_seeds_not_immune,patched,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_seeds_not_immune,patched,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_seeds_not_immune,patched,seeds holding a neighbourhood at the end,7,0,0.0,equal,"R 7, Python 7, shared 7"
+breast_seeds_not_immune,patched,neighbourhood members and association values,32,0,3.3306690738754696e-16,equal,
+breast_seeds_not_immune,patched,O of the final neighbourhoods,28,0,8.326672684688674e-17,equal,
+breast_seeds_not_immune,patched,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_seeds_not_immune,patched,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_single_pass,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_single_pass,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
+breast_single_pass,verbatim,"seeds added, iteration 1",1,0,0.0,equal,"R 1, Python 1, shared 1"
+breast_single_pass,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_single_pass,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_single_pass,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_single_pass,verbatim,neighbourhood members and association values,29,0,3.3306690738754696e-16,equal,
+breast_single_pass,verbatim,O of the final neighbourhoods,21,0,8.326672684688674e-17,equal,
+breast_single_pass,verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_single_pass,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
+breast_universe_subset,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_universe_subset,verbatim,"D, iteration 1",602,0,5.551115123125783e-17,equal,
+breast_universe_subset,verbatim,"seeds added, iteration 1",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_universe_subset,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_universe_subset,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_universe_subset,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_universe_subset,verbatim,neighbourhood members and association values,22,0,3.3306690738754696e-16,equal,
+breast_universe_subset,verbatim,O of the final neighbourhoods,21,0,5.551115123125783e-17,equal,
+breast_unscaled,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+breast_unscaled,verbatim,"D, iteration 1",1231,0,0.0,equal,
+breast_unscaled,verbatim,"seeds added, iteration 1",0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_unscaled,verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_unscaled,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+breast_unscaled,verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_unscaled,verbatim,neighbourhood members and association values,29,0,3.3306690738754696e-16,equal,
+breast_unscaled,verbatim,O of the final neighbourhoods,21,0,8.326672684688674e-17,equal,
+it_growth,verbatim,iterations,1,0,0.0,equal,"R 3, Python 3"
+it_growth,verbatim,"D, iteration 1",21253,0,1.1102230246251565e-16,equal,
+it_growth,verbatim,"seeds added, iteration 1",912,0,0.0,equal,"R 912, Python 912, shared 912"
+it_growth,verbatim,"D, iteration 2",21197,0,1.1102230246251565e-16,equal,
+it_growth,verbatim,"seeds added, iteration 2",819,0,0.0,equal,"R 819, Python 819, shared 819"
+it_growth,verbatim,"D, iteration 3",21148,0,1.1102230246251565e-16,equal,
+it_growth,verbatim,"seeds added, iteration 3",297,0,0.0,equal,"R 297, Python 297, shared 297"
+it_growth,verbatim,seeds removed on D,106,0,0.0,equal,"R 106, Python 106, shared 106"
+it_growth,verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+it_growth,verbatim,seeds holding a neighbourhood at the end,1635,0,0.0,equal,"R 1635, Python 1635, shared 1635"
+it_sd_prefilter,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
+it_sd_prefilter,verbatim,"D, iteration 1",21253,0,1.1102230246251565e-16,equal,
+it_sd_prefilter,verbatim,"seeds added, iteration 1",912,0,0.0,equal,"R 912, Python 912, shared 912"
+it_sd_prefilter,verbatim,seeds removed on D,1,0,0.0,equal,"R 1, Python 1, shared 1"
+it_sd_prefilter,verbatim,genes removed by the sd prefilter or on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+it_sd_prefilter,verbatim,seeds holding a neighbourhood at the end,9,0,0.0,equal,"R 9, Python 9, shared 9"
+it_sd_prefilter,patched,iterations,1,0,0.0,equal,"R 1, Python 1"
+it_sd_prefilter,patched,"D, iteration 1",21253,0,1.1102230246251565e-16,equal,
+it_sd_prefilter,patched,"seeds added, iteration 1",912,0,0.0,equal,"R 912, Python 912, shared 912"
+it_sd_prefilter,patched,seeds removed on D,1,0,0.0,equal,"R 1, Python 1, shared 1"
+it_sd_prefilter,patched,genes removed by the sd prefilter or on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
+it_sd_prefilter,patched,seeds holding a neighbourhood at the end,9,0,0.0,equal,"R 9, Python 9, shared 9"

@@ -14,3 +14,5 @@ site/
 /runs/
 /data/
 .DS_Store
+# raw outputs of the R parity harness (the reports kept in the repository are under results/)
+/validation/r_parity/out/

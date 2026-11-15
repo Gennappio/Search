@@ -1,7 +1,9 @@
 # Validation
 
-No comparison with the R originals is used as an acceptance criterion. Each layer must hold by
-construction or by common sense.
+The test suite uses no comparison with the R originals as an acceptance criterion: each layer
+must hold by construction or by common sense, and the tests need no R. The comparison with the
+originals is a separate harness, `validation/r_parity`, run by hand; what it found is in
+[Porting from R](porting.md).
 
 | layer | where | what |
 |---|---|---|
@@ -14,6 +16,7 @@ construction or by common sense.
 | pipeline | `tests/unit/test_pipeline.py` | end to end on three synthetic cohorts, through the API and the CLI, with resume |
 | real data | `tests/realdata/` | GBM cohorts through `SEARCH_GBM_DATA`: the published 51-gene metagene is enriched at the top |
 | benchmark | `tests/bench/` | one pass on 16548 x 95 under 1 s |
+| R originals | `validation/r_parity` (not part of the tests) | every number of the GBM script and of the SEARCH package against the two presets, on the same inputs and the same random draws |
 
 ## Real data, phase 2
 
@@ -104,3 +107,22 @@ because D takes only eleven distinct values. The paper's formula as printed sele
 a tenth of the replicates the per-gene variant had given 19 candidates instead of 28: that null
 needs the full replicate count to settle. The tables of every variant are kept with the project
 results (`RESULTS/SEARCH_PY/variants_full/`), outside the repository.
+
+## Comparison with the R originals, 2026-11-15
+
+Both originals were run next to Search on the same inputs
+([Porting from R](porting.md) has the method, the tables and every difference):
+
+| comparison | compared quantities | equal | different | R stops |
+|---|---|---|---|---|
+| GBM script, 20 bootstrap and 50 Monte Carlo replicates per cohort, same draws | 85 | 85 | 0 | 0 |
+| GBM script, 100 and 500 replicates, same draws | 86 | 75 | 11 | 0 |
+| functions of the GBM script on Breastdata1, same draws | 25 | 25 | 0 | 0 |
+| SEARCH package as it is, 28 cases | 319 | 261 | 53 | 5 |
+| SEARCH package with its defects corrected, 11 cases | 156 | 155 | 1 | 0 |
+
+The 11 differences of the second row come from one bootstrap replicate of 200, in which two
+seed clusters have the same size and mathematically tied connectivities are ranked differently
+by the two languages; the 26 selected genes are the same, in the same order. With independent
+random draws at that size every gene falls on the same side of the p < 0.01 cutoff in both
+cohorts and the same 26 genes are selected.

@@ -1,0 +1,99 @@
+case,variant,quantity,n,n_mismatch,max_abs_diff,status,detail
+IT,same draws,genes of the training matrix,16539,0,0.0,equal,"R 16539, Python 16539, shared 16539"
+IT,same draws,core: rho (genes x seeds),165390,0,7.771561172376096e-16,equal,
+IT,same draws,core: delta (genes x seeds),165390,0,0.0,equal,
+IT,same draws,core: gamma (genes x seeds),165390,0,9.627715291671279e-17,equal,
+IT,same draws,core: cluster size of every seed,10,0,0.0,equal,
+IT,same draws,core: S between seeds,100,0,3.297362383136715e-14,equal,
+IT,same draws,core: F between seeds,100,0,0.0,equal,
+IT,same draws,core: C_raw,16539,0,9.90960785651751e-17,equal,
+IT,same draws,core: C_rank,16539,0,2.220446049250313e-16,equal,
+IT,same draws,core: n_edges,16539,0,0.0,equal,
+IT,same draws,core: n_positive_edges,16539,0,0.0,equal,
+IT,same draws,core: n_negative_edges,16539,0,0.0,equal,
+IT,same draws,core: positive_consistent,16539,0,0.0,equal,
+IT,same draws,core: weighted_seed_rho,16539,0,4.440892098500626e-16,equal,
+IT,same draws,core: is_seed,16539,0,0.0,equal,
+IT,same draws,genes eligible as random seeds,16529,0,0.0,equal,"R 16529, Python 16529, shared 16529"
+IT,same draws,bootstrap summary: C_rank_boot_mean,16539,102,6.651348409714153e-06,differs,"follows from the tied replicates 22. largest difference at ENSG00000085382: R 0.585585, Python 0.585578"
+IT,same draws,bootstrap summary: C_rank_boot_var,16539,102,5.622606768391006e-06,differs,"follows from the tied replicates 22. largest difference at ENSG00000204604: R 0.0143587, Python 0.0143644"
+IT,same draws,bootstrap summary: C_rank_boot_sd,16539,102,4.0513824830005346e-05,differs,"follows from the tied replicates 22. largest difference at ENSG00000099377: R 0.0209721, Python 0.0210126"
+IT,same draws,null model: p_MC_C,16539,0,9.71445146547012e-17,equal,
+IT,same draws,"bootstrap: C_rank of every gene, replicates where the seed clusters differ in size",1637361,0,2.220446049250313e-16,equal,99 of 100 replicates.
+IT,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size",16539,102,0.0006651348409721924,differs,"replicates 22: connectivities equal in exact arithmetic differ in the last bit, and R and NumPy split different ties. largest difference at ENSG00000085382|22: R 0.841819, Python 0.841154"
+IT,same draws,null model: C_raw of every gene for every random seed set,8269500,0,9.999054535747565e-17,equal,500 random seed sets.
+IT,same draws,null model: mean_S of every random seed set,500,0,1.4502288259166107e-15,equal,
+IT,same draws,null model: median_S of every random seed set,500,0,2.2898349882893854e-16,equal,
+FR,same draws,genes of the training matrix,16539,0,0.0,equal,"R 16539, Python 16539, shared 16539"
+FR,same draws,core: rho (genes x seeds),165390,0,1.3322676295501878e-15,equal,
+FR,same draws,core: delta (genes x seeds),165390,0,0.0,equal,
+FR,same draws,core: gamma (genes x seeds),165390,0,8.131516293641283e-17,equal,
+FR,same draws,core: cluster size of every seed,10,0,0.0,equal,
+FR,same draws,core: S between seeds,100,0,5.329070518200751e-15,equal,
+FR,same draws,core: F between seeds,100,0,2.220446049250313e-16,equal,
+FR,same draws,core: C_raw,16539,0,9.996344030316351e-17,equal,
+FR,same draws,core: C_rank,16539,0,2.220446049250313e-16,equal,
+FR,same draws,core: n_edges,16539,0,0.0,equal,
+FR,same draws,core: n_positive_edges,16539,0,0.0,equal,
+FR,same draws,core: n_negative_edges,16539,0,0.0,equal,
+FR,same draws,core: positive_consistent,16539,0,0.0,equal,
+FR,same draws,core: weighted_seed_rho,16539,0,6.106226635438361e-16,equal,
+FR,same draws,core: is_seed,16539,0,0.0,equal,
+FR,same draws,genes eligible as random seeds,16529,0,0.0,equal,"R 16529, Python 16529, shared 16529"
+FR,same draws,bootstrap summary: C_rank_boot_mean,16539,0,2.220446049250313e-16,equal,
+FR,same draws,bootstrap summary: C_rank_boot_var,16539,0,1.5959455978986625e-16,equal,
+FR,same draws,bootstrap summary: C_rank_boot_sd,16539,0,2.220446049250313e-16,equal,
+FR,same draws,null model: p_MC_C,16539,0,1.0061396160665481e-16,equal,
+FR,same draws,"bootstrap: C_rank of every gene, replicates where the seed clusters differ in size",1653900,0,2.220446049250313e-16,equal,100 of 100 replicates.
+FR,same draws,null model: C_raw of every gene for every random seed set,8269500,0,1.0018028073766061e-16,equal,500 random seed sets.
+FR,same draws,null model: mean_S of every random seed set,500,0,7.7021722333370235e-16,equal,
+FR,same draws,null model: median_S of every random seed set,500,0,2.914335439641036e-16,equal,
+IT x FR,same draws,combination: C_raw_IT,16539,0,9.90960785651751e-17,equal,
+IT x FR,same draws,combination: C_rank_IT,16539,0,2.220446049250313e-16,equal,
+IT x FR,same draws,combination: C_rank_boot_mean_IT,16539,102,6.651348409714153e-06,differs,"follows from the tied bootstrap replicates. largest difference at ENSG00000085382: R 0.585585, Python 0.585578"
+IT x FR,same draws,combination: C_rank_boot_var_IT,16539,102,5.622606768391006e-06,differs,"follows from the tied bootstrap replicates. largest difference at ENSG00000204604: R 0.0143587, Python 0.0143644"
+IT x FR,same draws,combination: C_rank_boot_sd_IT,16539,102,4.0513824830005346e-05,differs,"follows from the tied bootstrap replicates. largest difference at ENSG00000099377: R 0.0209721, Python 0.0210126"
+IT x FR,same draws,combination: p_MC_C_IT,16539,0,9.71445146547012e-17,equal,
+IT x FR,same draws,combination: positive_consistent_IT,16539,0,0.0,equal,
+IT x FR,same draws,combination: weighted_seed_rho_IT,16539,0,4.440892098500626e-16,equal,
+IT x FR,same draws,combination: C_raw_FR,16539,0,9.996344030316351e-17,equal,
+IT x FR,same draws,combination: C_rank_FR,16539,0,2.220446049250313e-16,equal,
+IT x FR,same draws,combination: C_rank_boot_mean_FR,16539,0,2.220446049250313e-16,equal,
+IT x FR,same draws,combination: C_rank_boot_var_FR,16539,0,1.5959455978986625e-16,equal,
+IT x FR,same draws,combination: C_rank_boot_sd_FR,16539,0,2.220446049250313e-16,equal,
+IT x FR,same draws,combination: p_MC_C_FR,16539,0,1.0061396160665481e-16,equal,
+IT x FR,same draws,combination: positive_consistent_FR,16539,0,0.0,equal,
+IT x FR,same draws,combination: weighted_seed_rho_FR,16539,0,6.106226635438361e-16,equal,
+IT x FR,same draws,combination: var_IT_safe,16539,102,5.622606768391006e-06,differs,"follows from the tied bootstrap replicates. largest difference at ENSG00000204604: R 0.0143587, Python 0.0143644"
+IT x FR,same draws,combination: var_FR_safe,16539,0,1.5959455978986625e-16,equal,
+IT x FR,same draws,combination: is_seed,16539,0,0.0,equal,
+IT x FR,same draws,combination: pC_hat_ITxFR_obs,16539,0,2.220446049250313e-16,equal,
+IT x FR,same draws,combination: pC_hat_ITxFR_boot,16539,102,4.935074528200634e-06,differs,"follows from the tied bootstrap replicates. largest difference at ENSG00000103154: R 0.427304, Python 0.427309"
+IT x FR,same draws,combination: C_hat_IVW_ITFR,16539,102,7.400148097735926e-05,differs,"follows from the tied bootstrap replicates. largest difference at ENSG00000099377: R 0.950016, Python 0.949942"
+IT x FR,same draws,combination: positive_consistent_ITFR,16539,0,0.0,equal,
+IT x FR,same draws,combination: MC_significant_ITFR,16539,0,0.0,equal,
+IT x FR,same draws,combination: Buffa_product_pass,16539,0,0.0,equal,
+IT x FR,same draws,combination: Buffa_exact_candidate,16539,0,0.0,equal,
+IT x FR,same draws,combination: row order of the full ranking,16539,1,0.0,differs,follows from the tied bootstrap replicates. first different row: 1969
+IT x FR,same draws,selection: genes of the signature,26,0,0.0,equal,"R 26, Python 26, shared 26; same order"
+IT x FR,same draws,selection: genes of the top 51 of the signature,26,0,0.0,equal,"R 26, Python 26, shared 26; same order"
+scores,same draws,"signature_all: E_median_abs_expression (IT, FR and TCGA samples)",588,0,1.7763568394002505e-15,equal,
+scores,same draws,"signature_all: HS_rank01 (IT, FR and TCGA samples)",588,0,2.220446049250313e-16,equal,
+scores,same draws,"signature_all: n_signature_genes_present (IT, FR and TCGA samples)",588,0,0.0,equal,
+scores,same draws,"signature_all: n_signature_genes_total (IT, FR and TCGA samples)",588,0,0.0,equal,
+scores,same draws,"signature_top: E_median_abs_expression (IT, FR and TCGA samples)",588,0,1.7763568394002505e-15,equal,
+scores,same draws,"signature_top: HS_rank01 (IT, FR and TCGA samples)",588,0,2.220446049250313e-16,equal,
+scores,same draws,"signature_top: n_signature_genes_present (IT, FR and TCGA samples)",588,0,0.0,equal,
+scores,same draws,"signature_top: n_signature_genes_total (IT, FR and TCGA samples)",588,0,0.0,equal,
+IT,own draws,core: C_raw (no random numbers involved),16539,0,9.90960785651751e-17,equal,
+IT,own draws,core: C_rank (no random numbers involved),16539,0,2.220446049250313e-16,equal,
+IT,own draws,C_rank_boot_mean,16539,0,0.11757769984278627,info,"Spearman 0.9650, largest absolute difference 0.1176"
+IT,own draws,p_MC_C,16539,0,0.003418585958209569,info,"Spearman 1.0000, largest absolute difference 0.0034; p < 0.01: R 73, Python 73, same side of the cutoff 16539 of 16539"
+FR,own draws,core: C_raw (no random numbers involved),16539,0,9.996344030316351e-17,equal,
+FR,own draws,core: C_rank (no random numbers involved),16539,0,2.220446049250313e-16,equal,
+FR,own draws,C_rank_boot_mean,16539,0,0.11966652557745805,info,"Spearman 0.9549, largest absolute difference 0.1197"
+FR,own draws,p_MC_C,16539,0,0.0011068382481604078,info,"Spearman 1.0000, largest absolute difference 0.0011; p < 0.01: R 202, Python 202, same side of the cutoff 16539 of 16539"
+IT x FR,own draws,selection: genes of the signature,26,0,0.0,info,"R 26, Python 26, shared 26"
+timing,same draws,seconds per stage,0,0,0.0,info,"{'IT': {'core': 0.1, 'bootstrap': 9.2, 'null': 34.4}, 'FR': {'core': 0.2, 'bootstrap': 23.6, 'null': 93.3}}"
+timing,own draws,seconds per stage,0,0,0.0,info,"{'IT': {'core': 0.1, 'bootstrap': 4.2, 'null': 14.5}, 'FR': {'core': 0.2, 'bootstrap': 7.1, 'null': 29.8}}"
+timing,R script,whole run,0,0,0.0,info,R script: 1249 s for 100 bootstrap and 500 Monte Carlo replicates per cohort
