@@ -20,7 +20,9 @@ Breast1,same draws,bootstrap summary: C_rank_boot_var,1231,0,1.1102230246251565e
 Breast1,same draws,bootstrap summary: C_rank_boot_sd,1231,0,1.1102230246251565e-16,equal,
 Breast1,same draws,null model: p_MC_C,1231,0,8.543513119185775e-17,equal,
 Breast1,same draws,"bootstrap: C_rank of every gene, replicates where the seed clusters differ in size",9848,0,2.220446049250313e-16,equal,8 of 10 replicates.
-Breast1,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size",2462,0,2.220446049250313e-16,equal,"replicates 6, 9: no tie is split differently by R and NumPy."
+Breast1,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size, Search against exact ranks",2462,0,0.0,equal,"replicates 6, 9."
+Breast1,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size, R against exact ranks",2462,0,2.220446049250313e-16,equal,"replicates 6, 9."
+Breast1,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size",2462,0,2.220446049250313e-16,equal,"replicates 6, 9: no tie is ranked differently."
 Breast1,same draws,null model: C_raw of every gene for every random seed set,24620,0,8.847089727481716e-17,equal,20 random seed sets.
 Breast1,same draws,null model: mean_S of every random seed set,20,0,3.903127820947816e-17,equal,
 Breast1,same draws,null model: median_S of every random seed set,20,0,0.0,equal,

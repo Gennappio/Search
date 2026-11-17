@@ -39,10 +39,12 @@ def compare_vectors(
     r_values: pd.Series,
     py_values: pd.Series,
     tolerance: float = TOLERANCE,
+    sides: tuple[str, str] = ("R", "Python"),
 ) -> Row:
     """Two named numeric vectors: same names, and values within the tolerance.
 
     A value missing on both sides counts as equal; missing on one side only is a mismatch.
+    ``sides`` names the two vectors in the description of what differs.
     """
     r_names, py_names = set(r_values.index), set(py_values.index)
     only_r, only_py = r_names - py_names, py_names - r_names
@@ -56,15 +58,16 @@ def compare_vectors(
     n_mismatch = int(over.sum()) + len(only_r) + len(only_py)
     parts = []
     if only_r:
-        parts.append(f"{len(only_r)} names only in R, e.g. {sorted(only_r)[:3]}")
+        parts.append(f"{len(only_r)} names only in {sides[0]}, e.g. {sorted(only_r)[:3]}")
     if only_py:
-        parts.append(f"{len(only_py)} names only in Python, e.g. {sorted(only_py)[:3]}")
+        parts.append(f"{len(only_py)} names only in {sides[1]}, e.g. {sorted(only_py)[:3]}")
     if one_nan.any():
         parts.append(f"{int(one_nan.sum())} values missing on one side only")
     if over.any() and not one_nan.all():
         worst = int(np.argmax(diff))
         parts.append(
-            f"largest difference at {common[worst]}: R {a[worst]:.6g}, Python {b[worst]:.6g}"
+            f"largest difference at {common[worst]}: {sides[0]} {a[worst]:.6g}, "
+            f"{sides[1]} {b[worst]:.6g}"
         )
     return Row(
         case,

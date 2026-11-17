@@ -139,15 +139,11 @@ def r_overlap_table(path: Path) -> tuple[pd.Series, list[str]]:
     return pd.Series(out, dtype=float), seeds
 
 
-def degree_table(growth: GrowthResult, r_orientation: bool = False) -> pd.Series:
-    """nodes_degree of the port; with ``r_orientation`` the count estimate.nodes.degree makes:
-    how many seeds sit in the neighbourhood of the seed, not in how many neighbourhoods it sits."""
+def degree_table(growth: GrowthResult) -> pd.Series:
     seeds = list(growth.neighbourhoods)
     universe = growth.final_universe
     delta, _ = _membership_from_neighbourhoods(universe, seeds, growth.neighbourhoods)
     seed_idx = universe.get_indexer(pd.Index(seeds))
-    if r_orientation:
-        return pd.Series(delta[seed_idx, :].sum(axis=0) / float(len(seeds)), index=seeds)
     return pd.Series(nodes_degree(delta, seed_idx), index=seeds)
 
 
@@ -313,16 +309,6 @@ def compare_growth(
                     degree_table(partial),
                 )
             )
-            if iterative:
-                rows.append(
-                    compare_vectors(
-                        label,
-                        variant,
-                        f"{prefix}nodes degree, iteration {i}, counted as R counts it",
-                        r_degree,
-                        degree_table(partial, r_orientation=True),
-                    )
-                )
     return rows, growth
 
 

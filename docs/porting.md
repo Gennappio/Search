@@ -5,7 +5,9 @@ was checked against the originals, where the results are the same, where they ar
 why. It is written for whoever has to decide whether results obtained with Search can stand
 in for results obtained with the R code.
 
-Checked on 2026-11-15 against commit `5177011` of Search (version 0.1.1), with R 4.4.3,
+The comparison was first run on 2026-11-15, against commit `5177011` of Search (version
+0.1.1). It found defects in the originals and in the port; those of the port were corrected
+on 2026-11-17, and every number on this page is from the corrected code. Versions: R 4.4.3,
 data.table 1.18.2, matrixStats 1.5.0, RcppArmadillo 15.2.4, Python 3.12.9, NumPy 2.5.3,
 SciPy 1.18.1, pandas 3.0.6 and statsmodels 0.15.0, on macOS (arm64).
 
@@ -15,18 +17,18 @@ SciPy 1.18.1, pandas 3.0.6 and statsmodels 0.15.0, on macOS (arm64).
   run unmodified on the IT, FR and TCGA matrices, and Search was given the same random
   draws. With 20 bootstrap and 50 Monte Carlo replicates per cohort all 85 compared
   quantities are equal: 4.2 million numbers, the largest difference 3.3e-14, and the same 26
-  genes selected in the same order. With 100 and 500 replicates 75 of 86 quantities are
-  equal; the other 11 all come from one bootstrap replicate out of 200, where the two
-  languages rank mathematically tied values differently (see
-  [Floating point](#floating-point)). The effect on that run is at most 7e-6 on a bootstrap
-  mean and none on the selected genes.
+  genes selected in the same order. With 100 and 500 replicates 76 of 88 quantities are
+  equal; the other 12 all come from one bootstrap replicate out of 200, in which the script
+  ranks apart genes whose connectivities are equal in exact arithmetic, while Search gives
+  them the rank of the exact values (see [Floating point](#floating-point)). The effect on
+  that run is at most 1.2e-5 on a bootstrap mean and none on the selected genes.
 - **The SEARCH 0.0.2 package against the `search2014` preset: the same results wherever the
   package works as intended.** In 28 cases that exercise its three association functions,
-  the growth thresholds, both resampling schemes and the summary step, 416 of 475 compared
-  quantities are equal. The package stops with an error in 5 cases. Of the 54
+  the growth thresholds, both resampling schemes and the summary step, 423 of 473 compared
+  quantities are equal. The package stops with an error in 5 cases. Of the 45
   quantities that differ, 34 are caused by defects of the package, each of which was
   reproduced and then removed with a one-line correction of the R source, after which R and
-  Search agree. The other 20 are deliberate differences (11) or defects of the port (9).
+  Search agree. The other 11 are deliberate differences.
 - **Eight defects of the R package** are involved: three were already in the
   [decision log](decisions.md), one extends an entry of it, four were found by this
   comparison. Run with all its default arguments on its own test data, the package stops
@@ -36,13 +38,17 @@ SciPy 1.18.1, pandas 3.0.6 and statsmodels 0.15.0, on macOS (arm64).
   seed gives different bootstrap samples. With independent draws and 100 and 500
   replicates, all 16539 genes fall on the same side of the p < 0.01 cutoff in both cohorts
   and the same 26 genes are selected.
-- **Four defects were found in the port** and are open: a silent failure of the GLM
-  association with some covariate names, a rank that depends on the order of the seeds when
-  two seed clusters have the same size (the tie effect seen from the Python side), a
-  transposed node degree for non-gaussian GLMs, and a p-value given to genes that have no
-  observed value. Only the second touches `buffa2010` runs, in about one bootstrap replicate
-  in a hundred and by about 1e-5 on a bootstrap mean. They are listed in
-  [Defects found in the port](#defects-found-in-the-port).
+- **Six defects were found in the port, and corrected on 2026-11-17**, each with a test.
+  Four came out of the comparison: a silent failure of the GLM association with some
+  covariate names, a rank that depended on the order of the seeds when two seed clusters
+  have the same size (the tie effect seen from the Python side), a transposed node degree
+  for non-gaussian GLMs, and a p-value given to genes that have no observed value. Two more
+  came out while correcting the first: with the GLM association a constant gene got an edge
+  with every seed, and with least squares it got a meaningless statistic. Only the
+  correction of the rank touches `buffa2010` results: run again with 1000 and 5000
+  replicates, the bootstrap means move by at most 1.5e-6 and the 26 selected genes are the
+  same, in the same order. They are listed in
+  [Defects found in the port and corrected](#defects-found-in-the-port-and-corrected).
 
 ## What was ported
 
@@ -160,22 +166,23 @@ tables of Search. "Values" counts the numbers of the run with 100 and 500 replic
 | core | correlation of every gene with every seed, edges, memberships, cluster sizes, both cohorts | 992,360 | equal, largest difference 1.3e-15 | equal |
 | core | S and F between seeds | 400 | equal, 3.3e-14 | equal |
 | core | C_raw, C_rank, edge counts, sign consistency, weighted correlation of every gene | 264,624 | equal, 6.1e-16 | equal |
-| bootstrap | C_rank of every gene in every replicate | 3,307,800 | equal, 2.2e-16 | 199 of 200 replicates equal; one differs in 102 genes by up to 6.7e-4 |
-| bootstrap | mean, variance and standard deviation over the replicates | 99,234 | equal | FR equal; IT differs in 102 genes, the mean by up to 6.7e-6 and the standard deviation by up to 4.1e-5 |
+| bootstrap | C_rank of every gene in every replicate | 3,307,800 | equal, 2.2e-16 | 199 of 200 replicates equal; in one the script ranks 149 tied genes apart, by up to 1.2e-3, and Search equals the ranks of the exact values |
+| bootstrap | mean, variance and standard deviation over the replicates | 99,234 | equal | FR equal; IT differs in the same 149 genes, the mean by up to 1.2e-5 and the standard deviation by up to 4.1e-5 |
 | null model | C_raw of every gene for every random seed set | 16,539,000 | equal, 1.0e-16 | equal |
 | null model | genes eligible as random seeds, mean and median S of every random set, p-value of every gene | 68,136 | equal | equal |
 | combination | per-cohort columns, rank products, inverse-variance score, the three criteria and the candidate flag | 430,014 | equal | equal except the columns derived from the IT bootstrap ranks, up to 7.4e-5 |
-| combination | order of the 16539 rows | 16,539 | equal | equal for the first 1968 rows |
+| combination | order of the 16539 rows | 16,539 | equal | equal for the first 1080 rows |
 | selection | genes of the signature and of the top list, in order | 26 | equal | equal |
 | score | median expression, score and gene counts of 588 samples (IT, FR, TCGA), two signatures | 4,704 | equal, 1.8e-15 | equal |
 
 The same comparison on public data, so that it can be repeated without the GBM cohorts: the
 script's functions `run_dataset`, `buffa2010_core_one_dataset`, `bootstrap_checkpointed` and
 `monte_carlo_checkpointed`, taken from the script file unmodified and run on Breastdata1
-with six seeds, 10 bootstrap and 20 Monte Carlo replicates. All 25 quantities are equal
-(76,434 numbers, largest difference 3.3e-16), including two bootstrap replicates in which
-two seed clusters have the same size. The combination and the score are top-level code of
-the script and can only be compared on the GBM cohorts.
+with six seeds, 10 bootstrap and 20 Monte Carlo replicates. All 27 quantities are equal
+(81,358 numbers, largest difference 3.3e-16). Two of the ten bootstrap replicates have two
+seed clusters of the same size; in both, R and Search give the ranks of the exact values.
+The combination and the score are top-level code of the script and can only be compared on
+the GBM cohorts.
 
 ### Results with independent draws
 
@@ -201,11 +208,12 @@ run again at that size on today's matrices: it needs about four hours on eight c
 
 ### Time
 
-On the same laptop the script takes 159 s for 20 and 50 replicates per cohort (eight cores)
+On the same laptop the script takes 154 s for 20 and 50 replicates per cohort (eight cores)
 and 1249 s for 100 and 500 (seven cores), reading and writing included. Search takes 8 s and
-56 s for the core pass, the bootstrap and the null model of the two cohorts (eight
-processes). The script spends its time in `cor(..., use = "pairwise.complete.obs")`, which
-ranks every pair of rows separately.
+57 s for the core pass, the bootstrap and the null model of the two cohorts (eight
+processes), and 4 min 54 s for a whole run with 1000 and 5000 replicates. The script spends
+its time in `cor(..., use = "pairwise.complete.obs")`, which ranks every pair of rows
+separately.
 
 ## The SEARCH package and the `search2014` preset
 
@@ -306,13 +314,12 @@ also covers every replicate (on the samples drawn by R), the means and the p-val
 | `breast_fastlm_doc` | the same with `nodes.fastLm` | 7 of 14 | 14 of 14 | R5 |
 | `breast_fastlm` | `nodes.fastLm`, six seeds; Search with `ols` and with `glm` | 10 of 10, both | | |
 | `breast_glm_bh` | `nodes.glm` with `adjust.p = "BH"`; Search with `ols` and with `glm` | 10 of 10, both | | |
-| `breast_glm_covariates` | `nodes.glm` with covariates `t.rfs` and `e.rfs`; Search with `ols` | 10 of 10 | | |
-| | the same; Search with `glm` | 2 of 10 | | P1 |
+| `breast_glm_covariates` | `nodes.glm` with covariates `t.rfs` and `e.rfs`; Search with `ols` and with `glm` | 10 of 10, both | | 2 of 10 with `glm` before the correction of P1 |
 | `breast_glm_covariates_plain` | the same covariates renamed `t_rfs` and `e_rfs`; Search with `ols` and with `glm` | 10 of 10, both | | |
 | `breast_glm_covariates_ignored` | covariates passed without `formula.string`; Search without covariates | 10 of 10 | | |
 | | the same; Search with the covariates declared | 4 of 10 | | D3 |
-| `breast_glm_gamma` | `nodes.glm`, Gamma family | 11 of 11 | | tolerance 1e-8, largest difference 8e-12 |
-| `breast_glm_poisson_loose` | `nodes.glm`, poisson family, threshold 0.9 | 10 of 11 | | P3; tolerance 1e-8, largest difference 2e-11 |
+| `breast_glm_gamma` | `nodes.glm`, Gamma family | 10 of 10 | | tolerance 1e-8, largest difference 8e-12 |
+| `breast_glm_poisson_loose` | `nodes.glm`, poisson family, threshold 0.9 | 10 of 10 | | tolerance 1e-8, largest difference 2e-11; the node degree differed before the correction of P3 |
 | `breast_glm_poisson` | poisson family, threshold 1e-5: no association passes | R stops | | R6 |
 | `breast_bootstrap` | `SEARCH.randomise`, five replicates, two iterations, null runs, `summarise.iterations` | 10 of 11 | | D2 |
 | `breast_bootstrap_6iter` | eight replicates, up to six iterations | 13 of 15 | | D2, D4 |
@@ -322,9 +329,9 @@ also covers every replicate (on the samples drawn by R), the means and the p-val
 On the GBM IT cohort the growth loop gives the same result in both languages to the last
 digit: 912, 819 and 297 seeds added in the three iterations, 106 seeds removed on D, 1635
 seeds holding a neighbourhood at the end, D equal for 21253, 21197 and 21148 genes. The
-package takes 296 s and Search 223 s.
+package takes 249 s and Search 220 s.
 
-In total: 319 quantities compared with the package as it is (261 equal, 53 different, 5
+In total: 317 quantities compared with the package as it is (268 equal, 44 different, 5
 stops) and 156 with the corrected package (155 equal; the one that differs is D2, a
 deliberate difference).
 
@@ -368,6 +375,7 @@ seeds removed on D.
 | D8 | **Edge decisions on rounded values.** Search compares statistics and p-values rounded to 12 decimals with the threshold. | No edge differs from R in any comparison: the 330,780 gene and seed pairs of the two GBM cohorts, the replicates built on them, and every neighbourhood of the package cases. |
 | D9 | **Stricter inputs.** Seeds missing from the matrix, fewer than two seeds and a growth that removes every seed are errors in Search; the package continues with what is left. | Not a numerical difference. |
 | D10 | **Not available in Search.** Kendall correlation, the GLM families `quasi` and `quasipoisson`, the `p.adjust` methods other than `bonferroni` and `BH`, and values of `correlation.use` other than the default. | |
+| D11 | **Missing values in the GLM path.** R's `glm` leaves out the samples in which the gene has a missing value and fits on the others. Search gives the gene no association, as it does with every other method. | Read in the code, not run: the package was not run with `nodes.glm` on data with missing values. |
 
 ### Random numbers
 
@@ -390,43 +398,63 @@ points; no neighbourhood changes because of it.
 One effect is larger and was found only with 100 bootstrap replicates. C_raw of a gene is
 the sum, over the seeds it is connected to, of one divided by the size of the seed's
 cluster. When two seeds have clusters of the same size, genes connected to different
-combinations of seeds can have the same connectivity: equal in exact arithmetic, but the
-floating-point sums can differ in the last digit, depending on the order of the additions.
-Genes that should share a rank then get different ranks, and R and NumPy add in a different
-order.
+combinations of seeds can have the same connectivity: equal in exact arithmetic, but a
+floating-point sum depends on the order of the additions, and the two sums can differ in the
+last digit. Genes that should share a rank then get different ranks.
 
-In replicate 22 of the IT cohort two seeds have clusters of 2548 genes. There are 308
-distinct connectivity values in exact arithmetic; R computes 318 distinct numbers and
-Search 314. Each is up to 0.0012 away from the rank of the exact values, on 149 and 87
-genes; they differ from each other on 102 genes by up to 0.00067. This is the only
-replicate of the 200 in which two clusters have the same size, and the only one that
-differs. It moves the IT bootstrap mean of 102 genes by up to 6.7e-6 and, through it, the
-order of the combined ranking from row 1969 on. Equal cluster sizes do not always split a
-tie: on Breastdata1 two replicates of ten have them and R and Search still agree. Rounding
-C_raw to 12 decimals before ranking gives the exact ranks in both languages. In Search the
-same mechanism makes C_rank depend on the order in which the seeds are listed (P2 below).
+In replicate 22 of the IT cohort two seeds have clusters of 2548 genes, and there are 308
+distinct connectivity values in exact arithmetic, computed here with fractions. The script
+adds the terms in the order of the seeds and gets 318 distinct numbers: ten ties are split,
+149 genes are up to 0.0012 away from the rank of the exact values. Search adds the terms of
+each gene from the smallest to the largest, so that equal terms give equal sums: it gets 308
+distinct numbers and the ranks of the exact values, whatever the order of the seeds. This is
+the only replicate of the 200 in which two clusters have the same size, and the only one in
+which the two programs differ. The difference moves the IT bootstrap mean of 149 genes by up
+to 1.2e-5 and, through it, the order of the combined ranking from row 1081 on. Equal cluster
+sizes do not always split a tie: on Breastdata1 two replicates of ten have them and the
+script agrees with the exact ranks.
 
-## Defects found in the port
+Before its correction Search added in the order of the seeds too, with NumPy's own grouping
+of the additions: 314 distinct numbers in that replicate, 87 genes away from the exact
+ranks, and a rank that changed with the order of the seeds (P2 below).
 
-Found by this comparison in commit `5177011` and not corrected in it.
+## Defects found in the port and corrected
 
-| | where | defect | consequence |
-|---|---|---|---|
-| P1 | `src/search/core/linear.py:139-156` | With `association.method = glm`, covariate names are pasted into a statsmodels formula as they are. A name that is not a valid Python name, such as `t.rfs`, makes every fit fail, and the failures are caught and ignored. | The run ends with an empty network and no error. `ols` reads the columns directly and is not affected; `glm` works with names such as `t_rfs`. |
-| P2 | `src/search/core/corepass.py:147`, `src/search/stats.py:19` | C_rank ranks C_raw as computed. When two seed clusters have the same size, mathematically equal values can differ in the last digit ([Floating point](#floating-point)), and which ones do depends on the order of the seeds. | In the IT replicate above, listing the seeds in reverse order changes C_rank of 173 genes by up to 0.0012. About one bootstrap replicate in a hundred on the IT cohort; the observed ranks of IT and FR are not affected, their cluster sizes being all different. |
-| P3 | `src/search/core/connectivity.py:59` | `nodes_degree` counts in how many seed neighbourhoods a seed sits; `estimate.nodes.degree` counts how many seeds sit in its neighbourhood. The two are the same when the association is symmetric (correlation, least squares) and not for the other GLM families. | `breast_glm_poisson_loose`: three of six degrees differ; counted the other way, all six equal R's. |
-| P4 | `src/search/null.py:98-104` | With per-gene pooling a gene without an observed value gets count 0 and so the smallest possible p-value, 1 / (replicates + 1). The pooled path sets it to missing; the package has the same defect. | The per-cohort table of a run leaves out the genes removed during growth, so it shows there only through `search summarise`, for a gene whose bootstrap mean is missing. |
+P1 to P4 were found by the comparison in commit `5177011`; P5 and P6 while correcting P1.
+All were corrected on 2026-11-17. Each has a test that failed before the correction, and
+the comparison was run again afterwards: nothing that was equal became different.
 
-Also confirmed, and already known: the growth loop is slow on a real-size cohort (223 s for
-three iterations on IT, against 296 s for the R package) because
+| | where | defect | correction | checked by |
+|---|---|---|---|---|
+| P1 | `glm_loop` in `src/search/core/linear.py` | With `association.method = glm`, covariate names were pasted into a statsmodels formula as they are. A name that is not a valid Python name, such as `t.rfs`, made every fit fail, and the failures were caught and ignored: the run ended with an empty network and no error. | Covariate names are quoted in the formula. A model that cannot be built is a configuration error; a fit that fails is counted and logged; a run in which every fit fails stops. The covariates are checked as in the `ols` path. | `test_glm_reads_covariates_whatever_their_names`, `test_glm_failures_are_errors_not_empty_networks`; `breast_glm_covariates` with `glm`, from 2 to 10 of 10 |
+| P2 | `compute_connectivity` in `src/search/core/connectivity.py` | C_raw was added in the order of the seeds. When two seed clusters have the same size, connectivities that are equal in exact arithmetic could differ in the last digit ([Floating point](#floating-point)), tied genes got different ranks, and which ones depended on the order of the seeds: in the IT replicate above, listing the seeds in reverse changed C_rank of 173 genes by up to 0.0012. | The terms of each gene are added from the smallest to the largest. | `test_tied_connectivities_stay_tied_whatever_the_seed_order`, `test_seed_order_does_not_matter`; in the IT replicate Search equals the ranks of the exact values, and six other orders of the seeds give the same C_raw bit for bit |
+| P3 | `nodes_degree` in `src/search/core/connectivity.py` | It counted in how many seed neighbourhoods a seed sits; `estimate.nodes.degree` counts how many seeds sit in its neighbourhood. The two are the same number when the association is symmetric (correlation, least squares), and not for the other GLM families. | It counts as the package does. | `test_nodes_degree_counts_the_seeds_inside_the_neighbourhood`; `breast_glm_poisson_loose`, the six degrees equal R's |
+| P4 | `per_gene_counts` in `src/search/null.py` | With per-gene pooling a gene without an observed value had no null value above it and so the smallest possible p-value, 1 / (replicates + 1). The pooled path already set it to missing; the package has the same defect. It showed through `search summarise`, for a gene whose bootstrap mean is missing. | Such a gene has no p-value. | `test_null_counting_helpers`, `test_a_gene_without_observed_value_gets_no_p_value` |
+| P5 | `glm_loop` in `src/search/core/linear.py` | A gene with the same value in every sample is collinear with the intercept; statsmodels still returns a coefficient and a p-value for it, and on expression-like values (mean 8, standard deviation 1) every such gene got an edge with every seed, with p-values down to 8e-42. A gene with a missing value was fitted on the remaining samples. The rule of the engine is that neither has an association. | Both are left without association, as in every other method. | `test_glm_gives_no_association_to_genes_the_engine_cannot_use` |
+| P6 | `ols_fwl` in `src/search/core/linear.py` | A constant gene was recognised by residuals summing to exactly zero, which rounding prevents: it got a meaningless statistic, the ratio of two rounding residues. No edge came from it in any check made (0 of 6000 pairs). | A constant gene is recognised by its largest value being its smallest, before the residuals are taken. | the same test |
+
+What the corrections change in results already produced. For `buffa2010` only P2 matters.
+The run on the GBM cohorts with 1000 and 5000 replicates was repeated: C_raw, the observed
+C_rank, the Monte Carlo p-values and the scores are unchanged; the bootstrap mean of C_rank
+moves for 285 genes in IT and 618 in FR, by at most 5.4e-7 and 1.5e-6; the 26 selected genes
+are the same, in the same order, and 4 of the 16539 rows of the full ranking change place,
+from row 4578 on. For `search2014` runs with correlations nothing changes. Runs with
+`association.method = glm` can change through P1 and P5, and their `nodes_degree` through P3.
+
+Not corrected, and already known: the growth loop is slow on a real-size cohort (220 s for
+three iterations on IT, against 249 s for the R package) because
 `_membership_from_neighbourhoods` (`src/search/growth.py:137`) tests every neighbourhood
-against the universe once per seed.
+against the universe once per seed. A smaller point of the same kind as P6 is left as it is:
+with Pearson correlation a constant gene whose value is not exactly representable in binary
+gets a correlation of about 1e-17 where a missing value is promised; no edge can come from
+it.
 
 ## What was not compared
 
 - The figures of both programs.
 - The package with one seed, with the `inverse.gaussian` family, with `n.boot.start` other
-  than 1, and with the options that Search does not have (D10).
+  than 1, with `nodes.glm` on data with missing values (D11), and with the options that
+  Search does not have (D10).
 - The GBM script with 1000 and 5000 replicates on today's matrices (about four hours of R).
 - Operating systems other than macOS on arm64. The last digits, and with them the tie effect
   described under [Floating point](#floating-point), can differ on another platform or with
@@ -443,5 +471,5 @@ validation/r_parity/run_all.sh 100 500 8  # about half an hour
 The reports are in `validation/r_parity/results`: one row per compared quantity, with the
 number of values, how many differ, the largest difference and, where something differs, the
 first example. `validation/r_parity/README.md` describes the scripts and their requirements.
-The reports in the repository were produced on 2026-11-15 with the versions listed at the
-top of this page.
+The reports in the repository were produced on 2026-11-17, after the corrections of the
+port, with the versions listed at the top of this page.

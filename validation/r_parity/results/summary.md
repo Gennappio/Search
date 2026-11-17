@@ -2,11 +2,11 @@
 
 ## report_buffa2010_100_500.csv
 
-90 compared quantities: 79 equal, 11 different, 0 where R stopped with an error.
+92 compared quantities: 80 equal, 12 different, 0 where R stopped with an error.
 
 | case | R run | quantities | equal | differ | R error | values compared | largest difference among the equal |
 |---|---|---|---|---|---|---|---|
-| IT | same draws | 25 | 21 | 4 | 0 | 10586160 | 3.3e-14 |
+| IT | same draws | 27 | 22 | 5 | 0 | 10602699 | 3.3e-14 |
 | FR | same draws | 24 | 24 | 0 | 0 | 10652316 | 5.3e-15 |
 | IT x FR | same draws | 29 | 22 | 7 | 0 | 330832 | 6.1e-16 |
 | scores | same draws | 8 | 8 | 0 | 0 | 4704 | 1.8e-15 |
@@ -20,8 +20,8 @@ Information rows:
 - FR, own draws, C_rank_boot_mean: Spearman 0.9549, largest absolute difference 0.1197
 - FR, own draws, p_MC_C: Spearman 1.0000, largest absolute difference 0.0011; p < 0.01: R 202, Python 202, same side of the cutoff 16539 of 16539
 - IT x FR, own draws, selection: genes of the signature: R 26, Python 26, shared 26
-- timing, same draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 9.2, 'null': 34.4}, 'FR': {'core': 0.2, 'bootstrap': 23.6, 'null': 93.3}}
-- timing, own draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 4.2, 'null': 14.5}, 'FR': {'core': 0.2, 'bootstrap': 7.1, 'null': 29.8}}
+- timing, same draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 9.1, 'null': 33.4}, 'FR': {'core': 0.2, 'bootstrap': 23.6, 'null': 94.4}}
+- timing, own draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 4.4, 'null': 15.0}, 'FR': {'core': 0.2, 'bootstrap': 7.1, 'null': 30.0}}
 - timing, R script, whole run: R script: 1249 s for 100 bootstrap and 500 Monte Carlo replicates per cohort
 
 ## report_buffa2010_20_50.csv
@@ -44,22 +44,22 @@ Information rows:
 - FR, own draws, C_rank_boot_mean: Spearman 0.8600, largest absolute difference 0.2710
 - FR, own draws, p_MC_C: Spearman 1.0000, largest absolute difference 0.0168; p < 0.01: R 164, Python 197, same side of the cutoff 16506 of 16539
 - IT x FR, own draws, selection: genes of the signature: R 26, Python 26, shared 26
-- timing, same draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 2.0, 'null': 3.5}, 'FR': {'core': 0.2, 'bootstrap': 4.9, 'null': 9.5}}
-- timing, own draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 1.5, 'null': 1.5}, 'FR': {'core': 0.2, 'bootstrap': 1.4, 'null': 3.0}}
-- timing, R script, whole run: R script: 153 s for 20 bootstrap and 50 Monte Carlo replicates per cohort
+- timing, same draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 2.0, 'null': 3.4}, 'FR': {'core': 0.2, 'bootstrap': 4.9, 'null': 9.7}}
+- timing, own draws, seconds per stage: {'IT': {'core': 0.1, 'bootstrap': 1.6, 'null': 1.5}, 'FR': {'core': 0.2, 'bootstrap': 1.5, 'null': 3.0}}
+- timing, R script, whole run: R script: 154 s for 20 bootstrap and 50 Monte Carlo replicates per cohort
 
 ## report_buffa2010_public.csv
 
-40 compared quantities: 28 equal, 12 different, 0 where R stopped with an error.
+42 compared quantities: 30 equal, 12 different, 0 where R stopped with an error.
 
 | case | R run | quantities | equal | differ | R error | values compared | largest difference among the equal |
 |---|---|---|---|---|---|---|---|
-| Breast1 | same draws | 25 | 25 | 0 | 0 | 76434 | 3.3e-16 |
+| Breast1 | same draws | 27 | 27 | 0 | 0 | 81358 | 3.3e-16 |
 | Breast1, one missing value in 30 probesets | by design | 15 | 3 | 12 | 0 | 3693 | 0.0e+00 |
 
 ## report_search2014.csv
 
-475 compared quantities: 416 equal, 54 different, 5 where R stopped with an error.
+473 compared quantities: 423 equal, 45 different, 5 where R stopped with an error.
 
 | case | R run | quantities | equal | differ | R error | values compared | largest difference among the equal |
 |---|---|---|---|---|---|---|---|
@@ -78,16 +78,16 @@ Information rows:
 | breast_glm_bh | verbatim | 10 | 10 | 0 | 0 | 1413 | 1.4e-14 |
 | breast_glm_bh [association.method=glm] | verbatim | 10 | 10 | 0 | 0 | 1413 | 1.1e-14 |
 | breast_glm_covariates | verbatim | 10 | 10 | 0 | 0 | 1597 | 1.3e-14 |
-| breast_glm_covariates [association.method=glm] | verbatim | 10 | 2 | 8 | 0 | 1 | 0.0e+00 |
+| breast_glm_covariates [association.method=glm] | verbatim | 10 | 10 | 0 | 0 | 1597 | 3.0e-13 |
 | breast_glm_covariates_ignored [covariates declared] | verbatim | 10 | 4 | 6 | 0 | 7 | 0.0e+00 |
 | breast_glm_covariates_ignored [no covariates] | verbatim | 10 | 10 | 0 | 0 | 1592 | 1.4e-14 |
 | breast_glm_covariates_plain | verbatim | 10 | 10 | 0 | 0 | 1597 | 1.3e-14 |
 | breast_glm_covariates_plain [association.method=glm] | verbatim | 10 | 10 | 0 | 0 | 1597 | 3.0e-13 |
 | breast_glm_doc | verbatim | 14 | 7 | 7 | 0 | 94 | 5.6e-17 |
 | breast_glm_doc | patched | 14 | 14 | 0 | 0 | 2849 | 6.9e-15 |
-| breast_glm_gamma | verbatim | 11 | 11 | 0 | 0 | 1321 | 8.1e-12 |
+| breast_glm_gamma | verbatim | 10 | 10 | 0 | 0 | 1315 | 8.1e-12 |
 | breast_glm_poisson | verbatim | 1 | 0 | 0 | 1 | 0 | - |
-| breast_glm_poisson_loose | verbatim | 11 | 10 | 1 | 0 | 3412 | 1.7e-11 |
+| breast_glm_poisson_loose | verbatim | 10 | 10 | 0 | 0 | 3412 | 1.7e-11 |
 | breast_growth | verbatim | 12 | 12 | 0 | 0 | 2558 | 3.3e-16 |
 | breast_jackknife | verbatim | 10 | 9 | 1 | 0 | 8642 | 3.3e-06 |
 | breast_missing_values | verbatim | 1 | 0 | 0 | 1 | 0 | - |

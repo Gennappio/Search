@@ -16,12 +16,22 @@ def compute_connectivity(
 ) -> FloatArray:
     """C_raw = sum_j w_j gamma_j / sum_j w_j, with w = 0 for a seed's own column when
     ``exclude_self``. With binary membership and ``fraction`` this is the D of SEARCH 2014:
-    seeds are divided by K - 1 and other genes by K."""
+    seeds are divided by K - 1 and other genes by K.
+
+    The terms of a gene are added from the smallest to the largest. A floating-point sum
+    depends on the order of the additions, and added column by column two genes with the same
+    terms in different columns (connected to different seeds whose clusters have the same size)
+    could differ in the last bit: tied in exact arithmetic, apart in the ranking, and
+    differently for another order of the seeds. Sorted, equal terms give equal sums.
+    """
     n_genes, n_seeds = gamma.shape
     w = np.ones((n_genes, n_seeds))
     if cfg.exclude_self:
         w[seed_idx, np.arange(n_seeds)] = 0.0
-    numerator = (w * gamma).sum(axis=1)
+    terms = w * gamma
+    if not np.array_equal(terms, np.rint(terms)):  # sums of whole numbers are exact in any order
+        terms = np.sort(terms, axis=1)
+    numerator = terms.sum(axis=1)
     if cfg.normalise == "count":
         return numerator
     denominator = w.sum(axis=1)
@@ -54,6 +64,11 @@ def edge_statistics(
 
 
 def nodes_degree(delta: BoolArray, seed_idx: NDArray[np.intp]) -> FloatArray:
-    """For every seed, the fraction of seeds (itself included) it is connected to."""
+    """For every seed, the fraction of seeds (itself included) found in its neighbourhood.
+
+    This is the count of estimate.nodes.degree in the SEARCH package. Counting in how many
+    neighbourhoods the seed sits gives the same number only when the association is symmetric,
+    which a GLM family other than the gaussian is not.
+    """
     n_seeds = delta.shape[1]
-    return delta[seed_idx, :].sum(axis=1) / float(n_seeds)
+    return delta[seed_idx, :].sum(axis=0) / float(n_seeds)

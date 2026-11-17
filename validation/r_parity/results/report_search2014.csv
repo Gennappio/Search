@@ -162,15 +162,15 @@ breast_glm_covariates,verbatim,O of the final neighbourhoods,21,0,8.326672684688
 breast_glm_covariates,verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
 breast_glm_covariates,verbatim,"nodes degree, iteration 1",6,0,1.1102230246251565e-16,equal,
 breast_glm_covariates [association.method=glm],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
-breast_glm_covariates [association.method=glm],verbatim,"D, iteration 1",1231,153,0.8333333333333333,differs,"6 names only in R, e.g. ['1017_at', '10458_at', '27044_at']; largest difference at 9869_at: R 0.833333, Python 0"
-breast_glm_covariates [association.method=glm],verbatim,"seeds added, iteration 1",55,55,0.0,differs,"R 55, Python 0, shared 0; only in R e.g. ['1001_at', '10298_at', '1457_at']"
-breast_glm_covariates [association.method=glm],verbatim,seeds removed on D,6,6,0.0,differs,"R 0, Python 6, shared 0; only in Python e.g. ['1017_at', '10458_at', '27044_at']"
+breast_glm_covariates [association.method=glm],verbatim,"D, iteration 1",1231,0,1.1102230246251565e-16,equal,
+breast_glm_covariates [association.method=glm],verbatim,"seeds added, iteration 1",55,0,0.0,equal,"R 55, Python 55, shared 55"
+breast_glm_covariates [association.method=glm],verbatim,seeds removed on D,0,0,0.0,equal,"R 0, Python 0, shared 0"
 breast_glm_covariates [association.method=glm],verbatim,seeds removed on Omax,0,0,0.0,equal,"R 0, Python 0, shared 0"
-breast_glm_covariates [association.method=glm],verbatim,seeds holding a neighbourhood at the end,6,6,0.0,differs,"R 6, Python 0, shared 0; only in R e.g. ['1017_at', '10458_at', '27044_at']"
-breast_glm_covariates [association.method=glm],verbatim,neighbourhood members and association values,256,256,0.0,differs,"256 names only in R, e.g. ['1017_at|1001_at', '1017_at|1017_at', '1017_at|10298_at']"
-breast_glm_covariates [association.method=glm],verbatim,O of the final neighbourhoods,21,21,0.0,differs,"21 names only in R, e.g. ['1017_at|1017_at', '1017_at|10458_at', '1017_at|27044_at']"
-breast_glm_covariates [association.method=glm],verbatim,O matrix stored at iteration 1,21,21,0.0,differs,"21 names only in R, e.g. ['1017_at|1017_at', '1017_at|10458_at', '1017_at|27044_at']"
-breast_glm_covariates [association.method=glm],verbatim,"nodes degree, iteration 1",6,6,0.0,differs,"6 names only in R, e.g. ['1017_at', '10458_at', '27044_at']"
+breast_glm_covariates [association.method=glm],verbatim,seeds holding a neighbourhood at the end,6,0,0.0,equal,"R 6, Python 6, shared 6"
+breast_glm_covariates [association.method=glm],verbatim,neighbourhood members and association values,256,0,2.970956813896919e-13,equal,
+breast_glm_covariates [association.method=glm],verbatim,O of the final neighbourhoods,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates [association.method=glm],verbatim,O matrix stored at iteration 1,21,0,8.326672684688674e-17,equal,
+breast_glm_covariates [association.method=glm],verbatim,"nodes degree, iteration 1",6,0,1.1102230246251565e-16,equal,
 breast_glm_covariates_ignored [covariates declared],verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
 breast_glm_covariates_ignored [covariates declared],verbatim,"D, iteration 1",1231,37,0.3333333333333333,differs,"largest difference at 4683_at: R 0.666667, Python 0.333333"
 breast_glm_covariates_ignored [covariates declared],verbatim,"seeds added, iteration 1",61,11,0.0,differs,"R 56, Python 55, shared 50; only in R e.g. ['1788_at', '23236_at', '4214_at']; only in Python e.g. ['2237_at', '25_at', '5607_at']"
@@ -249,7 +249,6 @@ breast_glm_gamma,verbatim,neighbourhood members and association values,28,0,8.14
 breast_glm_gamma,verbatim,O of the final neighbourhoods,21,0,5.551115123125783e-17,equal,
 breast_glm_gamma,verbatim,O matrix stored at iteration 1,21,0,5.551115123125783e-17,equal,
 breast_glm_gamma,verbatim,"nodes degree, iteration 1",6,0,0.0,equal,
-breast_glm_gamma,verbatim,"nodes degree, iteration 1, counted as R counts it",6,0,0.0,equal,
 breast_glm_poisson,verbatim,run,0,1,,r_error,"R stopped with 'subscript out of bounds'; Python: 1 iterations, max_iter, 0 seeds"
 breast_glm_poisson_loose,verbatim,iterations,1,0,0.0,equal,"R 1, Python 1"
 breast_glm_poisson_loose,verbatim,"D, iteration 1",1231,0,1.1102230246251565e-16,equal,
@@ -260,8 +259,7 @@ breast_glm_poisson_loose,verbatim,seeds holding a neighbourhood at the end,6,0,0
 breast_glm_poisson_loose,verbatim,neighbourhood members and association values,1698,0,1.7014736841680644e-11,equal,
 breast_glm_poisson_loose,verbatim,O of the final neighbourhoods,21,0,1.1102230246251565e-16,equal,
 breast_glm_poisson_loose,verbatim,O matrix stored at iteration 1,21,0,1.1102230246251565e-16,equal,
-breast_glm_poisson_loose,verbatim,"nodes degree, iteration 1",6,3,0.33333333333333337,differs,"largest difference at 6427_at: R 0.666667, Python 1"
-breast_glm_poisson_loose,verbatim,"nodes degree, iteration 1, counted as R counts it",6,0,1.1102230246251565e-16,equal,
+breast_glm_poisson_loose,verbatim,"nodes degree, iteration 1",6,0,1.1102230246251565e-16,equal,
 breast_growth,verbatim,iterations,1,0,0.0,equal,"R 2, Python 2"
 breast_growth,verbatim,"D, iteration 1",1231,0,5.551115123125783e-17,equal,
 breast_growth,verbatim,"seeds added, iteration 1",1,0,0.0,equal,"R 1, Python 1, shared 1"

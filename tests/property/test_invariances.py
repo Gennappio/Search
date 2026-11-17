@@ -43,6 +43,27 @@ def test_gene_and_sample_order_do_not_matter(seed, n_genes, n_samples, n_seeds, 
     assert (a["positive_consistent"] == b["positive_consistent"]).all()
 
 
+@settings(max_examples=60, deadline=None)
+@given(
+    seed=st.integers(0, 10**6),
+    n_genes=st.integers(10, 30),
+    n_samples=st.integers(6, 20),
+    n_seeds=st.integers(3, 6),
+    preset=st.sampled_from([BUFFA2010, SEARCH2014]),
+)
+def test_seed_order_does_not_matter(seed, n_genes, n_samples, n_seeds, preset) -> None:
+    # With few genes, seed clusters of the same size are common, and with them connectivities
+    # that are equal in exact arithmetic: connectivity and rank must not depend on the order in
+    # which such seeds are listed, to the last bit.
+    expr = random_expr(seed, n_genes, n_samples)
+    seeds = [f"g{i}" for i in range(n_seeds)]
+    shuffled = [seeds[i] for i in np.random.default_rng(seed + 2).permutation(n_seeds)]
+    a = run_core(expr, seeds, preset).gene_table().set_index("gene")
+    b = run_core(expr, shuffled, preset).gene_table().set_index("gene")
+    for column in ["C_raw", "C_rank", "n_edges"]:
+        np.testing.assert_array_equal(a[column].to_numpy(float), b[column].to_numpy(float))
+
+
 @settings(max_examples=20, deadline=None)
 @given(
     seed=st.integers(0, 10**6),

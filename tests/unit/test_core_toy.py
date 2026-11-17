@@ -104,3 +104,35 @@ def test_edge_statistics_and_degree() -> None:
     np.testing.assert_array_equal(es["positive_consistent"], [1, 1, 1, 1, 0, 1])
     np.testing.assert_allclose(es["weighted_seed_rho"], [0.8, 0.8, 0.8, 0.8, 0.05, 0.8])
     np.testing.assert_allclose(nodes_degree(delta, SEED_IDX), [2 / 3, 2 / 3, 1 / 3])
+
+
+def test_tied_connectivities_stay_tied_whatever_the_seed_order() -> None:
+    # Clusters of 7, 3, 9, 11 and 7 genes: the first and the last seed have clusters of the same
+    # size. Gene a sits in the clusters of seeds 0-3, gene b in those of seeds 1-4, so both have
+    # connectivity (1/7 + 1/3 + 1/9 + 1/11) / 5. Added column by column the two sums differ in
+    # the last bit, and the two genes would get different ranks.
+    sizes = np.array([7.0, 3.0, 9.0, 11.0, 7.0])
+    delta = np.zeros((2, 5), dtype=bool)
+    delta[0, [0, 1, 2, 3]] = True
+    delta[1, [1, 2, 3, 4]] = True
+    gamma = delta / sizes[None, :]
+    cfg = ConnectivityConfig(exclude_self=False, normalise="fraction", rank="fractional")
+    no_seed_rows = np.zeros(5, dtype=np.intp)
+    c = compute_connectivity(gamma, no_seed_rows, cfg)
+    assert c[0] == c[1]
+    assert c[0] == pytest.approx((1 / 7 + 1 / 3 + 1 / 9 + 1 / 11) / 5)
+    # the same genes with the seeds listed in another order: the same numbers, bit for bit
+    for order in ([4, 3, 2, 1, 0], [2, 0, 4, 1, 3]):
+        shuffled = compute_connectivity(gamma[:, order], no_seed_rows, cfg)
+        np.testing.assert_array_equal(shuffled, c)
+
+
+def test_nodes_degree_counts_the_seeds_inside_the_neighbourhood() -> None:
+    # An association that is not symmetric (a GLM family other than the gaussian): s1 has s2 in
+    # its neighbourhood, s2 does not have s1. The degree of a seed is the fraction of seeds
+    # found in its own neighbourhood, as estimate.nodes.degree of the R package counts it.
+    delta = np.zeros((4, 3), dtype=bool)
+    delta[[0, 1, 2], 0] = True  # neighbourhood of s1: s1, s2, s3
+    delta[[1], 1] = True  # neighbourhood of s2: itself
+    delta[[2, 0], 2] = True  # neighbourhood of s3: s3, s1
+    np.testing.assert_allclose(nodes_degree(delta, SEED_IDX), [1.0, 1 / 3, 2 / 3])

@@ -23,6 +23,7 @@ import sys
 import warnings
 from collections.abc import Iterator
 from contextlib import contextmanager
+from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +52,7 @@ from search.core.corepass import CoreResult, run_core  # noqa: E402
 from search.data import ExpressionSet  # noqa: E402
 from search.presets import get_preset  # noqa: E402
 from search.run import CohortManifest, CohortRun, PipelineResult, run_pipeline  # noqa: E402
+from search.stats import rank01  # noqa: E402
 
 TRAINING = ("IT", "FR")
 CORE_COLUMNS = [
@@ -276,20 +278,42 @@ def compare_core(
 
 def equal_cluster_sizes(
     expr: ExpressionSet, seeds: list[str], cfg: RunConfig, boot: np.ndarray
-) -> list[int]:
-    """Bootstrap replicates (1-based) in which two seeds have clusters of the same size.
+) -> dict[int, CoreResult]:
+    """Bootstrap replicates (1-based) in which two seeds have clusters of the same size, with
+    the pass of each.
 
     There two different combinations of seeds can give a gene the same connectivity. The two
-    sums are equal in exact arithmetic and may differ in the last bit in floating point, so
-    whether the genes are tied in the ranking depends on the order of the additions, which is
-    not the same in R and in NumPy.
+    sums are equal in exact arithmetic and can differ in the last bit in floating point,
+    depending on the order of the additions, so genes that are tied can get different ranks.
     """
-    hits = []
+    hits = {}
     for b in range(len(boot)):
-        sizes = run_core(expr, seeds, cfg, sample_idx=boot[b]).cluster_size.tolist()
+        core = run_core(expr, seeds, cfg, sample_idx=boot[b])
+        sizes = core.cluster_size.tolist()
         if len(set(sizes)) < len(sizes):
-            hits.append(b + 1)
+            hits[b + 1] = core
     return hits
+
+
+def exact_rank(core: CoreResult) -> pd.Series:
+    """C_rank of a pass with cluster-size membership, from connectivities held as fractions.
+
+    The reference for a replicate with ties: no rounding takes part, so genes with the same
+    connectivity share a rank whatever the order of the seeds.
+    """
+    k = core.n_seeds
+    sizes = [int(v) for v in core.cluster_size]
+    own = {int(row): j for j, row in enumerate(core.seed_idx)}
+    exact = []
+    for g in range(core.n_genes):
+        total = Fraction(0)
+        for j in np.flatnonzero(core.delta[g]):
+            if own.get(g) != j:
+                total += Fraction(1, sizes[int(j)])
+        exact.append(total / (k - 1 if g in own else k))
+    position = {value: i for i, value in enumerate(sorted(set(exact)))}
+    dense = np.array([position[value] for value in exact], dtype=float)
+    return pd.Series(rank01(dense), index=[str(g) for g in core.genes])
 
 
 def compare_cohort(
@@ -332,7 +356,8 @@ def compare_cohort(
     r_boot = read_gene_matrix(export / f"{ds}_bootstrap_C_rank.tsv")
     r_boot.columns = [c.replace("boot_", "") for c in r_boot.columns]
     py_boot = python_chunks(run_dir, cfg, ds, "bootstrap", b_boot)
-    tied = [str(b) for b in equal_cluster_sizes(expr, run.core.seeds, cfg, draws.boot[ds])]
+    tied_cores = equal_cluster_sizes(expr, run.core.seeds, cfg, draws.boot[ds])
+    tied = [str(b) for b in tied_cores]
     plain = [c for c in r_boot.columns if c not in tied]
     row = compare_vectors(
         ds,
@@ -344,19 +369,43 @@ def compare_cohort(
     row.detail = (f"{len(plain)} of {b_boot} replicates. " + row.detail).strip()
     rows.append(row)
     if tied:
+        exact = pd.DataFrame({str(b): exact_rank(core) for b, core in tied_cores.items()})
+        where = "replicates where two seed clusters have the same size"
         row = compare_vectors(
             ds,
             variant,
-            "bootstrap: C_rank of every gene, "
-            "replicates where two seed clusters have the same size",
+            f"bootstrap: C_rank of every gene, {where}, Search against exact ranks",
+            flatten(exact),
+            flatten(py_boot[tied]),
+            sides=("exact", "Search"),
+        )
+        row.detail = (f"replicates {', '.join(tied)}. " + row.detail).strip()
+        rows.append(row)
+        row = compare_vectors(
+            ds,
+            variant,
+            f"bootstrap: C_rank of every gene, {where}, R against exact ranks",
+            flatten(exact),
+            flatten(r_boot[tied]),
+            sides=("exact", "R"),
+        )
+        row.detail = (f"replicates {', '.join(tied)}. " + row.detail).strip()
+        r_splits = row.status == "differs"
+        rows.append(row)
+        row = compare_vectors(
+            ds,
+            variant,
+            f"bootstrap: C_rank of every gene, {where}",
             flatten(r_boot[tied]),
             flatten(py_boot[tied]),
         )
         explanation = (
-            "connectivities equal in exact arithmetic differ in the last bit, and R and NumPy "
-            "split different ties. "
-            if row.status == "differs"
-            else "no tie is split differently by R and NumPy. "
+            "the script adds the terms of a connectivity in the order of the seeds, and values "
+            "that are equal in exact arithmetic differ in the last bit and are ranked apart. "
+            if row.status == "differs" and r_splits
+            else "no tie is ranked differently. "
+            if row.status == "equal"
+            else ""
         )
         row.detail = (f"replicates {', '.join(tied)}: " + explanation + row.detail).strip()
         rows.append(row)

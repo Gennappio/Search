@@ -108,11 +108,30 @@ Choices of the engine that differ from the package and were not recorded:
   package summarised each iteration number separately, over the replicates that reached it.
   The two coincide when every replicate stops at the same iteration, as with `max_iter = 1`.
 
-Open defects of the port, found by the same comparison and listed with their evidence in
-[Porting from R](porting.md#defects-found-in-the-port): covariate names that are not valid
-Python names silently empty the network with `association.method = glm`; `C_rank` depends on
-the order of the seeds when two seed clusters have the same size, because mathematically tied
-connectivities can differ in the last digit; `nodes_degree` is transposed for association
-methods that are not symmetric; with per-gene pooling a gene without an observed value gets
-the smallest p-value. None is corrected in version 0.1.1.
+## Corrections to the port, 2026-11-17
 
+The same comparison found defects in Search itself
+([Porting from R](porting.md#defects-found-in-the-port-and-corrected)). They are corrected,
+each with a test. The choices they involved:
+
+- **Connectivity is added in sorted order** (`compute_connectivity`). Added in the order of
+  the seeds, connectivities that are equal in exact arithmetic could differ in the last digit
+  when two seed clusters have the same size, so that tied genes got different ranks, and
+  `C_rank` depended on the order of the seeds. Sorting the terms of each gene before adding
+  them removes both. Rounding `C_raw` before ranking was not chosen: it needs an arbitrary
+  number of decimals and still separates two values that fall on either side of a rounding
+  step. What sorting does not cover: two different sets of terms with the same sum, such as
+  1/2 + 1/6 and 1/3 + 1/3, which needs cluster sizes in very particular ratios.
+- **The GLM association follows the rules of the engine.** Covariate names are quoted in the
+  formula. A model that cannot be built is a configuration error; a fit that fails is counted
+  and logged; a run in which every fit fails stops. Before, all of these ended in an empty
+  network without a message. Genes with a missing value or with the same value in every
+  sample get no association, as in the other methods: before, a constant gene, being
+  collinear with the intercept, got an edge with every seed, and a gene with a missing value
+  was fitted on the remaining samples. The covariates are checked as in the `ols` path.
+- **A constant gene has no association in the `ols` path either.** It had a meaningless
+  number, the ratio of two rounding residues; no edge came from it in any check made.
+- **The degree of a seed counts the seeds inside its neighbourhood**, as
+  `estimate.nodes.degree` of the package does. It counted the neighbourhoods the seed is in,
+  which is the same number unless the association is not symmetric.
+- **A gene without an observed value has no per-gene p-value.** It got the smallest one.

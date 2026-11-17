@@ -41,6 +41,13 @@ when `exclude_self`. With binary membership this is the D of SEARCH 2014: seeds 
 K - 1, other genes by K. `rank = fractional` adds `C_rank`, the fractional rank in [0, 1]
 with average ranks for ties.
 
+The terms of a gene are added from the smallest to the largest. A floating-point sum depends
+on the order of the additions: added in the order of the seeds, two genes connected to
+different seeds whose clusters have the same size have the same terms in different columns,
+and their sums can differ in the last digit. They are tied in exact arithmetic and would get
+different ranks, and other ranks again for another order of the seeds. Added in sorted order,
+equal terms give equal sums. Sums of whole numbers (binary membership) are exact in any order.
+
 Per gene the engine also reports the number of edges, of positive and negative edges,
 `positive_consistent` (at least one edge and no negative one) and the membership-weighted
 association.
@@ -121,4 +128,12 @@ the coefficient; the usual edge rule is `p_threshold` with `bonferroni = none` a
 `association.method = glm` fits one statsmodels GLM per pair (families gaussian, poisson, gamma,
 inverse gaussian) and accepts extra formula terms, including interactions with the gene
 (`formula: "x_node:batch"`). It is slow and meant for small universes or for checking the
-vectorised path, which it reproduces exactly for the gaussian family.
+vectorised path, which it reproduces exactly for the gaussian family. Covariates enter the
+formula quoted, so their names can hold any character (`t.rfs`, `tumour grade`); names used in
+`formula` are written by the user and must be valid in a formula. A model that cannot be built
+is a configuration error. A fit that fails gives no association to that pair and is counted
+in the log, and a run in which every fit fails stops with an error.
+
+In both linear paths, as with the correlations, a gene with a missing value or with the same
+value in every sample gets no association and never an edge, and the covariates must have no
+missing value and must not be collinear.
