@@ -50,6 +50,11 @@ SciPy 1.18.1, pandas 3.0.6 and statsmodels 0.15.0, on macOS (arm64).
   same, in the same order. They are listed in
   [Defects found in the port and corrected](#defects-found-in-the-port-and-corrected).
 
+This page compares the R programs with the engine of Search, which computes the method without
+their defects. A second port, `search.r2014`, reproduces the SEARCH package with its defects,
+bit for bit; it is the subject of [Replicating the 2014 package](replication.md), which also
+lists five more defects of the package (R9 to R13) found while building it.
+
 ## What was ported
 
 | original | where | size | what it does | preset |

@@ -10,3 +10,4 @@ nav:
   - Command line: cli.md
   - Validation: validation.md
   - Porting from R: porting.md
+  - Replicating the 2014 package: replication.md

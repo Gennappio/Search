@@ -11,6 +11,9 @@ Seed-based gene co-expression clustering with named presets: one engine, the `bu
 - [Validation](validation.md): the tests of every layer and the results on real data.
 - [Porting from R](porting.md): how the port was checked against the two R originals, number by
   number, and every difference with its cause.
+- [Replicating the 2014 package](replication.md): the verbatim port of the SEARCH package,
+  defects included, how far it reproduces R, and what in a result depends on the R that
+  computed it.
 
 ## Quick start
 

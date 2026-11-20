@@ -32,6 +32,12 @@ The port was compared with both R originals number by number; the result, and ev
 with its cause, is in `docs/porting.md`. The comparison can be repeated with
 `validation/r_parity/run_all.sh` (it needs R).
 
+Next to the engine, `search.r2014` is a second, verbatim port of the SEARCH R package: every
+function transliterated with its defects, to obtain again, without R, what the 2014 package
+returns. It reproduces the unmodified package bit for bit on its correlation path, in R 4.4.3
+and in the R 3.1.0 of 2014; `docs/replication.md` has the study and
+`validation/r_parity/run_r2014.sh` repeats it.
+
 ## Install
 
 ```bash

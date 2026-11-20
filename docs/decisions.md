@@ -135,3 +135,41 @@ each with a test. The choices they involved:
   `estimate.nodes.degree` of the package does. It counted the neighbourhoods the seed is in,
   which is the same number unless the association is not symmetric.
 - **A gene without an observed value has no per-gene p-value.** It got the smallest one.
+
+## Two ports of the SEARCH package, 2026-11-19
+
+- **A verbatim port next to the engine.** `search.r2014` reproduces the SEARCH R package as it
+  was written, defects included; the `search2014` preset keeps computing the method as it
+  was meant. The first answers "can a result of the 2014 package be obtained again", the
+  second "what should the result be". Neither replaces the other, and nothing of the verbatim
+  port is used by the engine.
+- **For the verbatim port R is the specification.** It is accepted when it returns what the
+  unmodified package returns in R: the same double bit for bit, the same file character for
+  character, the same error message. Its tests compare it with answers recorded from R. This
+  is the opposite of the rule of the engine, whose tests use no comparison with R.
+- **The installation of R is a parameter.** R 3.1.0 on x86-64 and R 4.4.3 on arm64 differ in
+  how they draw samples, round, read and write numbers and add up, and the package turns
+  those last digits into decisions. `search.r2014.platform` selects which one the port stands
+  for. Only installations the port was compared with are defined; for any other it stops.
+- **Where R's own result is rounding noise, the port says so.** A seed with the same value in
+  every sample under a regression function gets a neighbourhood that R itself changes with
+  the order of the samples. The port returns one of the same kind with the warning
+  `NotReproducible`.
+- **The port stops instead of guessing.** Inputs the package was not meant for (duplicated row
+  names, a gene name with a quote in it, an output path the shell would interpret) raise
+  `UnportedState`.
+- **The figures and the console output of the package are not ported.**
+
+Defects of the package found while building it, beyond entries 1 to 12 above (numbered R9 to
+R13 in [Replicating the 2014 package](replication.md#defects-of-the-package)):
+
+13. **Replicates after a missing one are dropped from the summary** (summarise.iterations.R).
+    Columns are numbered by how many files were found and filled by replicate number.
+14. **A blank in the output directory leaves every file uncompressed** (write.data.files.R):
+    the path goes to `gzip` through the shell without quotes, and the summary then finds
+    nothing.
+15. **A constant seed under `nodes.glm` or `nodes.fastLm` gets a neighbourhood of rounding
+    noise**, up to half of the genes.
+16. **A constant gene under `nodes.fastLm` gets a coefficient and can become a seed.**
+17. **Gene names that all look like numbers come back changed from the files**
+    (summarise.iterations.R): `007` as `7`, `100000` as `1e+05`.

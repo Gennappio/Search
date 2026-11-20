@@ -1,0 +1,3 @@
+family,cases,equal,"equal, R stops",differs,not ported,quantities,values,largest difference among the equal
+"SEARCH(), Breastdata1",19,13,6,0,0,510,63204,0
+"SEARCH.randomise(), Breastdata1",7,7,0,0,0,570,265325,0

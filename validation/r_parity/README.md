@@ -15,6 +15,15 @@ the engine changes in a way that could move results, and before a release.
 | functions of the GBM script against the `buffa2010` preset | `r/gbm_functions_public.R` | `py/compare_buffa2010_public.py` | Breastdata1 |
 | GBM script, unmodified, against the `buffa2010` preset | `run_gbm_script.sh`, `r/gbm_script_export.R` | `py/compare_buffa2010.py` | GBM IT, FR and TCGA cohorts |
 
+A second set of scripts compares the verbatim port, `search.r2014`, with the same package
+(findings in [docs/replication.md](../../docs/replication.md)):
+
+| comparison | R side | Python side | data |
+|---|---|---|---|
+| SEARCH 0.0.2 package, unmodified, against `search.r2014`: everything returned and written, bit for bit | `r/r2014_oracle.R` | `py/compare_r2014.py`, `py/r2014_lib.py`, cases from `py/r2014_cases.py` | 25,000 random matrices, Breastdata1, GBM IT cohort |
+| the functions of R the port reimplements (`sample`, reading and writing numbers, `round`, `sd`, `cor`, `p.adjust`, `rowMeans`) | `r/r2014_primitives.R` | `py/check_r2014_primitives.py` | generated |
+| two installations of R with each other | the two above, run twice | `py/compare_r_versions.py`, `py/compare_platforms.py` | the same cases |
+
 The R sources are the ones under `reference/r_sources`, read from there and never copied.
 The package is not installed: its files are sourced into an environment, with
 `parallel::mclapply` in place of the removed `multicore` and the plotting function stubbed
@@ -32,7 +41,8 @@ Two ideas make the comparison exact instead of approximate:
 ## Requirements
 
 - R 4.x with `data.table`, `optparse`, `matrixStats`, `jsonlite`, and `RcppArmadillo` for the
-  `nodes.fastLm` cases (skipped without it). To keep them out of the main library:
+  `nodes.fastLm` cases (skipped without it). The scripts of the verbatim port (`r2014_*`) need
+  no R package at all, so that they also run in R 3.1.0. To keep them out of the main library:
   `Rscript -e 'install.packages(c("data.table", "optparse", "RcppArmadillo"), lib = "<dir>")'`
   and `export R_LIBS=<dir>`.
 - The project environment with the `glm` extra (`uv sync --all-extras`).
@@ -58,6 +68,25 @@ Rscript validation/r_parity/r/search2014_run.R . validation/r_parity/out/search2
 .venv/bin/python validation/r_parity/py/compare_search2014.py . validation/r_parity/out/search2014 [case ...]
 ```
 
+The verbatim port:
+
+```bash
+export R_LIBS=<dir>                         # optional, for the nodes.fastLm cases
+validation/r_parity/run_r2014.sh            # 20000 random SEARCH() cases and the rest, 15 minutes
+validation/r_parity/run_r2014.sh 2000 4     # fewer cases, four R processes
+validation/r_parity/run_r2014_r31.sh 2      # the same cases in R 3.1.0 (2014), in containers
+Rscript validation/r_parity/r/r2014_primitives.R <dir>
+.venv/bin/python validation/r_parity/py/check_r2014_primitives.py <dir>/primitives.json
+.venv/bin/python validation/r_parity/py/make_r2014_golden.py validation/r_parity/out/r2014 tests/data/r2014
+```
+
+`run_r2014_r31.sh` needs Docker and the image `rocker/r-ver:3.1.0`, which exists for x86-64
+only: elsewhere it is emulated, about ten times slower, and each container holds a whole R.
+Give it a number of parallel containers the machine can spare; with seven of them next to
+other containers, on a virtual machine of 4 GB, the container engine restarted. Do not edit
+a script of this folder while it runs: bash and Rscript read their files as they go.
+`make_r2014_golden.py` refreshes the answers the test suite compares the port with.
+
 ## Output
 
 - `out/` (not in git): everything the two sides write. For the GBM cohorts it holds tables
@@ -65,6 +94,10 @@ Rscript validation/r_parity/r/search2014_run.R . validation/r_parity/out/search2
 - `results/report_*.csv` (in git): one row per compared quantity, with the number of values
   compared, how many differ, the largest absolute difference and a status.
 - `results/summary.md`: the reports condensed to one row per case.
+- `results/report_r2014.md` and `report_r2014.csv` (R of the machine), `report_r2014_r31.*`
+  (R 3.1.0): the verbatim port, one row per family of cases; `report_r2014_cases.csv` lists
+  the named cases and every random case that is not simply equal; `report_r2014_primitives*.csv`
+  the building blocks.
 
 Status values: `equal` (every value within 1e-12, or within the stated tolerance for
 quantities R rounds or fits iteratively), `differs`, `r_error` (the R original stopped with an

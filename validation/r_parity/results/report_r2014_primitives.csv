@@ -1,0 +1,47 @@
+block,what,compared,different,note
+random numbers,"set.seed and sample(), kind Rejection: seeds x sizes",90,0,
+random numbers,"set.seed and sample(), kind Rounding: seeds x sizes",90,0,
+numbers to text,write.table of a number (15 significant digits),78334,0,
+text to numbers,as.numeric of a text with 3 significant digits,2,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 4 significant digits,24,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 5 significant digits,204,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 6 significant digits,2770,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 9 significant digits,3,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 10 significant digits,33,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 11 significant digits,271,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 12 significant digits,2695,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 13 significant digits,30,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 14 significant digits,293,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 15 significant digits,2957,0,R read 0 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 16 significant digits,3018,0,R read 87 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 17 significant digits,2998,0,R read 905 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 18 significant digits,2733,0,R read 1054 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 19 significant digits,296,0,R read 135 of them into a double that is not the nearest
+text to numbers,as.numeric of a text with 20 significant digits,2673,0,R read 1355 of them into a double that is not the nearest
+round,"round(x, 5)",128361,0,
+round,"round(x, 3)",128361,0,
+cor,"cor(method = kendall, use = all.obs)",576,0,
+cor,"cor(method = kendall, use = complete.obs)",813,0,
+cor,"cor(method = kendall, use = everything)",951,0,
+cor,"cor(method = kendall, use = na.or.complete)",951,0,
+cor,"cor(method = kendall, use = pairwise.complete.obs)",951,0,
+cor,"cor(method = pearson, use = all.obs)",576,0,
+cor,"cor(method = pearson, use = complete.obs)",813,0,
+cor,"cor(method = pearson, use = everything)",951,0,
+cor,"cor(method = pearson, use = na.or.complete)",951,0,
+cor,"cor(method = pearson, use = pairwise.complete.obs)",951,0,
+cor,"cor(method = spearman, use = all.obs)",576,0,
+cor,"cor(method = spearman, use = complete.obs)",813,0,
+cor,"cor(method = spearman, use = everything)",951,0,
+cor,"cor(method = spearman, use = na.or.complete)",951,0,
+cor,"cor(method = spearman, use = pairwise.complete.obs)",951,0,
+sd,sd of a row,7590,0,
+p.adjust,p.adjust(method = BH),1160,0,
+p.adjust,p.adjust(method = BY),1160,0,
+p.adjust,p.adjust(method = bonferroni),1160,0,
+p.adjust,p.adjust(method = fdr),1160,0,
+p.adjust,p.adjust(method = hochberg),1160,0,
+p.adjust,p.adjust(method = holm),1160,0,
+p.adjust,p.adjust(method = hommel),1160,0,
+p.adjust,p.adjust(method = none),1160,0,
+rowMeans,"rowMeans(x, na.rm = TRUE) of ten values with five decimals",4000,0,
