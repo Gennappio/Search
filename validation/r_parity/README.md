@@ -21,6 +21,7 @@ A second set of scripts compares the verbatim port, `search.r2014`, with the sam
 | comparison | R side | Python side | data |
 |---|---|---|---|
 | SEARCH 0.0.2 package, unmodified, against `search.r2014`: everything returned and written, bit for bit | `r/r2014_oracle.R` | `py/compare_r2014.py`, `py/r2014_lib.py`, cases from `py/r2014_cases.py` | 25,000 random matrices, Breastdata1, GBM IT cohort |
+| every function of the package, and every rule of R the port wrote down, called on its own | `r/r2014_units.R` | `py/r2014_units.py` (cases, port, comparison) | generated |
 | the functions of R the port reimplements (`sample`, reading and writing numbers, `round`, `sd`, `cor`, `p.adjust`, `rowMeans`) | `r/r2014_primitives.R` | `py/check_r2014_primitives.py` | generated |
 | two installations of R with each other | the two above, run twice | `py/compare_r_versions.py`, `py/compare_platforms.py` | the same cases |
 
@@ -75,6 +76,8 @@ export R_LIBS=<dir>                         # optional, for the nodes.fastLm cas
 validation/r_parity/run_r2014.sh            # 20000 random SEARCH() cases and the rest, 15 minutes
 validation/r_parity/run_r2014.sh 2000 4     # fewer cases, four R processes
 validation/r_parity/run_r2014_r31.sh 2      # the same cases in R 3.1.0 (2014), in containers
+validation/r_parity/run_r2014_units.sh      # every function on its own, 1 minute; rewrites the test data
+validation/r_parity/run_r2014_units.sh 20   # twenty times the random cases, test data left alone
 Rscript validation/r_parity/r/r2014_primitives.R <dir>
 .venv/bin/python validation/r_parity/py/check_r2014_primitives.py <dir>/primitives.json
 .venv/bin/python validation/r_parity/py/make_r2014_golden.py validation/r_parity/out/r2014 tests/data/r2014
@@ -85,7 +88,10 @@ only: elsewhere it is emulated, about ten times slower, and each container holds
 Give it a number of parallel containers the machine can spare; with seven of them next to
 other containers, on a virtual machine of 4 GB, the container engine restarted. Do not edit
 a script of this folder while it runs: bash and Rscript read their files as they go.
-`make_r2014_golden.py` refreshes the answers the test suite compares the port with.
+`make_r2014_golden.py` refreshes the answers of the whole runs and of the building blocks that
+the test suite compares the port with; `run_r2014_units.sh` those of the single functions
+(it needs the R package `jsonlite`). [docs/r2014_tests.md](../../docs/r2014_tests.md) describes
+the tests.
 
 ## Output
 
@@ -97,7 +103,8 @@ a script of this folder while it runs: bash and Rscript read their files as they
 - `results/report_r2014.md` and `report_r2014.csv` (R of the machine), `report_r2014_r31.*`
   (R 3.1.0): the verbatim port, one row per family of cases; `report_r2014_cases.csv` lists
   the named cases and every random case that is not simply equal; `report_r2014_primitives*.csv`
-  the building blocks.
+  the building blocks; `report_r2014_units.csv` every function called on its own, one row per
+  case.
 
 Status values: `equal` (every value within 1e-12, or within the stated tolerance for
 quantities R rounds or fits iteratively), `differs`, `r_error` (the R original stopped with an

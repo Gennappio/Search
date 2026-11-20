@@ -11,3 +11,4 @@ nav:
   - Validation: validation.md
   - Porting from R: porting.md
   - Replicating the 2014 package: replication.md
+  - Tests of the verbatim port: r2014_tests.md

@@ -10,7 +10,9 @@ exactly?**
 The study was run on 2026-11-19 with Python 3.12.9, NumPy 2.5.3 and SciPy 1.18.1 on macOS
 (arm64), against two installations of R: R 4.4.3 on the same machine, and R 3.1.0 for Linux
 x86-64, the R released three days after the date of the package, run from the container image
-`rocker/r-ver:3.1.0`.
+`rocker/r-ver:3.1.0`. On 2026-11-20 every function of the package was compared with R on its
+own; that comparison found seven differences the whole runs had not reached, and they were
+corrected ([Function by function](#function-by-function)).
 
 ## The answer
 
@@ -21,6 +23,10 @@ x86-64, the R released three days after the date of the package, run from the co
   error at the same point. This holds in all 22,535 cases compared (37.9 million numbers),
   among them the examples of the manual, every known defect, bootstrap and jackknife runs
   with their summary, and three growth iterations on the GBM IT cohort (21254 genes).
+- **Function by function as well.** Each of the 14 ported functions of the package, called on
+  its own in R 4.4.3 and in the port, returns the same in every case tried, and so does each
+  of the 18 rules of R the port had to write down. Getting there took seven corrections to
+  the port, all in states no whole run had reached.
 - **Yes also for the R of 2014, as far as it was run.** In R 3.1.0 on x86-64 the 26 cases on
   the package's own data are reproduced in the same exact sense, once the port is told to
   compute as that R does.
@@ -145,6 +151,14 @@ one. The script needs no R package, so it also runs in R 3.1.0.
 numbers read and written, rounding, standard deviations, correlations, adjusted p-values and
 row means; `py/check_r2014_primitives.py` compares each with the port's version.
 
+**Every function, separately.** `r/r2014_units.R` calls one function of the package per case,
+with arguments chosen for that function: the ordinary ones and those at the edges (nothing,
+one element, no names, missing names, a name given twice, missing values, ties).
+`py/r2014_units.py` makes the cases, calls the port's function and compares in the same exact
+sense. The rules of R the port wrote down (what `v[names] <- values` does with a name that is
+not there, how `write.table` writes a number) are compared the same way, each as the R
+expression it stands for. [Tests of the verbatim port](r2014_tests.md) lists the cases.
+
 **The same in two installations of R.** Every script was run with R 4.4.3 on macOS arm64. The
 building blocks and the named cases on Breastdata1 with correlations were also run with R
 3.1.0 on Linux x86-64, in a container.
@@ -190,6 +204,36 @@ The building blocks, each compared bit for bit or character for character:
 | `sd` | 7,590 | 0 |
 | `p.adjust`, eight methods | 9,280 | 0 |
 | `rowMeans` of ten values | 4,000 | 0 |
+
+### Function by function
+
+Run on 2026-11-20 in R 4.4.3 on macOS arm64: one call of one function per case. The first set
+is the one kept in the test suite; the second is the same generator with twenty times the
+random cases.
+
+| | cases | equal | of which R stops | refused by the port, as stated | differ |
+|---|---|---|---|---|---|
+| the 14 functions of the package, test set | 1,062 | 1,058 | 153 | 4 | 0 |
+| the 18 rules of R, test set | 574 | 573 | 23 | 1 | 0 |
+| the 14 functions of the package, larger set | 16,526 | 16,520 | 2,021 | 4 | 2 |
+| the 18 rules of R, larger set | 9,124 | 9,123 | 179 | 1 | 0 |
+
+The two cases that differ are `nodes.fastLm` with covariates, in standard errors that agree
+with R to eight significant digits and not to nine: the difference of the six whole-run cases
+above. The five refusals are inputs the port does not model, tested as refusals.
+[Tests of the verbatim port](r2014_tests.md) has the counts per function and the list of the
+cases.
+
+These numbers are those of the port after seven corrections. The first run of the unit cases
+found 37 differences in 1,631 cases where the whole runs had found none, and the larger set one
+more: `write.table` writes `NaN` as `NA` and the port wrote `NaN`; `cor` loses the names of
+the genes when exactly one sample is complete under a rank method; three error messages were
+not R's; three rules of R the package never reaches and the reading of numbers below 1e-307
+were wrong. The list, with
+what R does in each, is in [Tests of the verbatim port](r2014_tests.md#what-the-unit-tests-found).
+After the corrections the comparison of the whole runs was repeated against the stored
+answers of R, for both installations: every report is identical to the byte, so the tables
+above and below stand.
 
 ### R 3.1.0 on Linux x86-64
 
@@ -321,6 +365,11 @@ Smaller points, also reproduced:
 - **The regression functions bit for bit.** They agree with R to nine digits, six for the
   standard errors of badly conditioned models. A p-value that close to the threshold could
   fall on the other side; it did not in 2,198 cases.
+- **A seed in its own neighbourhood, under a regression function with a threshold below about
+  1e-140.** A seed is regressed on itself like on any other gene; the fit is exact and its
+  p-value is rounding noise: 0 in R for the two seeds of a test case, between 8e-147 and
+  4e-173 in the port. With the thresholds in use (0.01, 0.05) the seed always passes. With
+  1e-200, R kept both seeds and the port none or one.
 - **`formula.string` in general.** It is R code. The port reads sums of covariate names and
   their interactions (`a + b`, `a:b`, `a*b`, also with `x.node`) and refuses the rest.
   Covariates that are text become factors with their levels in the order of the character
@@ -338,6 +387,7 @@ Smaller points, also reproduced:
 ## Not compared
 
 - R 3.1.0 on the random cases, the regression functions and the GBM cohort (see above).
+- R 3.1.0 function by function: the unit cases were answered by R 4.4.3 only.
 - R 4 on Linux x86-64 and any R on Windows.
 - Versions of R between 3.1.0 and 4.4.3. Two changes are dated in R's own news (`sample()` in
   3.6.0, `round()` in 4.0.0); when `cor` began to clamp at -1 was not looked up.
@@ -351,6 +401,7 @@ export R_LIBS=/path/to/a/library/with/RcppArmadillo      # optional: the nodes.f
 export SEARCH_GBM_DATA=/path/to/GBM_HYPOXIA_SIGNATURE     # optional: the two GBM cases
 validation/r_parity/run_r2014.sh            # 25,050 cases in the R of the machine, 15 minutes
 validation/r_parity/run_r2014_r31.sh 2      # the same cases in R 3.1.0, in containers
+validation/r_parity/run_r2014_units.sh 20   # every function on its own, R of the machine
 
 Rscript validation/r_parity/r/r2014_primitives.R out/primitives
 .venv/bin/python validation/r_parity/py/check_r2014_primitives.py out/primitives/primitives.json

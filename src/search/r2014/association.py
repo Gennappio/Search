@@ -24,7 +24,7 @@ from search.r2014.rsem import (
     compare,
     subset_logical,
 )
-from search.r2014.rstats import r_cor
+from search.r2014.rstats import cor_keeps_names, r_cor
 
 
 @dataclass
@@ -85,6 +85,9 @@ def nodes_correlation(
         seed_pos.append(position[seed])
     values = x.values[rows]
     x_cor = r_cor(values[seed_pos], values, correlation_method, correlation_use)
+    # lapply(x.cor.list, function(p) { names(p) <- colnames(x.cor); return (p); })
+    # colnames(x.cor) is NULL when cor() ranked a single complete observation
+    named = cor_keeps_names(values[seed_pos], values, correlation_method, correlation_use)
 
     # x.cor.filtered <- lapply(x.cor.list, function(q) { q[abs(q) > correlation.threshold] } )
     # R defect R7: where the correlation is missing the condition is NA, and q[NA] is not an
@@ -92,8 +95,8 @@ def nodes_correlation(
     items: list[NamedVector] = []
     for k in range(len(seed_pos)):
         row = x_cor[k]
-        if np.isnan(row).any() or correlation_threshold != correlation_threshold:
-            q = NamedVector(row, list(genes))
+        if not named or np.isnan(row).any() or correlation_threshold != correlation_threshold:
+            q = NamedVector(row, list(genes) if named else None)
             items.append(subset_logical(q, compare(np.abs(row), ">", correlation_threshold)))
         else:  # nothing missing: the same selection, without the element-by-element walk
             chosen = np.flatnonzero(np.abs(row) > correlation_threshold)
