@@ -445,12 +445,11 @@ def _regression_nodes(
         raise RError("glm.family not supported!")
     rows = universe_rows(x, Blist)
     assert x.rownames is not None
-    if len(rows) < 2:
-        # x[rownames(x) %in% Blist, ] is a plain vector (or has no row): x[seed, ] fails
-        raise RError(
-            "incorrect number of dimensions" if len(rows) == 1 else "subscript out of bounds",
-            "x[seed, ]",
-        )
+    if len(rows) == 1:
+        # x[rownames(x) %in% Blist, ] is a plain vector, ncol() of it is NULL
+        raise RError("invalid 'times' argument", "rep(NA, ncol(x))")
+    if len(rows) == 0:
+        raise RError("subscript out of bounds", "x[seed, ]")
     genes = [x.rownames[i] for i in rows]
     if len(set(genes)) != len(genes):
         raise UnportedState("duplicated row names in the data matrix")
@@ -487,6 +486,7 @@ def _regression_nodes(
         p = np.full(len(genes), NA_REAL)
         tables: list[FloatArray] = []
         coefficient_names: list[str] | None = None
+        unequal_table: int | None = None
         for g in range(len(genes)):
             y, design, names = _model_matrix(seed_exp, values[g], covariates, terms)
             if fast:
@@ -497,8 +497,8 @@ def _regression_nodes(
                 p_column = 1
             if coefficient_names is None:
                 coefficient_names = names
-            elif len(names) != len(coefficient_names):
-                raise RError("number of rows of matrices must match (see arg 2)", "cbind")
+            elif len(names) != len(coefficient_names) and unequal_table is None:
+                unequal_table = g + 1  # the first table with other rows than the first one
             node = names.index("x.node")
             beta[g] = table[node, 0]
             p[g] = table[node, p_column]
@@ -515,6 +515,12 @@ def _regression_nodes(
             items.append(NamedVector(beta[selected], [genes[i] for i in selected]))
             item_names.append(seed)
         # R defect R6: no gene selected: glm.res.beta[[seed]] <- NULL adds nothing to the list
+        if unequal_table is not None:
+            # glm.res.all[[seed]] <- do.call(cbind, tmp.obj): the tables of all the genes are
+            # bound once every model is fitted, and cbind names the first that does not fit
+            raise RError(
+                f"number of rows of matrices must match (see arg {unequal_table})", "cbind"
+            )
         assert coefficient_names is not None
         blocks.append(np.hstack(tables))
         block_rows += [f"{seed}.{name}" for name in coefficient_names]

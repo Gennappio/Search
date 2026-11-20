@@ -379,6 +379,27 @@ def r_cor(
     return _cor_no_missing_rule(xs, ys, kendall, ranks=method_full == "spearman")
 
 
+def cor_keeps_names(xs: FloatArray, ys: FloatArray, method: str, use: str) -> bool:
+    """Whether the matrix ``cor(x, y)`` returns carries the names of the variables of ``y``.
+
+    It does not in one case. For Spearman and Kendall under ``complete.obs`` and
+    ``na.or.complete`` R drops the incomplete observations and ranks what is left with its
+    ``Rank`` helper, which for a matrix of a single row returns ``row(u)``: a matrix of ones
+    without names. With exactly one complete observation the correlations are all ``NA`` and
+    the names are gone.
+    """
+    method_full = _match_arg(method, ("pearson", "kendall", "spearman"), "method")
+    use_full = _match_arg(
+        use,
+        ("all.obs", "complete.obs", "pairwise.complete.obs", "everything", "na.or.complete"),
+        "use",
+    )
+    if method_full == "pearson" or use_full not in ("complete.obs", "na.or.complete"):
+        return True
+    complete = ~(np.isnan(xs).any(axis=0) | np.isnan(ys).any(axis=0))
+    return int(complete.sum()) != 1
+
+
 def _match_arg(value: str, choices: tuple[str, ...], what: str) -> str:
     """``pmatch`` / ``match.arg``: an exact match, or a unique prefix."""
     if value in choices:
@@ -387,7 +408,8 @@ def _match_arg(value: str, choices: tuple[str, ...], what: str) -> str:
     if len(hits) != 1:
         if what == "use":
             raise RError("invalid 'use' argument")
-        raise RError("'arg' should be one of " + ", ".join(f"‘{c}’" for c in choices))
+        # dQuote(), in a UTF-8 locale; in the C locale R writes plain double quotes
+        raise RError("'arg' should be one of " + ", ".join(f"“{c}”" for c in choices))
     return hits[0]
 
 

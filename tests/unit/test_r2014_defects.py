@@ -87,7 +87,10 @@ def test_more_names_than_elements_is_the_error_r_gives() -> None:
 def test_numbers_are_written_as_write_table_writes_them() -> None:
     written = [rformat.format_real(v) for v in (0.0004, 0.00047, 1e5, 123456.0, 1 / 3, 1e-05)]
     assert written == ["4e-04", "0.00047", "1e+05", "123456", "0.333333333333333", "1e-05"]
+    # as.character() tells NaN from NA; write.table writes both as NA
     assert rformat.format_real(NA_REAL) == "NA" and rformat.format_real(float("nan")) == "NaN"
+    table = rio.table_of_vector(NamedVector(np.array([NA_REAL, float("nan")]), ["a", "b"]))
+    assert table == "\tx\na\tNA\nb\tNA\n"
 
 
 def test_a_number_of_17_digits_is_read_as_r_reads_it_not_as_the_nearest_double() -> None:

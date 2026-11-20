@@ -212,8 +212,8 @@ def remove_by_name_list(x: Sequence[Name], lst: RList) -> RList:
 def concat_lists(a: RList, b: RList) -> RList:
     """``c(a, b)`` for two lists. The result has names when either has them; an element of a
     list without names gets the empty name."""
-    if a.names is None and b.names is None:
-        return RList([*a.items, *b.items], None)
+    if (a.names is None and b.names is None) or len(a.items) + len(b.items) == 0:
+        return RList([*a.items, *b.items], None)  # nothing to name: no names
     names_a: Names = list(a.names) if a.names is not None else [""] * len(a.items)
     names_b: Names = list(b.names) if b.names is not None else [""] * len(b.items)
     return RList([*a.items, *b.items], [*names_a, *names_b])
@@ -256,7 +256,9 @@ def compare(values: FloatArray, op: str, threshold: float) -> list[bool | None]:
 
 def get_by_names(vec: NamedVector, names: Sequence[Name]) -> NamedVector:
     """``vec[names]`` for a character index: a name that is not there gives a missing value
-    under a missing name."""
+    under a missing name. A vector without names gives missing values without names."""
+    if vec.names is None:
+        return NamedVector(np.full(len(names), NA_REAL), None)
     index = vec.first_index()
     out_values = np.empty(len(names), dtype=np.float64)
     out_names: Names = []
@@ -304,10 +306,10 @@ def set_names(vec: NamedVector | None, names: Sequence[Name]) -> NamedVector | N
     """``names(vec) <- names``. ``vec`` is ``None`` for ``NULL``.
 
     Fewer names than elements: the rest are missing. More names than elements: an error.
+    Names for ``NULL`` are an error even when there are none (``names`` is a character
+    vector here, never ``NULL``).
     """
     if vec is None:
-        if len(names) == 0:
-            return None
         raise RError("attempt to set an attribute on NULL")
     if len(names) > len(vec):
         raise RError(

@@ -17,7 +17,7 @@ originals is a separate harness, `validation/r_parity`, run by hand; what it fou
 | real data | `tests/realdata/` | GBM cohorts through `SEARCH_GBM_DATA`: the published 51-gene metagene is enriched at the top |
 | benchmark | `tests/bench/` | one pass on 16548 x 95 under 1 s |
 | R originals | `validation/r_parity` (not part of the tests) | every number of the GBM script and of the SEARCH package against the two presets, on the same inputs and the same random draws |
-| verbatim port | `tests/unit/test_r2014_golden.py`, `test_r2014_defects.py` | `search.r2014` against answers recorded from the unmodified R package in R 4.4.3 and in R 3.1.0 (445 cases and a sample of every building block of R it reimplements), bit for bit; each defect of the package on an example worked out by hand |
+| verbatim port | `tests/unit/test_r2014_units.py`, `test_r2014_golden.py`, `test_r2014_defects.py` | `search.r2014` against answers recorded from the unmodified R package: every function of the package and every rule of R the port wrote down, called on its own (1,636 calls, R 4.4.3); whole runs in R 4.4.3 and in R 3.1.0 (445 cases) and a sample of every building block of R it reimplements; bit for bit; each defect of the package on an example worked out by hand. [Tests of the verbatim port](r2014_tests.md) describes them |
 
 ## Real data, phase 2
 
@@ -140,7 +140,8 @@ Whole run 4 min 54 s on eight processes.
 ## Verbatim port of the SEARCH package, 2026-11-19
 
 `search.r2014` is checked against R, not against common sense: for it the R package is the
-specification. [Replicating the 2014 package](replication.md) has the method and every table;
+specification. [Replicating the 2014 package](replication.md) has the method and every table,
+[Tests of the verbatim port](r2014_tests.md) the tests that keep it so;
 in short, against the unmodified package run by R 4.4.3 on the same machine:
 
 | family | cases | equal | differ |

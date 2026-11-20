@@ -185,17 +185,35 @@ def r_strtod(text: str) -> float:
     ans = 0.0
     for digit in digits:
         ans = 10.0 * ans + digit
-    if expn != 0 and ans != 0.0:
-        n = abs(expn)
-        fac = 1.0
-        p10 = 10.0
+    # avoid unnecessary underflow for large negative exponents
+    if expn + len(digits) < -300:
+        for _ in digits:
+            ans /= 10.0
+        expn += len(digits)
+    fac = 1.0
+    p10 = 10.0
+    n = abs(expn)
+    if expn < -307:  # use underflow, not overflow
+        while n:
+            if n & 1:
+                fac /= p10
+            n >>= 1
+            p10 *= p10
+        ans *= fac
+    elif expn < 0:  # positive powers are exact
         while n:
             if n & 1:
                 fac *= p10
             n >>= 1
-            if n:
-                p10 *= p10
-        ans = ans / fac if expn < 0 else ans * fac
+            p10 *= p10
+        ans /= fac
+    elif ans != 0.0:
+        while n:
+            if n & 1:
+                fac *= p10
+            n >>= 1
+            p10 *= p10
+        ans *= fac
     return sign * ans
 
 

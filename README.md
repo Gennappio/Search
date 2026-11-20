@@ -36,7 +36,8 @@ Next to the engine, `search.r2014` is a second, verbatim port of the SEARCH R pa
 function transliterated with its defects, to obtain again, without R, what the 2014 package
 returns. It reproduces the unmodified package bit for bit on its correlation path, in R 4.4.3
 and in the R 3.1.0 of 2014; `docs/replication.md` has the study and
-`validation/r_parity/run_r2014.sh` repeats it.
+`validation/r_parity/run_r2014.sh` repeats it. Its tests compare every function of the package
+with the answer the function gave in R (`docs/r2014_tests.md`).
 
 ## Install
 

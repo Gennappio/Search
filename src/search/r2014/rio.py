@@ -9,6 +9,7 @@ TRUE, sep = "\\t"))``. Only those two forms are reproduced.
 from __future__ import annotations
 
 import gzip
+import math
 import re
 from pathlib import Path
 
@@ -28,6 +29,12 @@ def _automatic(n: int) -> list[str]:
     return [str(i + 1) for i in range(n)]
 
 
+def _cell(value: float) -> str:
+    """A number as ``write.table`` writes it. Its test for a missing value is ``ISNAN``
+    (``isna`` in ``utils/src/io.c``), so a ``NaN`` is written ``NA`` like a missing value."""
+    return "NA" if math.isnan(value) else format_real(value)
+
+
 def table_of_vector(vec: NamedVector) -> str:
     """``write.table`` of a numeric vector: R makes a data frame with one column ``x`` of it.
 
@@ -44,7 +51,7 @@ def table_of_vector(vec: NamedVector) -> str:
     else:
         rows = [_name(n) for n in names]
     lines = ["\tx"]
-    lines += [f"{r}\t{format_real(float(v))}" for r, v in zip(rows, vec.values, strict=True)]
+    lines += [f"{r}\t{_cell(float(v))}" for r, v in zip(rows, vec.values, strict=True)]
     return "\n".join(lines) + "\n"
 
 
@@ -66,7 +73,7 @@ def table_of_matrix(m: RMatrix) -> str:
     lines = ["\t".join(["", *cols])] if m.ncol > 0 else [""]
     for i in range(m.nrow):
         lines.append(
-            "\t".join([rows[i], *(format_real(float(v)) for v in m.values[i])])
+            "\t".join([rows[i], *(_cell(float(v)) for v in m.values[i])])
             if m.ncol > 0
             else rows[i] + "\t"
         )

@@ -173,3 +173,43 @@ R13 in [Replicating the 2014 package](replication.md#defects-of-the-package)):
 16. **A constant gene under `nodes.fastLm` gets a coefficient and can become a seed.**
 17. **Gene names that all look like numbers come back changed from the files**
     (summarise.iterations.R): `007` as `7`, `100000` as `1e+05`.
+
+## The verbatim port function by function, 2026-11-20
+
+- **A whole run that is right does not show that every function is.** The comparison of whole
+  runs had found no difference in 22,535 cases. Calling every function of the package on its
+  own, in R and in the port, found seven places where the port did not do what R does, in
+  states no whole run had reached. So the verbatim port is now tested at both levels, and a
+  function is accepted when it returns, alone, what the same function returns in R.
+  [Tests of the verbatim port](r2014_tests.md) describes the tests.
+- **The cases must notice a repair.** The tests of the port are there to keep the defects of
+  the package in place. For seven behaviours a test repairs the port and requires that cases
+  fail.
+- **A refusal is tested as a refusal.** Where the port stops with `UnportedState`, the test
+  expects exactly that, and the documentation lists the five inputs and what R does with
+  them.
+
+Corrections to the verbatim port made on that day, each found by a unit case and confirmed in
+the sources of R 3.1.0 and of R 4.4.3:
+
+1. `write.table` writes `NaN` as `NA` (its test for a missing value is `ISNAN`); the port
+   wrote `NaN`.
+2. `cor` with Spearman or Kendall under `complete.obs` or `na.or.complete` returns a matrix
+   without names when exactly one sample is complete; the port kept the names.
+3. `nodes.glm` and `nodes.fastLm` with a universe of one gene stop at `rep(NA, ncol(x))`,
+   with the message "invalid 'times' argument"; the port stopped one statement later with
+   another message.
+4. The message for a correlation method that does not exist quotes the choices with double
+   quotes; the port used single ones.
+5. Three rules of R the package never reaches: `v[names]` on a vector without names gives no
+   names, `names(NULL) <- character(0)` is an error, `c()` of two empty lists has no names.
+6. A number below 1e-307 is read in two scaling steps, so 5e-324 is read as 5e-324; the port
+   read 0 (R 4.4.3; for R 3.1.0 on x86-64 the port still refuses such a number).
+7. When the model of one gene has fewer coefficients than the others, the regression
+   functions fit every gene and then stop in `cbind`, which names the first table that does
+   not fit ("see arg 6"); the port stopped at that gene and always said "see arg 2".
+
+One finding is not a correction. The p-value of a seed regressed on itself is rounding noise
+(0 in R for the two seeds of a test case, between 8e-147 and 4e-173 in the port), so with
+`significance.threshold` below about 1e-140 the port does not reproduce whether a seed stays
+in its own neighbourhood. With the thresholds in use (0.01, 0.05) it always stays.
