@@ -1,0 +1,43 @@
+case,variant,quantity,n,n_mismatch,max_abs_diff,status,detail
+Breast1,same draws,genes of the training matrix,1231,0,0.0,equal,"R 1231, Python 1231, shared 1231"
+Breast1,same draws,core: rho (genes x seeds),7386,0,3.3306690738754696e-16,equal,
+Breast1,same draws,core: delta (genes x seeds),7386,0,0.0,equal,
+Breast1,same draws,core: gamma (genes x seeds),7386,0,5.551115123125783e-17,equal,
+Breast1,same draws,core: cluster size of every seed,6,0,0.0,equal,
+Breast1,same draws,core: S between seeds,36,0,6.938893903907228e-17,equal,
+Breast1,same draws,core: F between seeds,36,0,0.0,equal,
+Breast1,same draws,core: C_raw,1231,0,8.326672684688674e-17,equal,
+Breast1,same draws,core: C_rank,1231,0,1.1102230246251565e-16,equal,
+Breast1,same draws,core: n_edges,1231,0,0.0,equal,
+Breast1,same draws,core: n_positive_edges,1231,0,0.0,equal,
+Breast1,same draws,core: n_negative_edges,1231,0,0.0,equal,
+Breast1,same draws,core: positive_consistent,1231,0,0.0,equal,
+Breast1,same draws,core: weighted_seed_rho,1231,0,3.3306690738754696e-16,equal,
+Breast1,same draws,core: is_seed,1231,0,0.0,equal,
+Breast1,same draws,genes eligible as random seeds,1225,0,0.0,equal,"R 1225, Python 1225, shared 1225"
+Breast1,same draws,bootstrap summary: C_rank_boot_mean,1231,0,1.1102230246251565e-16,equal,
+Breast1,same draws,bootstrap summary: C_rank_boot_var,1231,0,1.1102230246251565e-16,equal,
+Breast1,same draws,bootstrap summary: C_rank_boot_sd,1231,0,1.1102230246251565e-16,equal,
+Breast1,same draws,null model: p_MC_C,1231,0,8.543513119185775e-17,equal,
+Breast1,same draws,"bootstrap: C_rank of every gene, replicates where the seed clusters differ in size",9848,0,2.220446049250313e-16,equal,8 of 10 replicates.
+Breast1,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size, Search against exact ranks",2462,0,0.0,equal,"replicates 6, 9."
+Breast1,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size, R against exact ranks",2462,0,2.220446049250313e-16,equal,"replicates 6, 9."
+Breast1,same draws,"bootstrap: C_rank of every gene, replicates where two seed clusters have the same size",2462,0,2.220446049250313e-16,equal,"replicates 6, 9: no tie is ranked differently."
+Breast1,same draws,null model: C_raw of every gene for every random seed set,24620,0,8.847089727481716e-17,equal,20 random seed sets.
+Breast1,same draws,null model: mean_S of every random seed set,20,0,3.903127820947816e-17,equal,
+Breast1,same draws,null model: median_S of every random seed set,20,0,0.0,equal,
+"Breast1, one missing value in 30 probesets",by design,genes of the training matrix,1231,0,0.0,equal,"R 1231, Python 1231, shared 1231"
+"Breast1, one missing value in 30 probesets",by design,core: rho (genes x seeds),7386,180,3.3306690738754696e-16,differs,"180 values missing on one side only; largest difference at 1017_at|10458_at: R 0.541958, Python 0.541958"
+"Breast1, one missing value in 30 probesets",by design,core: delta (genes x seeds),7386,8,1.0,differs,"largest difference at 3727_at|1017_at: R 1, Python 0"
+"Breast1, one missing value in 30 probesets",by design,core: gamma (genes x seeds),7386,52,0.3333333333333333,differs,"largest difference at 87_at|715_at: R 0.333333, Python 0"
+"Breast1, one missing value in 30 probesets",by design,core: cluster size of every seed,6,5,3.0,differs,"largest difference at 27044_at: R 5, Python 2"
+"Breast1, one missing value in 30 probesets",by design,core: S between seeds,36,26,0.8421052631578948,differs,"largest difference at 27044_at|715_at: R 0.157895, Python 1"
+"Breast1, one missing value in 30 probesets",by design,core: F between seeds,36,4,0.0,differs,"4 values missing on one side only; largest difference at 1017_at|1017_at: R 1, Python 1"
+"Breast1, one missing value in 30 probesets",by design,core: C_raw,1231,39,0.09874883286647998,differs,"largest difference at 1017_at: R 0.246349, Python 0.345098"
+"Breast1, one missing value in 30 probesets",by design,core: C_rank,1231,1230,0.5130081300813006,differs,"largest difference at 87_at: R 0.999187, Python 0.486179"
+"Breast1, one missing value in 30 probesets",by design,core: n_edges,1231,5,3.0,differs,"largest difference at 808_at: R 3, Python 0"
+"Breast1, one missing value in 30 probesets",by design,core: n_positive_edges,1231,5,3.0,differs,"largest difference at 808_at: R 3, Python 0"
+"Breast1, one missing value in 30 probesets",by design,core: n_negative_edges,1231,0,0.0,equal,
+"Breast1, one missing value in 30 probesets",by design,core: positive_consistent,1231,5,1.0,differs,"largest difference at 3727_at: R 1, Python 0"
+"Breast1, one missing value in 30 probesets",by design,core: weighted_seed_rho,1231,13,0.04893652054316899,differs,"5 values missing on one side only; largest difference at 27044_at: R 0.901086, Python 0.950022"
+"Breast1, one missing value in 30 probesets",by design,core: is_seed,1231,0,0.0,equal,

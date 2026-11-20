@@ -1,0 +1,57 @@
+case,family,outcome,quantities,values,largest_difference,r_error,detail,note
+breast_blank_in_path,"SEARCH.randomise(), Breastdata1",equal,55,19985,0,length of 'dimnames' [2] not equal to array extent,,an output directory with a blank in its name (R10)
+breast_bootstrap,"SEARCH.randomise(), Breastdata1",equal,89,58318,0,,,"five replicates, two iterations, null runs and the summary"
+breast_bootstrap_6iter,"SEARCH.randomise(), Breastdata1",equal,197,121085,0,,,"eight replicates, up to six iterations: they stop at different ones (R9)"
+breast_bootstrap_defaults,"SEARCH.randomise(), Breastdata1",equal,75,22691,0,subscript out of bounds,,"every default of SEARCH.randomise, ten replicates (R1, R8)"
+breast_bootstrap_rounding,"SEARCH.randomise(), Breastdata1",equal,75,25039,0,subscript out of bounds,,the bootstrap as R drew it before version 3.6.0
+breast_doc_example,"SEARCH(), Breastdata1",equal,49,5252,0,,,"the correlation example of the manual, through SEARCH()"
+breast_doc_not_immune,"SEARCH(), Breastdata1","equal, R stops",1,0,0,subscript out of bounds,,"the manual's example with keep.seeds = FALSE (R2, R3)"
+breast_fastlm,"regression, Breastdata1",equal,38,66734,9.65e-12,,,"nodes.fastLm, six seeds"
+breast_fastlm_doc,"regression, Breastdata1",equal,59,162596,9.66e-12,,,the same with nodes.fastLm (R5)
+breast_glm_bh,"regression, Breastdata1",equal,38,35387,1.5e-13,,,nodes.glm with adjust.p = BH
+breast_glm_covariates,"regression, Breastdata1",equal,38,65746,1.31e-13,,,nodes.glm with two covariates through formula.string
+breast_glm_covariates_ignored,"regression, Breastdata1",equal,38,36165,1.5e-13,,,covariates without formula.string: left out of the model (D3)
+breast_glm_doc,"regression, Breastdata1",equal,59,83966,1.05e-13,,,"the GLM example of the manual, through SEARCH() (R5)"
+breast_glm_gamma,"regression, Breastdata1",equal,38,34728,1.34e-13,,,"nodes.glm, Gamma family"
+breast_glm_interaction,"regression, Breastdata1",equal,38,65290,5.45e-13,,,nodes.glm with an interaction between the gene and a covariate
+breast_glm_inverse_gaussian,"regression, Breastdata1",equal,38,34728,6.78e-14,,,"nodes.glm, inverse.gaussian family"
+breast_glm_poisson,"regression, Breastdata1","equal, R stops",1,0,0,subscript out of bounds,,poisson family at the documented threshold: no association passes (R6)
+breast_glm_poisson_loose,"regression, Breastdata1",equal,38,43738,4.62e-14,,,"poisson family, threshold 0.9"
+breast_glm_quasi,"regression, Breastdata1",equal,38,34728,1.5e-13,,,"nodes.glm, quasi family"
+breast_glm_quasipoisson,"regression, Breastdata1",equal,38,34728,1.46e-13,,,"nodes.glm, quasipoisson family"
+breast_growth,"SEARCH(), Breastdata1",equal,39,5188,0,,,growth to convergence
+breast_jackknife,"SEARCH.randomise(), Breastdata1",equal,38,22249,0,,,sampling = jacknife
+breast_kendall,"SEARCH(), Breastdata1",equal,29,4942,0,,,Kendall instead of Spearman
+breast_manual_correlation,"SEARCH.randomise(), Breastdata1",equal,121,68144,0,,,"the correlation example of the manual, as written there"
+breast_manual_glm,"regression, Breastdata1",equal,107,1740576,4.83e-13,,,"the GLM example of the manual, as written there"
+breast_missing_pairwise,"SEARCH(), Breastdata1",equal,51,5524,0,,,the same with correlation.use = pairwise.complete.obs
+breast_missing_values,"SEARCH(), Breastdata1","equal, R stops",1,0,0,subscript out of bounds,,one missing value in 25 probesets (R7)
+breast_omax_pruning,"SEARCH(), Breastdata1",equal,48,7764,0,,,"higher O.lower: new seeds are removed on Omax (R2, R4)"
+breast_one_seed,"SEARCH(), Breastdata1",equal,43,5039,0,,,a single seed: D is divided by zero
+breast_pearson,"SEARCH(), Breastdata1",equal,24,2506,0,,,Pearson instead of Spearman
+breast_pearson_bootstrap,"SEARCH.randomise(), Breastdata1",equal,54,33491,0,,,Pearson on resampled columns
+breast_pruned_members,"SEARCH(), Breastdata1",equal,80,13456,0,,,"lower D.higher: seeds are added, then removed on D (R4)"
+breast_sd_prefilter,"SEARCH(), Breastdata1",equal,22,2309,0,,,"every default of SEARCH.randomise, sd prefilter included (R1)"
+breast_seed_not_in_matrix,"SEARCH(), Breastdata1","equal, R stops",1,0,0,subscript out of bounds,,"a seed that is not a row of the matrix, given to SEARCH() directly"
+breast_seeds_not_immune,"SEARCH(), Breastdata1","equal, R stops",1,0,0,subscript out of bounds,,"keep.seeds = FALSE (R2, R3)"
+breast_single_pass,"SEARCH(), Breastdata1",equal,34,2719,0,,,one pass with the thresholds of SEARCH.randomise
+breast_universe_reversed,"SEARCH(), Breastdata1",equal,37,4725,0,,,"the universe listed in reverse order, with the sd prefilter (R1)"
+breast_universe_subset,"SEARCH(), Breastdata1",equal,24,1254,0,,,universe of the first 600 probesets
+breast_unknown_correlation_type,"SEARCH(), Breastdata1","equal, R stops",1,0,0,correlation.type not supported!,,correlation.type other than standard
+breast_unknown_family,"regression, Breastdata1","equal, R stops",1,0,0,glm.family not supported!,,a GLM family the package does not list
+breast_unknown_function,"SEARCH(), Breastdata1","equal, R stops",1,0,0,object 'nodes.spline' of mode 'function' was not found,,an association function that does not exist
+breast_unscaled,"SEARCH(), Breastdata1",equal,24,2526,0,,,scale = FALSE: D is a count
+it_growth,"SEARCH(), GBM IT cohort",equal,3318,35908869,0,,,"GBM IT cohort, ten hypoxia seeds, three iterations"
+it_sd_prefilter,"SEARCH(), GBM IT cohort",equal,40,76118,0,,,"GBM IT cohort, one pass with the sd prefilter"
+names_all_logical,"SEARCH.randomise(), gene names that look like numbers",equal,40,157,0,duplicate 'row.names' are not allowed,,"T comes back as TRUE: duplicated names, the summary stops"
+names_colliding_numbers,"SEARCH.randomise(), gene names that look like numbers",equal,40,220,0,duplicate 'row.names' are not allowed,,7 and 07 become the same name: the summary stops
+names_decimal_numbers,"SEARCH.randomise(), gene names that look like numbers",equal,50,317,0,,,1.50 comes back as 1.5 and 100000 as 1e+05
+names_logical,"SEARCH.randomise(), gene names that look like numbers",equal,50,317,0,,,not all logical: left as they are
+names_whole_numbers,"SEARCH.randomise(), gene names that look like numbers",equal,50,317,0,,,leading zeros are lost: 007 comes back as 7
+names_with_na,"SEARCH.randomise(), gene names that look like numbers",equal,40,220,0,missing values in 'row.names' are not allowed,,a gene called NA: the summary stops
+regression_00934,"regression, random matrices",differs,28,911,5.43e-15,,"other.data[[1]]: values: 40 of 784 values, largest 9.65e-07",
+regression_02184,"regression, random matrices",differs,20,298,5.23e-14,,"other.data[[1]]: values: 18 of 240 values, largest 3.02e-09",
+regression_02364,"regression, random matrices",differs,28,266,1.81e-14,,"other.data[[1]]: values: 2 of 196 values, largest 1.02e-09",
+regression_01447,"regression, random matrices",differs,54,645,9.05e-14,,"other.data[[1]]: values: 5 of 336 values, largest 9.92e-07; other.data[[2]]: values: 3 of 84 values, largest 9.93e-07; other.data[[3]]: values: 3 of 84 values, largest 9.93e-07",
+regression_01500,"regression, random matrices",differs,28,397,2.57e-15,,"other.data[[1]]: values: 4 of 308 values, largest 2.46e-09",
+regression_01900,"regression, random matrices",differs,16,414,0,,"other.data[[1]]: values: 165 of 336 values, largest 1.26e-08",

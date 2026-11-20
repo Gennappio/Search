@@ -98,10 +98,19 @@ def pooled_counts(observed: FloatArray, chunk: FloatArray) -> tuple[NDArray[np.i
 def per_gene_counts(
     observed: FloatArray, chunk: FloatArray
 ) -> tuple[NDArray[np.int64], NDArray[np.int64]]:
+    """Per gene: how many of its own null values are >= its observed value, and how many null
+    values it has.
+
+    A gene without an observed value has nothing to compare: it is given no null values, so
+    that its p-value is missing. Counted as it comes, it would have no null value above it and
+    the smallest p-value of all.
+    """
     finite = np.isfinite(chunk)
     with np.errstate(invalid="ignore"):
         ge = finite & (chunk >= observed[:, None] - TOLERANCE)
-    return ge.sum(axis=1).astype(np.int64), finite.sum(axis=1).astype(np.int64)
+    n_null = finite.sum(axis=1).astype(np.int64)
+    n_null[~np.isfinite(observed)] = 0
+    return ge.sum(axis=1).astype(np.int64), n_null
 
 
 def run_internal_null(

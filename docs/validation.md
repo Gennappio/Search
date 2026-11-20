@@ -1,19 +1,23 @@
 # Validation
 
-No comparison with the R originals is used as an acceptance criterion. Each layer must hold by
-construction or by common sense.
+The test suite uses no comparison with the R originals as an acceptance criterion: each layer
+must hold by construction or by common sense, and the tests need no R. The comparison with the
+originals is a separate harness, `validation/r_parity`, run by hand; what it found is in
+[Porting from R](porting.md).
 
 | layer | where | what |
 |---|---|---|
-| hand-computed toy | `tests/unit/test_core_toy.py` | 3 seeds, 3 genes: D, C, O, S, F, degrees written by hand |
+| hand-computed toy | `tests/unit/test_core_toy.py` | 3 seeds, 3 genes: D, C, O, S, F, degrees written by hand; connectivities equal in exact arithmetic stay equal, bit for bit, whatever the order of the seeds; the degree of a seed with an association that is not symmetric |
 | independent references | `tests/unit/test_association.py`, `test_stats.py` | Spearman and Pearson equal to scipy pair by pair; p-values equal to the manual t formula; p.adjust known values |
-| properties | `tests/property/` | gene and sample order do not matter; ranges and symmetries; self edges; disabled growth equals one pass |
-| mechanics | `tests/unit/test_bootstrap_null.py`, `test_resampling_checkpoint.py` | replicates reproducible from derived seeds; chunks match direct replicates; resume reuses valid chunks only; pooled and per-gene counts by hand |
+| properties | `tests/property/` | gene, sample and seed order do not matter; ranges and symmetries; self edges; disabled growth equals one pass |
+| mechanics | `tests/unit/test_bootstrap_null.py`, `test_resampling_checkpoint.py` | replicates reproducible from derived seeds; chunks match direct replicates; resume reuses valid chunks only; pooled and per-gene counts by hand; a gene without an observed value gets no p-value |
 | synthetic structure | `tests/synthetic/` | a planted module is recovered from five of its genes (AUC > 0.95); an unrelated module does not overlap |
 | calibration | `tests/statistical/` | on pure noise the null p-values show no excess of small values |
 | pipeline | `tests/unit/test_pipeline.py` | end to end on three synthetic cohorts, through the API and the CLI, with resume |
 | real data | `tests/realdata/` | GBM cohorts through `SEARCH_GBM_DATA`: the published 51-gene metagene is enriched at the top |
 | benchmark | `tests/bench/` | one pass on 16548 x 95 under 1 s |
+| R originals | `validation/r_parity` (not part of the tests) | every number of the GBM script and of the SEARCH package against the two presets, on the same inputs and the same random draws |
+| verbatim port | `tests/unit/test_r2014_golden.py`, `test_r2014_defects.py` | `search.r2014` against answers recorded from the unmodified R package in R 4.4.3 and in R 3.1.0 (445 cases and a sample of every building block of R it reimplements), bit for bit; each defect of the package on an example worked out by hand |
 
 ## Real data, phase 2
 
@@ -72,7 +76,7 @@ using different random draws and slightly different input matrices.
 
 | test | what it checks |
 |---|---|
-| `tests/unit/test_linear.py` | the vectorised coefficients and p-values equal least squares pair by pair with numeric and categorical covariates; without covariates they equal `scipy.stats.linregress`; they equal statsmodels OLS and gaussian GLM; a planted batch effect creates spurious edges without the covariate and none with it, while the real module is still recovered (AUC > 0.95); resampling keeps covariates aligned with the columns |
+| `tests/unit/test_linear.py` | the vectorised coefficients and p-values equal least squares pair by pair with numeric and categorical covariates; without covariates they equal `scipy.stats.linregress`; they equal statsmodels OLS and gaussian GLM; a planted batch effect creates spurious edges without the covariate and none with it, while the real module is still recovered (AUC > 0.95); resampling keeps covariates aligned with the columns; the GLM path reads covariates whatever their names, turns a model that cannot be built and a run of failed fits into errors, and, like least squares, gives no association to a gene with a missing value or without variance |
 
 ## Usage audit and variant comparison, 2026-10-09
 
@@ -104,3 +108,47 @@ because D takes only eleven distinct values. The paper's formula as printed sele
 a tenth of the replicates the per-gene variant had given 19 candidates instead of 28: that null
 needs the full replicate count to settle. The tables of every variant are kept with the project
 results (`RESULTS/SEARCH_PY/variants_full/`), outside the repository.
+
+## Comparison with the R originals, 2026-11-15 and 2026-11-17
+
+Both originals were run next to Search on the same inputs
+([Porting from R](porting.md) has the method, the tables and every difference). The first
+run found six defects in Search, corrected on 2026-11-17; the numbers are from the corrected
+code:
+
+| comparison | compared quantities | equal | different | R stops |
+|---|---|---|---|---|
+| GBM script, 20 bootstrap and 50 Monte Carlo replicates per cohort, same draws | 85 | 85 | 0 | 0 |
+| GBM script, 100 and 500 replicates, same draws | 88 | 76 | 12 | 0 |
+| functions of the GBM script on Breastdata1, same draws | 27 | 27 | 0 | 0 |
+| SEARCH package as it is, 28 cases | 317 | 268 | 44 | 5 |
+| SEARCH package with its defects corrected, 11 cases | 156 | 155 | 1 | 0 |
+
+The 12 differences of the second row come from one bootstrap replicate of 200, in which two
+seed clusters have the same size: the script ranks apart genes whose connectivities are equal
+in exact arithmetic, and Search gives them the rank of the exact values. The 26 selected genes
+are the same, in the same order. With independent random draws at that size every gene falls
+on the same side of the p < 0.01 cutoff in both cohorts and the same 26 genes are selected.
+The 44 differences from the package as it is are 34 effects of its defects and 10 deliberate
+differences; none comes from a defect of Search.
+
+After the corrections the full run on the GBM cohorts (1000 bootstrap, 5000 Monte Carlo) was
+repeated: the 26 selected genes are the same, in the same order; connectivity, observed ranks,
+Monte Carlo p-values and scores are unchanged; the bootstrap means move by at most 1.5e-6.
+Whole run 4 min 54 s on eight processes.
+
+## Verbatim port of the SEARCH package, 2026-11-19
+
+`search.r2014` is checked against R, not against common sense: for it the R package is the
+specification. [Replicating the 2014 package](replication.md) has the method and every table;
+in short, against the unmodified package run by R 4.4.3 on the same machine:
+
+| family | cases | equal | differ |
+|---|---|---|---|
+| correlation path: `SEARCH()`, `SEARCH.randomise()` and `summarise.iterations()` on Breastdata1, on the GBM IT cohort and on random matrices | 22,535 | 22,535 (37.9 million numbers bit for bit, files character for character, 5,907 cases in which R stops with the same error) | 0 |
+| regression functions, to nine significant digits | 2,198 | 2,192 | 6 (standard errors of badly conditioned models, equal to six digits) |
+| the building blocks of R (random draws, reading and writing numbers, `round`, `sd`, `cor`, `p.adjust`, `rowMeans`) | 389,832 values | all | 0 |
+
+Against R 3.1.0 on Linux x86-64, with the port set to that platform: 26 of 26 cases on
+Breastdata1 and all 389,671 values of the building blocks. The random cases were not run in
+that R.

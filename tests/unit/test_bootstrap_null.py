@@ -4,8 +4,15 @@ import numpy as np
 import pandas as pd
 
 from search.bootstrap import run_bootstrap
+from search.checkpoint import ChunkMeta, ChunkStore
 from search.core.corepass import run_core
-from search.null import empirical_p, per_gene_counts, pooled_counts, run_internal_null
+from search.null import (
+    empirical_p,
+    external_null,
+    per_gene_counts,
+    pooled_counts,
+    run_internal_null,
+)
 from search.presets import BUFFA2010
 from tests.synthetic_data import make_planted
 
@@ -81,7 +88,9 @@ def test_null_counting_helpers() -> None:
     np.testing.assert_array_equal(counts, [4, 7, 0])  # values >= 0.5: 0.6, 0.9 x3 ; >= 0.1: 7 of 8
     counts_g, n_g = per_gene_counts(observed, chunk)
     np.testing.assert_array_equal(counts_g, [1, 2, 0])
-    np.testing.assert_array_equal(n_g, [2, 3, 3])
+    # the third gene has no observed value: nothing to compare, so no null values and no p-value
+    np.testing.assert_array_equal(n_g, [2, 3, 0])
+    assert np.isnan(empirical_p(counts_g, n_g)[2])
     p = empirical_p(np.array([0, 3, 0]), np.array([9, 9, 0]))
     np.testing.assert_allclose(p[:2], [0.1, 0.4])
     assert np.isnan(p[2])
@@ -120,3 +129,17 @@ def test_internal_null_pooled_and_per_gene(tmp_path: Path) -> None:
     a = pd.read_parquet(tmp_path / "a" / "null_chunk_0001.parquet")
     b = pd.read_parquet(tmp_path / "b" / "null_chunk_0001.parquet")
     pd.testing.assert_frame_equal(a, b)
+
+
+def test_a_gene_without_observed_value_gets_no_p_value(tmp_path: Path) -> None:
+    # null replicates stored by another run: three genes, four replicates
+    genes = pd.Index(["a", "b", "c"], name="gene")
+    replicates = {rep: np.array([0.1 * rep, 0.2, 0.3]) for rep in range(1, 5)}
+    store = ChunkStore(tmp_path / "checkpoints" / "X", "bootstrap")
+    store.write(1, genes, replicates, ChunkMeta("bootstrap", 1, 4, 0, "c", "i", {}))
+    observed = np.array([0.25, np.nan, 0.3])
+    for pooling in ("per_gene", "pooled"):
+        result = external_null(observed, genes, [tmp_path], pooling=pooling, cohort="X")
+        assert np.isnan(result.p[1]), pooling
+        assert result.n_null[1] == 0 and result.count_ge[1] == 0
+        assert np.isfinite(result.p[[0, 2]]).all()

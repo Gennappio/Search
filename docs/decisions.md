@@ -75,3 +75,101 @@ Deviations from the R originals and open questions, with the default chosen in t
   from the surviving sets only, or could not be built at all. Inside the run a random seed set
   that loses its seeds is a replicate like any other. `null.scheme = external_runs` and
   `search summarise` remain available.
+
+## Found by the comparison with R, 2026-11-15
+
+The comparison described in [Porting from R](porting.md) ran both originals next to Search.
+It confirmed entries 1, 2 and 5 above with numbers, and added the following.
+
+Defects of the SEARCH package that were not recorded. Search never had them; they explain
+differences from the package, and three of them stop it with an error:
+
+8. **Pruned genes stayed members of the other neighbourhoods** (SEARCH.R, any value of
+   keep.Alist). Entry 5 is the special case of an old seed removed on Omax. A gene removed on D
+   or on Omax kept counting in every later overlap O; D was not affected.
+9. **A neighbourhood of one member lost its name** (nodes.glm.R, nodes.fastLm.R). A seed
+   associated only with itself was not counted in its own D, got D = -1 / (K - 1) and was removed
+   even with D.lower = 0. Search keeps the self edge whatever the association method.
+10. **A seed with no significant association disappeared from the result** (nodes.glm.R), and
+    when this happened to every seed the run stopped with an error.
+11. **Missing values added an entry named NA to a neighbourhood** (nodes.correlation.R), and the
+    run stopped at the second iteration. With that corrected the package and Search agree: a
+    gene with a missing value has no association.
+12. **summarise.iterations stopped on a gene present only in a null run.** With every default
+    argument on Breastdata1 this follows from entry 1.
+
+Choices of the engine that differ from the package and were not recorded:
+
+- **Genes absent from a null replicate** (`search.null.per_gene_counts`). The p-value divides
+  by the number of null replicates in which the gene has a value, plus one. The package divided
+  by the number of all null replicates plus one, so a gene absent from half of them could get
+  0.55 where Search gives 1.
+- **Bootstrap of a growth run.** The replicates are summarised on the final D of each. The
+  package summarised each iteration number separately, over the replicates that reached it.
+  The two coincide when every replicate stops at the same iteration, as with `max_iter = 1`.
+
+## Corrections to the port, 2026-11-17
+
+The same comparison found defects in Search itself
+([Porting from R](porting.md#defects-found-in-the-port-and-corrected)). They are corrected,
+each with a test. The choices they involved:
+
+- **Connectivity is added in sorted order** (`compute_connectivity`). Added in the order of
+  the seeds, connectivities that are equal in exact arithmetic could differ in the last digit
+  when two seed clusters have the same size, so that tied genes got different ranks, and
+  `C_rank` depended on the order of the seeds. Sorting the terms of each gene before adding
+  them removes both. Rounding `C_raw` before ranking was not chosen: it needs an arbitrary
+  number of decimals and still separates two values that fall on either side of a rounding
+  step. What sorting does not cover: two different sets of terms with the same sum, such as
+  1/2 + 1/6 and 1/3 + 1/3, which needs cluster sizes in very particular ratios.
+- **The GLM association follows the rules of the engine.** Covariate names are quoted in the
+  formula. A model that cannot be built is a configuration error; a fit that fails is counted
+  and logged; a run in which every fit fails stops. Before, all of these ended in an empty
+  network without a message. Genes with a missing value or with the same value in every
+  sample get no association, as in the other methods: before, a constant gene, being
+  collinear with the intercept, got an edge with every seed, and a gene with a missing value
+  was fitted on the remaining samples. The covariates are checked as in the `ols` path.
+- **A constant gene has no association in the `ols` path either.** It had a meaningless
+  number, the ratio of two rounding residues; no edge came from it in any check made.
+- **The degree of a seed counts the seeds inside its neighbourhood**, as
+  `estimate.nodes.degree` of the package does. It counted the neighbourhoods the seed is in,
+  which is the same number unless the association is not symmetric.
+- **A gene without an observed value has no per-gene p-value.** It got the smallest one.
+
+## Two ports of the SEARCH package, 2026-11-19
+
+- **A verbatim port next to the engine.** `search.r2014` reproduces the SEARCH R package as it
+  was written, defects included; the `search2014` preset keeps computing the method as it
+  was meant. The first answers "can a result of the 2014 package be obtained again", the
+  second "what should the result be". Neither replaces the other, and nothing of the verbatim
+  port is used by the engine.
+- **For the verbatim port R is the specification.** It is accepted when it returns what the
+  unmodified package returns in R: the same double bit for bit, the same file character for
+  character, the same error message. Its tests compare it with answers recorded from R. This
+  is the opposite of the rule of the engine, whose tests use no comparison with R.
+- **The installation of R is a parameter.** R 3.1.0 on x86-64 and R 4.4.3 on arm64 differ in
+  how they draw samples, round, read and write numbers and add up, and the package turns
+  those last digits into decisions. `search.r2014.platform` selects which one the port stands
+  for. Only installations the port was compared with are defined; for any other it stops.
+- **Where R's own result is rounding noise, the port says so.** A seed with the same value in
+  every sample under a regression function gets a neighbourhood that R itself changes with
+  the order of the samples. The port returns one of the same kind with the warning
+  `NotReproducible`.
+- **The port stops instead of guessing.** Inputs the package was not meant for (duplicated row
+  names, a gene name with a quote in it, an output path the shell would interpret) raise
+  `UnportedState`.
+- **The figures and the console output of the package are not ported.**
+
+Defects of the package found while building it, beyond entries 1 to 12 above (numbered R9 to
+R13 in [Replicating the 2014 package](replication.md#defects-of-the-package)):
+
+13. **Replicates after a missing one are dropped from the summary** (summarise.iterations.R).
+    Columns are numbered by how many files were found and filled by replicate number.
+14. **A blank in the output directory leaves every file uncompressed** (write.data.files.R):
+    the path goes to `gzip` through the shell without quotes, and the summary then finds
+    nothing.
+15. **A constant seed under `nodes.glm` or `nodes.fastLm` gets a neighbourhood of rounding
+    noise**, up to half of the genes.
+16. **A constant gene under `nodes.fastLm` gets a coefficient and can become a seed.**
+17. **Gene names that all look like numbers come back changed from the files**
+    (summarise.iterations.R): `007` as `7`, `100000` as `1e+05`.

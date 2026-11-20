@@ -105,6 +105,70 @@ def test_glm_gaussian_equals_ols_and_formula_requires_glm() -> None:
     assert np.isfinite(inter.stat[1:, 0]).all()
 
 
+def test_glm_reads_covariates_whatever_their_names() -> None:
+    pytest.importorskip("statsmodels")
+    rng = np.random.default_rng(5)
+    values = rng.normal(size=(5, 30))
+    # names that are not valid Python names, as they come from R tables and spreadsheets
+    table = pd.DataFrame(
+        {
+            "t.rfs": rng.normal(size=30),
+            "tumour grade": rng.choice(["low", "high", "mid"], 30),
+            "2nd-batch": rng.integers(0, 2, 30).astype(float),
+        }
+    )
+    covariates = ["t.rfs", "tumour grade", "2nd-batch"]
+    seeds = np.array([0, 1])
+    ols = associate(values, seeds, AssociationConfig(method="ols", covariates=covariates), table)
+    glm = associate(values, seeds, AssociationConfig(method="glm", covariates=covariates), table)
+    assert np.isfinite(glm.stat).all()
+    off_diagonal = np.ones_like(glm.stat, dtype=bool)
+    off_diagonal[seeds, [0, 1]] = False  # a seed against itself: a perfect fit, p = 0
+    np.testing.assert_allclose(ols.stat[off_diagonal], glm.stat[off_diagonal], rtol=1e-6)
+    np.testing.assert_allclose(ols.p[off_diagonal], glm.p[off_diagonal], rtol=1e-4)
+
+
+# the fits of this test fail on purpose, and statsmodels warns on its way to each failure
+@pytest.mark.filterwarnings("ignore")
+def test_glm_failures_are_errors_not_empty_networks(caplog: pytest.LogCaptureFixture) -> None:
+    pytest.importorskip("statsmodels")
+    rng = np.random.default_rng(6)
+    values = rng.normal(size=(4, 25))
+    table = pd.DataFrame({"age": rng.normal(size=25)})
+    seeds = np.array([0])
+    # a formula term that names no column is a configuration error
+    with pytest.raises(ConfigError, match="no_such_column"):
+        associate(values, seeds, AssociationConfig(method="glm", formula="no_such_column"), table)
+    # a family that cannot fit these values at all (poisson on negative values): the run stops
+    with pytest.raises(DataError, match="every one of the 4 GLM fits failed"):
+        associate(values - 5.0, seeds, AssociationConfig(method="glm", glm_family="poisson"), table)
+    # a family that fails on some pairs only: those get no association, and the log says so
+    with caplog.at_level("WARNING", logger="search"):
+        partial = associate(
+            values, seeds, AssociationConfig(method="glm", glm_family="gamma"), table
+        )
+    assert np.isnan(partial.stat).sum() == 1 and np.isfinite(partial.stat).sum() == 3
+    assert "1 of 4 fits failed" in caplog.text
+    # the checks of the ols path hold for glm too: a covariate with a missing value
+    holed = table.copy()
+    holed.loc[3, "age"] = np.nan
+    with pytest.raises(DataError, match="missing"):
+        associate(values, seeds, AssociationConfig(method="glm", covariates=["age"]), holed)
+
+
+def test_glm_gives_no_association_to_genes_the_engine_cannot_use() -> None:
+    pytest.importorskip("statsmodels")
+    rng = np.random.default_rng(7)
+    values = rng.normal(size=(5, 25))
+    values[2, 4] = np.nan  # a missing value
+    values[3] = 1.5  # no variance
+    for method in ("ols", "glm"):
+        result = associate(values, np.array([0]), AssociationConfig(method=method), None)
+        assert np.isnan(result.stat[[2, 3], 0]).all(), method
+        assert np.isnan(result.p[[2, 3], 0]).all(), method
+        assert np.isfinite(result.stat[[1, 4], 0]).all(), method
+
+
 def test_planted_batch_effect_is_removed_by_the_covariate() -> None:
     rng = np.random.default_rng(4)
     n_genes, n = 120, 80

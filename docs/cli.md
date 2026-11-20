@@ -79,7 +79,7 @@ runs/<name>_<timestamp>/
     <cohort>_MC_random_seed_S_summary.csv
     combined_full_ranking.csv, combined_signature.csv, combined_signature_top.csv
     scores_signature_all.csv, scores_signature_top.csv
-    <cohort>_seeds.csv                  seed, cluster size, degree among the seeds
+    <cohort>_seeds.csv                  seed, cluster size, share of the seeds inside its cluster
     <cohort>_covariate_coefficients.csv coefficients of the covariates per seed (ols with covariates)
     <cohort>_growth_*.csv               iterations, events, connectivity per iteration, final seeds (growth)
     gene_symbols.csv                    gene -> symbol, used by the plots
