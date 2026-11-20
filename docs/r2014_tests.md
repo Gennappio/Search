@@ -4,7 +4,9 @@
 its defects. For this code R is the specification: a test passes when the port returns what the
 R package returns, not when it returns what would be right. This page says which tests exist,
 what each one compares, how to run them and what the last run gave.
-[Replicating the 2014 package](replication.md) has the study the tests come from.
+[Replicating the 2014 package](replication.md) has the study the tests come from;
+[How the verbatim port is tested](r2014_testing_overview.md) is a shorter introduction, with one
+worked example.
 
 ## The three test files
 

@@ -14,6 +14,8 @@ Seed-based gene co-expression clustering with named presets: one engine, the `bu
 - [Replicating the 2014 package](replication.md): the verbatim port of the SEARCH package,
   defects included, how far it reproduces R, and what in a result depends on the R that
   computed it.
+- [How the verbatim port is tested](r2014_testing_overview.md): an introduction to the tests
+  of the verbatim port, with one worked example, for readers who have not followed the port.
 - [Tests of the verbatim port](r2014_tests.md): which tests hold the verbatim port to R,
   function by function, how to run them and what the last run gave.
 
