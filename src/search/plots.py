@@ -9,7 +9,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from search.export.tables import read_cohort_tables
+from search.export.tables import read_cohort_tables, read_result_csv
 
 
 def _require() -> tuple[Any, Any]:
@@ -29,7 +29,7 @@ def load_symbols(results_dir: Path) -> dict[str, str]:
     path = Path(results_dir) / "gene_symbols.csv"
     if not path.exists():
         return {}
-    table = pd.read_csv(path, dtype=str).dropna()
+    table = read_result_csv(path).dropna()
     return dict(zip(table["gene"], table["symbol"], strict=True))
 
 
@@ -139,7 +139,7 @@ def plot_run(run_dir: Path | str, product_cutoff: float = 0.5) -> list[Path]:
         for kind, column in (("shared_neighbourhood_S", "S"), ("seed_overlap_O", "O")):
             path = results / f"{name}_{kind}.csv"
             if path.exists():
-                pairs = pd.read_csv(path)
+                pairs = read_result_csv(path)
                 if pairs[column].notna().any():
                     written.append(
                         seed_network_plot(
@@ -152,7 +152,7 @@ def plot_run(run_dir: Path | str, product_cutoff: float = 0.5) -> list[Path]:
                     )
     full_path = results / "combined_full_ranking.csv"
     if full_path.exists():
-        full = pd.read_csv(full_path)
+        full = read_result_csv(full_path)
         cohorts = [
             c.removeprefix("C_rank_")
             for c in full.columns
@@ -166,5 +166,5 @@ def plot_run(run_dir: Path | str, product_cutoff: float = 0.5) -> list[Path]:
             written.append(product_histogram(full, out / "product_histogram.png", product_cutoff))
     scores_path = results / "scores_signature_all.csv"
     if scores_path.exists():
-        written.append(score_violin(pd.read_csv(scores_path), out / "score_violin.png"))
+        written.append(score_violin(read_result_csv(scores_path), out / "score_violin.png"))
     return written

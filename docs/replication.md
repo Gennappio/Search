@@ -319,9 +319,14 @@ platform for it and refuses to guess.
 
 ## Defects of the package
 
-Every one is reproduced by the port, and none is in the `search2014` preset of the engine. R1
-to R8 are described with their measured effect in [Porting from R](porting.md); R9 to R13 were
-found by this study.
+R1–R13 identify defects of the original SEARCH 0.0.2 package. The verbatim port
+(`search.r2014`) preserves these behaviours for historical replication. The initial
+comparison measured R1–R8, and this replication study identified R9–R13.
+[Measured effects of R1–R8](porting.md#defects-of-the-r-package)
+
+The main Python engine has its own correction history, P1–P7. Some R defects were
+already avoided by the engine's implementation. Others have related Python fixes, such
+as P7 for numeric-looking identifiers. [How the main engine handles each R defect](porting.md#how-the-main-engine-handles-the-13-r-defects)
 
 | | where | what happens |
 |---|---|---|

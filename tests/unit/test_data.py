@@ -6,6 +6,7 @@ import pytest
 
 from search.data import (
     ExpressionSet,
+    read_gene_list,
     read_matrix,
     read_sample_table,
     read_seeds,
@@ -96,6 +97,44 @@ def test_read_breast_fixture(breast_dir: Path) -> None:
     assert expr.sample_table is not None and "t.rfs" in expr.sample_table.columns
     table = read_sample_table(breast_dir / "Breastdata1" / "patient_annotation.txt")
     assert len(table) == 77
+
+
+@pytest.mark.parametrize("filename", ["m.csv", "m.tsv.gz"])
+def test_text_identifiers_survive_matrix_round_trip(tmp_path: Path, filename: str) -> None:
+    expr = ExpressionSet(
+        np.array([[1.5, np.nan], [2, 3], [4, 5], [6, 7]]),
+        pd.Index(["007", "7", "1.50", "NA"]),
+        pd.Index(["001", "1"]),
+    )
+    path = tmp_path / filename
+    write_matrix(expr, path)
+    metadata = tmp_path / "metadata.csv"
+    metadata.write_text("sample,age\n1,54\n001,NA\n")
+    back = read_matrix(path, sample_table=metadata)
+    assert list(back.genes) == list(expr.genes)
+    assert list(back.samples) == list(expr.samples)
+    np.testing.assert_equal(back.values, expr.values)
+    assert back.sample_table is not None
+    np.testing.assert_equal(back.sample_table["age"].to_numpy(), [np.nan, 54])
+
+
+def test_seed_and_signature_ids_stay_distinct(tmp_path: Path) -> None:
+    path = tmp_path / "seeds.csv"
+    path.write_text("symbol,gene\n001,007\n1,7\n,1.50\nNA,NA\n,\n")
+    spec = read_seeds(path)
+    assert spec.seeds == ["007", "7", "1.50", "NA"]
+    assert spec.symbols == {"007": "001", "7": "1", "NA": "NA"}
+    assert read_gene_list(path) == spec.seeds
+
+
+@pytest.mark.parametrize("header", [",s1,s2", "s1,s2"])
+def test_row_names_with_an_unnamed_or_omitted_header(tmp_path: Path, header: str) -> None:
+    path = tmp_path / "matrix.csv"
+    path.write_text(f"{header}\n007,1,2\n7,3,4\nNA,5,NA\n")
+    expr = read_matrix(path)
+    assert expr.genes.tolist() == ["007", "7", "NA"]
+    assert expr.samples.tolist() == ["s1", "s2"]
+    np.testing.assert_equal(expr.values, [[1, 2], [3, 4], [5, np.nan]])
 
 
 def test_strip_version_and_seeds(tmp_path: Path) -> None:

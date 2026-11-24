@@ -50,10 +50,11 @@ SciPy 1.18.1, pandas 3.0.6 and statsmodels 0.15.0, on macOS (arm64).
   same, in the same order. They are listed in
   [Defects found in the port and corrected](#defects-found-in-the-port-and-corrected).
 
-This page compares the R programs with the engine of Search, which computes the method without
-their defects. A second port, `search.r2014`, reproduces the SEARCH package with its defects,
-bit for bit; it is the subject of [Replicating the 2014 package](replication.md), which also
-lists five more defects of the package (R9 to R13) found while building it.
+The two defect counts track different implementations. **R1–R13** identify defects in the
+original SEARCH R package. **P1–P7** identify defects found in the main Python engine.
+P1–P6 were corrected on 2026-11-17. P7, corrected on 2026-11-24, concerned identifiers in
+text files. The separate `search.r2014` port preserves historical R behaviour for replication.
+[How the main engine handles each R defect](#how-the-main-engine-handles-the-13-r-defects)
 
 ## What was ported
 
@@ -366,6 +367,35 @@ one, and O is filled above the diagonal only (`get.matrix.format.R:17`); with a 
 is divided by zero (`SEARCH.R:185`); the list `removed` returned by `SEARCH` holds only the
 seeds removed on D.
 
+### How the main engine handles the 13 R defects
+
+R1 shows why an R defect can have no corresponding P entry. The main engine already
+attached each standard deviation to the right gene when the comparison began. P3 shows
+the reverse case. R counted the seeds inside each seed's neighbourhood correctly, and the
+Python engine needed a fix to match it. The original symptoms and the Python fixes have
+separate records. [R defect catalogue](replication.md#defects-of-the-package) ·
+[Python correction history](#defects-found-in-the-port-and-corrected)
+
+| R defect | Behaviour of the main Python engine |
+|---|---|
+| R1 · Variability filter | Each standard deviation is indexed by gene name, so moving the seeds to the front of the list cannot change which genes pass the filter. |
+| R2 · Maximum overlap | Each seed is compared with every other seed. Three identical neighbourhoods all receive an `Omax` of 1, including the last one. |
+| R3 · Pruned seed | Removing a seed on `Omax` also removes its stored neighbourhood before the next iteration. |
+| R4 · Pruned member | Later overlaps count only genes still in the current universe. A removed gene can no longer contribute to another seed's overlap. |
+| R5 · Singleton neighbourhood | The seed retains its identifier. With the `search2014` preset, a seed connected only to itself has connectivity `D = 0`. |
+| R6 · Empty neighbourhood | Each seed has its own column even when no association passes the threshold. The preset includes the seed in its own cluster and applies the usual pruning rule to its connectivity. |
+| R7 · Missing correlation | A missing correlation creates no edge to another gene. The neighbourhood contains only gene identifiers from the matrix. |
+| R8 · Gene found only in a null run | The external null aligns each replicate to the observed gene identifiers. Extra genes in a null run therefore leave the summary of the observed genes intact. P4 covers a separate case where an observed gene has a missing statistic and must receive a missing p-value. |
+| R9 · Gap in replicate numbers | Bootstrap results are stored by replicate ID. If replicate 2 stops early, replicate 3 still contributes its available final values. The engine averages final connectivity across replicates. R summarises each iteration separately over the replicates that reached it (D4). |
+| R10 · Spaces in output paths | The engine writes CSV tables and Parquet checkpoints directly. A space in a directory name stays part of the path. |
+| R11 · Constant seed in regression | GLM and ordinary least squares mark associations for a constant seed as missing. Rounding noise cannot select other genes for its neighbourhood. |
+| R12 · Constant gene in regression | Both regression methods also mark associations for a constant predictor as missing. P5 records the GLM correction and P6 the least-squares correction. |
+| R13 · Identifier conversion | In R the conversion occurred when the summary reread the identifiers. After P7, Python preserves `007` and `7` as distinct identifiers both at input and when reading saved results. [P7 details and regression tests](#p7-csv-and-tsv-identifiers) |
+
+The pooled null model (D1) and the choice to average final connectivity (D4) are
+methodological decisions. Both can change results even when the R run encounters none
+of the thirteen defects. [Deliberate differences](#deliberate-differences)
+
 ### Deliberate differences
 
 | | difference | effect |
@@ -453,6 +483,25 @@ against the universe once per seed. A smaller point of the same kind as P6 is le
 with Pearson correlation a constant gene whose value is not exactly representable in binary
 gets a correlation of about 1e-17 where a missing value is promised; no edge can come from
 it.
+
+### P7. CSV and TSV identifiers
+
+Before the fix on 2026-11-24, reading a matrix or seed list could turn `007` into `7`.
+A matrix containing both identifiers could then fail the duplicate-gene check. In a seed
+list the two could silently become one seed. Reading a saved ranking could likewise make
+two signatures appear to share a gene when one contained `007` and the other contained `7`.
+
+The main engine now reads identifier fields as text in matrices, metadata, gene lists and
+saved results. It preserves leading zeros, decimal spelling such as `1.50`, and the
+literal identifier `NA`. In expression and numeric covariate columns, `NA` still means
+a missing measurement. If an earlier run wrote altered identifiers, rerun it from inputs
+that retain the original spelling. The exported value `7` alone cannot recover that distinction.
+
+The regression tests cover CSV and compressed TSV round trips, sample alignment, seed and
+signature lists, and comparison of saved rankings. See `test_text_identifiers_survive_matrix_round_trip`
+in `tests/unit/test_data.py` and `test_saved_results_distinguish_padded_gene_ids` in
+`tests/unit/test_phase5.py`. The historical R summary has a related conversion defect,
+[R13](replication.md#defects-of-the-package), which `search.r2014` reproduces.
 
 ## What was not compared
 

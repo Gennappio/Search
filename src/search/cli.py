@@ -150,7 +150,7 @@ def combine(
     """Recombine the cohort tables of a run with different selection criteria."""
     from search.combine import combine_cohorts
     from search.config import RunConfig
-    from search.export.tables import read_cohort_tables, write_combined_tables
+    from search.export.tables import read_cohort_tables, read_result_csv, write_combined_tables
     from search.run import resolve_run_dir
 
     try:
@@ -170,13 +170,10 @@ def combine(
         symbols = None
         full = target / "results" / "combined_full_ranking.csv"
         if full.exists():
-            import pandas as pd
-
-            previous = pd.read_csv(full)
+            previous = read_result_csv(full)
             if "symbol" in previous.columns:
-                symbols = dict(
-                    zip(previous["gene"].astype(str), previous["symbol"].astype(str), strict=True)
-                )
+                named = previous.dropna(subset=["gene", "symbol"])
+                symbols = dict(zip(named["gene"], named["symbol"], strict=True))
         combined = combine_cohorts(tables, cfg, symbols)
         written = write_combined_tables(target / "results", combined, prefix)
     except (SearchError, OSError) as exc:

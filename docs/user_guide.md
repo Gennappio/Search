@@ -68,6 +68,10 @@ Supply **one already-normalised expression matrix per cohort**. For a CSV matrix
 column contains gene identifiers, each remaining column is a sample, and the cells contain
 numeric expression values. This is called `genes_x_samples` orientation.
 
+In CSV and TSV files, SEARCH reads gene and sample identifiers as text. For example,
+`007` and `7` identify different genes. A field containing `NA` can be a gene identifier
+in the first column and a missing measurement in an expression column.
+
 Example of the file structure, with illustrative values:
 
 ```csv

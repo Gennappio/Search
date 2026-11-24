@@ -10,6 +10,7 @@ from typer.testing import CliRunner
 from search.cli import app
 from search.compare import compare_runs, summarise_variants, variant_label, variants_grid
 from search.data import ExpressionSet, read_matrix, write_matrix
+from search.export.tables import read_cohort_tables
 from search.run import CohortManifest, run_pipeline
 from tests.unit.test_pipeline import write_manifest_files
 
@@ -45,6 +46,24 @@ def test_compare_runs_and_variants(tmp_path: Path) -> None:
     assert list(table["variant"]) == ["baseline", "binary"]
     assert table.loc[0, "spearman_vs_baseline"] == pytest.approx(1.0)
     assert table["top10"].str.len().gt(0).all()
+
+
+def test_saved_results_distinguish_padded_gene_ids(tmp_path: Path) -> None:
+    for name, candidate in [("a", "007"), ("b", "7")]:
+        results = tmp_path / name / "results"
+        results.mkdir(parents=True)
+        (results / "001_gene_connectivity.csv").write_text(
+            "dataset,gene,C_raw\n001,007,0.5\n001,7,NA\n"
+        )
+        (results / "combined_full_ranking.csv").write_text(
+            f"gene,candidate\n007,{candidate == '007'}\n7,{candidate == '7'}\n"
+        )
+    table = read_cohort_tables(tmp_path / "a" / "results")["001"]
+    assert table["gene"].tolist() == ["007", "7"]
+    np.testing.assert_equal(table["C_raw"].to_numpy(), [0.5, np.nan])
+    comparison = compare_runs(tmp_path / "a", tmp_path / "b")
+    assert comparison.only_a == ["007"] and comparison.only_b == ["7"]
+    assert comparison.signature_jaccard == 0.0
 
 
 def test_cli_compare_variants_and_plot(tmp_path: Path) -> None:

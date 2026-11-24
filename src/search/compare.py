@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from search.export.tables import read_cohort_tables
+from search.export.tables import read_cohort_tables, read_result_csv
 from search.run import resolve_run_dir
 
 
@@ -91,7 +91,8 @@ def compare_runs(run_a: Path | str, run_b: Path | str, top_n: int = 50) -> RunCo
         b_dir / "results" / "combined_full_ranking.csv",
     )
     if full_a.exists() and full_b.exists():
-        fa, fb = pd.read_csv(full_a).set_index("gene"), pd.read_csv(full_b).set_index("gene")
+        fa = read_result_csv(full_a).set_index("gene")
+        fb = read_result_csv(full_b).set_index("gene")
         for column in ("pC_boot", "pC_obs", "C_IVW"):
             if column in fa.columns and column in fb.columns:
                 pearson, spearman, n = _correlations(fa[column], fb[column])
@@ -138,10 +139,11 @@ def summarise_variants(runs: dict[str, Path], baseline: str, top_n: int = 50) ->
     """One row per variant: candidates, agreement with the baseline, top genes."""
     rows = []
     base_dir = resolve_run_dir(runs[baseline])
-    base_full = pd.read_csv(base_dir / "results" / "combined_full_ranking.csv").set_index("gene")
+    ranking_path = Path("results") / "combined_full_ranking.csv"
+    base_full = read_result_csv(base_dir / ranking_path).set_index("gene")
     for label, path in runs.items():
         run_dir = resolve_run_dir(path)
-        full = pd.read_csv(run_dir / "results" / "combined_full_ranking.csv").set_index("gene")
+        full = read_result_csv(run_dir / ranking_path).set_index("gene")
         comparison = compare_runs(base_dir, run_dir, top_n)
         score = "pC_boot" if "pC_boot" in full.columns else "pC_obs"
         pearson, spearman, _ = _correlations(base_full[score], full[score])

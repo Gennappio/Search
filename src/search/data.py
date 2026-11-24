@@ -219,7 +219,20 @@ def detect_format(path: Path | str) -> TableFormat:
     return "tsv" if "\t" in first else "csv"
 
 
-def read_table(path: Path | str, format: TableFormat | None = None) -> pd.DataFrame:
+def read_identifier_csv(path: Path, *columns: str | int, sep: str = ",") -> pd.DataFrame:
+    """Read nonempty identifiers literally. Other columns keep pandas' usual types."""
+
+    def identifier(value: str) -> str | None:
+        return value or None
+
+    return pd.read_csv(
+        path, sep=sep, converters={col: identifier for col in columns}, low_memory=False
+    )
+
+
+def read_table(
+    path: Path | str, format: TableFormat | None = None, *, text_columns: tuple[str, ...] = ()
+) -> pd.DataFrame:
     """A table whose first column holds row identifiers (csv, tsv, parquet)."""
     p = Path(path)
     if not p.exists():
@@ -227,12 +240,14 @@ def read_table(path: Path | str, format: TableFormat | None = None) -> pd.DataFr
     fmt = format or detect_format(p)
     if fmt == "parquet":
         frame = pd.read_parquet(p)
-        if isinstance(frame.index, pd.RangeIndex) and frame.shape[1] > 0:
-            frame = frame.set_index(frame.columns[0])
     elif fmt in ("csv", "tsv"):
-        frame = pd.read_csv(p, sep="\t" if fmt == "tsv" else ",", index_col=0, low_memory=False)
+        frame = read_identifier_csv(p, 0, *text_columns, sep="\t" if fmt == "tsv" else ",")
     else:
         raise DataError(f"read_table does not handle format {fmt}")
+    # Set the index after parsing so pandas cannot infer its type a second time.
+    # A header that omits the row-name field already produces an index.
+    if isinstance(frame.index, pd.RangeIndex) and frame.shape[1] > 0:
+        frame = frame.set_index(frame.columns[0])
     frame.index = pd.Index([str(i) for i in frame.index])
     return frame
 
@@ -259,7 +274,7 @@ def read_gene_list(path: Path | str, column: str = "gene") -> list[str]:
     sep = "\t" if "\t" in lines[0] else ","
     header = [h.strip().strip('"') for h in lines[0].split(sep)]
     if column in header:
-        frame = pd.read_csv(p, sep=sep)
+        frame = read_identifier_csv(p, column, sep=sep)
         return [str(g).strip() for g in frame[column].dropna()]
     return [line.split(sep)[0].strip().strip('"') for line in lines]
 
@@ -270,7 +285,7 @@ def read_seeds(path: Path | str) -> SeedSpec:
     if not p.exists():
         raise DataError(f"seed file not found: {p}")
     sep = "\t" if detect_format(p) == "tsv" else ","
-    frame = pd.read_csv(p, sep=sep)
+    frame = read_identifier_csv(p, "gene", "symbol", sep=sep)
     if "gene" not in frame.columns:
         raise DataError(f"seed file {p} needs a 'gene' column")
     seeds = [str(g).strip() for g in frame["gene"].dropna()]

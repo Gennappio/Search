@@ -143,11 +143,9 @@ def load_inputs(manifest: CohortManifest) -> LoadedInputs:
     symbols = dict(seeds.symbols)
     gf = manifest.gene_filter
     if gf.annotation_table:
-        annotation = read_table(manifest.resolve(gf.annotation_table))
-        symbol_column = next(
-            (c for c in ("symbol", "symbol_consensus", "gene_symbol") if c in annotation.columns),
-            None,
-        )
+        symbol_columns = ("symbol", "symbol_consensus", "gene_symbol")
+        annotation = read_table(manifest.resolve(gf.annotation_table), text_columns=symbol_columns)
+        symbol_column = next((c for c in symbol_columns if c in annotation.columns), None)
         if symbol_column:
             found = annotation[symbol_column].dropna()
             symbols = {**{str(k): str(v) for k, v in found.items()}, **symbols}

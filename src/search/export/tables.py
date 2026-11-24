@@ -10,6 +10,7 @@ import pandas as pd
 from search.bootstrap import BootstrapSummary
 from search.combine import CombinedResult, legacy_two_cohort_names
 from search.core.corepass import CoreResult
+from search.data import read_identifier_csv
 from search.growth import GrowthResult
 from search.null import NullResult
 
@@ -120,11 +121,18 @@ def write_scores(results_dir: Path, scores: pd.DataFrame, filename: str) -> Path
     return path
 
 
+def read_result_csv(path: Path) -> pd.DataFrame:
+    """Read an exported table with the same identifiers used to write it."""
+    return read_identifier_csv(
+        path, "gene", "symbol", "dataset", "sample", "seed", "seed_x", "seed_y"
+    )
+
+
 def read_cohort_tables(results_dir: Path) -> dict[str, pd.DataFrame]:
     """The per-cohort gene tables of a run directory, keyed by cohort name."""
     tables: dict[str, pd.DataFrame] = {}
     for path in sorted(Path(results_dir).glob("*_gene_connectivity.csv")):
-        frame = pd.read_csv(path)
+        frame = read_result_csv(path)
         name = (
             str(frame["dataset"].iloc[0])
             if "dataset" in frame.columns and len(frame)
